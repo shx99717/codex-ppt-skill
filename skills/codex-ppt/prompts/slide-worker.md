@@ -8,10 +8,10 @@ Generate slide <N> for this codex-ppt deck.
 Deck dir: <absolute deck dir>
 Slide job file: <absolute deck dir>/prompts/slide_<NN>.json
 Output target owned by parent: <absolute deck dir>/origin_image/slide_<NN>.png
-Selected image backend: <built-in image tool OR CLI/API fallback>
+Selected image backend: <exact locked label from parent>
 Sample generation method copied from the approved sample:
 - backend_used: <exact backend label recorded by parent>
-- tool_name: <image_gen OR image_generate OR scripts/image_gen.py>
+- tool_name: <GenerateImage OR image_gen OR codex-gpt-image OR scripts/image_gen.py>
 - mode: <generate OR edit>
 - model/config: <model, size, quality, or "built-in default" if not exposed>
 - prompt_source: <approved sample prompt source>
@@ -24,7 +24,7 @@ Input images already prepared by the parent:
 
 Read the JSON job file, then follow its `prompt` field exactly. Use the selected image backend and the recorded sample generation method only.
 You must produce the final slide candidate by calling the selected image generation backend:
-- Built-in mode: use the built-in image generation/editing tool.
+- Use the exact locked tool/label from the parent (for example Cursor GenerateImage, Codex image_gen, codex-gpt-image, or scripts/image_gen.py).
 - CLI/API fallback mode: use `scripts/image_gen.py` with the saved job prompt and required image inputs.
 
 Forbidden for final slide image creation:
@@ -33,19 +33,20 @@ Forbidden for final slide image creation:
 - SVG, HTML/CSS, or canvas screenshots
 - python-pptx/PptxGenJS/native PPT layout screenshots
 - manually composited text, card, chart, or image overlays
+- switching to a different backend than the parent locked (including OpenClaw image_generate)
 
 If you cannot use the selected image backend, stop and return `blocker=<reason>` instead of creating a lower-quality replacement.
 If you cannot follow the recorded sample generation method, stop and return `blocker=<reason>` instead of switching tools.
 Do not edit slide job files, origin_image, speech.md, or assemble the PPT.
 
 Before returning, visually check:
-- Chinese text is readable and not garbled
+- text in the slide's locked language is readable and not garbled (for mixed slides: both CJK and Latin)
 - style matches the approved sample slide
 - required source images are visibly included and not replaced by a similar redraw
 - no overlapping or truncated important content
 
 Return only:
-backend_used=<built-in image tool OR scripts/image_gen.py>
+backend_used=<exact locked label from parent>
 selected_source=/absolute/path/to/$CODEX_HOME/generated_images/.../ig_*.png
 qa_note=<one sentence>
 ```

@@ -42,7 +42,7 @@ python3 -c 'import json, pathlib; print(json.loads(pathlib.Path("{base_dir}/{dec
   --out {base_dir}/{deck_name}/origin_image/slide_01.png
 ```
 
-Before using this text-only `generate` path, inspect the assigned `prompts/slide_XX.json`. If `input_images` is non-empty or `requires_context_images` is true, this command is not sufficient because it does not attach those images. Use a selected backend/path that can pass the required images, such as the built-in image tool with the images visible in context or a CLI/API edit/image-input path that supplies every required source image. If no such path is available, stop and ask the user whether to switch backend. Do not generate a text-only replacement for a strict input asset.
+Before using this text-only `generate` path, inspect the assigned `prompts/slide_XX.json`. If `input_images` is non-empty or `requires_context_images` is true, this command is not sufficient because it does not attach those images. Use a selected backend/path that can pass the required images, such as a host-native tool (`GenerateImage` / `image_gen`) or bridge (`codex-gpt-image`) with the images visible in context, or a CLI/API edit/image-input path that supplies every required source image. If no such path is available, stop and ask the user whether to switch backend. Do not generate a text-only replacement for a strict input asset.
 
 ## Capabilities And Sizes
 

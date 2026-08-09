@@ -172,7 +172,7 @@ def _ensure_api_key(dry_run: bool) -> None:
     _die(
         "OPENAI_API_KEY is not set for codex-ppt CLI/API fallback.\n"
         f"{target_hint}\n"
-        "Use the built-in image tool if it is available. Otherwise configure the shared runtime once:\n"
+        "Prefer a host-native tool (Codex image_gen / Cursor GenerateImage) or codex-gpt-image if available. Otherwise configure the shared runtime once:\n"
         f"  {command}\n"
         "To use a third-party proxy, set OPENAI_BASE_URL and the provider's model name.\n"
         f"Details: {config_doc}"

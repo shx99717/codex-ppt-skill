@@ -118,7 +118,8 @@ Important:
 - `{deck_name}.pptx` must match the project folder name.
 - The script reads images from `{base_dir}/{deck_name}/origin_image/`.
 - The script only reads final images named like `slide_01.png`, `slide_02.png`, etc.; drafts and sample files are ignored.
-- Before running assembly, `slide_jobs.json` should show every generated slide as `recorded` and every approved sample slide as `accepted`. If any slide is `pending`, `dispatched`, or `blocked`, stop and report that state.
+- Before running assembly, `slide_jobs.json` should show every generated slide as `recorded` with a valid `user_review` (status `user_reviewed` and `image_sha256` matching the current `origin_image/slide_XX.png`), and every approved sample slide as `accepted`. If any slide is `pending`, `dispatched`, or `blocked`, or any non-sample recorded slide lacks valid user review, stop and report that state. `assemble_ppt.py` does not enforce the user-review marker — the agent must.
+- Do not regenerate only a named slide without impact analysis (other slides / planned narrative / visuals) and user confirmation when scope expands.
 - If `{base_dir}/{deck_name}/speech.md` exists and uses `Slide N` headings, the script writes those notes into the corresponding PPT speaker notes.
 - The script writes `{base_dir}/{deck_name}/{deck_name}.pptx`.
 

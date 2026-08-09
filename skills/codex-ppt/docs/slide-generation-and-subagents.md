@@ -4,7 +4,7 @@ Read this before full-deck image generation, preparing slide jobs, dispatching s
 
 ## Final Slide Image Generation
 
-Generate one image per slide with the selected image backend. Every final `slide_XX.png` must be produced by the built-in image tool or by `scripts/image_gen.py`; programmatic rendering or hybrid text overlay is not acceptable for slide image creation.
+Generate one image per slide with the selected image backend. Every final `slide_XX.png` must be produced by the locked specific backend (for example `GenerateImage`, `image_gen`, `codex-gpt-image`, or `scripts/image_gen.py`); programmatic rendering or hybrid text overlay is not acceptable for slide image creation.
 
 After the outline, visual style, image backend, and sample slide have all been approved, create final downstream artifacts if they do not already exist:
 
@@ -15,6 +15,8 @@ After the outline, visual style, image backend, and sample slide have all been a
 Do not create these final downstream artifacts before outline approval. If the user explicitly asks for pre-approval planning files, use `.draft.` filenames and synchronize them after approval.
 
 `deck_spec.json` must include `sample_generation_method` copied from the approved sample before `prepare_slide_prompts.py` is run. The helper copies that method into each `prompts/slide_XX.json` and into `slide_jobs.json`, so workers can see the exact backend, tool, mode, image context preparation, and output constraints used for the approved sample.
+
+For multilingual or mixed decks, every slide object in `deck_spec.json` must include its own `language` field (`Chinese`, `English`, `mixed`, or another label). Deck-level `language` is only a fallback for prepare; smoke TARGET T3 requires the per-slide field. Do not omit slide languages and assume the Chinese/English default is enough.
 
 Before full production, create structured per-slide image jobs. Prefer the bundled deterministic helper:
 
@@ -71,7 +73,7 @@ Avoid generating every slide as the same three-card layout. For each slide, choo
 ```json
 {
   "type": "16:9 full-slide PowerPoint image",
-  "language": "Chinese",
+  "language": "{resolved slide language: Chinese | English | mixed | ...}",
   "canvas": {
     "aspect_ratio": "16:9",
     "use_full_canvas": true,
@@ -102,7 +104,7 @@ Avoid generating every slide as the same three-card layout. For each slide, choo
   "text": {
     "title": "{slide title}",
     "key_points": ["{point 1}", "{point 2}", "{point 3}"],
-    "text_quality": "render all Chinese text exactly, clearly, and without garbled characters"
+    "text_quality": "render text in the slide language exactly and legibly; for Chinese use CJK accuracy; for English use Latin-script accuracy; for mixed require both"
   },
   "local_context": {
     "required_background": "{facts, lists, definitions, comparisons, or prior-slide references this slide needs to be self-contained}"
@@ -142,6 +144,9 @@ Parent agent responsibilities:
 - Spawn subagents with exactly one slide job each, up to `dispatch_slots_available`.
 - Immediately after each successful spawn, run `record_slide_dispatch.py` with the real agent id and prompt path.
 - After each worker returns, visually check its selected output, then run `record_slide_result.py` to copy the selected generated image into `origin_image/slide_XX.png` and record backend provenance.
+- After the current wave's results are recorded: **stop**. Do not spawn the next wave yet. Present each newly recorded full-resolution `origin_image/slide_XX.png` to the user (no contact sheet). On approve, run `record_user_review.py` with `--approve`. Track the wave's slide ids in prose.
+- On a user change request: do not blindly regenerate only the named slide. Perform **mandatory impact analysis** — other slides (sequence, paired layouts, shared motifs), planned spoken narrative (`speech.md` if present, otherwise outline / slide context), and visual consistency with the approved sample. Report blast radius; if scope expands beyond the named slide(s), confirm with the user. Clear review (`record_user_review.py --clear` or re-dispatch), regenerate, re-record, and re-approve every affected slide before continuing.
+- Do not treat sample approval as full-deck image approval. Do not overlap the next wave while the user is still reviewing the current wave.
 - If a worker cannot use the selected image backend or cannot access required input images, run `record_slide_blocker.py` and report the blocker.
 
 Subagent responsibilities:
@@ -180,10 +185,23 @@ Result recording:
   {base_dir}/{deck_name} \
   --slide slide_02 \
   --agent-id <agent id> \
-  --backend-used "built-in image tool" \
+  --backend-used "GenerateImage" \
   --selected-source /absolute/path/to/generated/slide_02.png \
   --qa-note "Text readable; style matches the approved sample."
 ```
+
+After recording the wave (agent visual check + `record_slide_result.py` for each returned worker), run user review before the next dispatch:
+
+```bash
+~/.codex-ppt-skill/.venv/bin/python {skill_root}/scripts/record_user_review.py \
+  {base_dir}/{deck_name} \
+  --slide slide_02 \
+  --approve
+```
+
+Only when every slide in the wave is user-reviewed may you refill dispatch slots for the next wave.
+
+If a final PNG is replaced on disk after approval without `--clear` / re-dispatch, per-slide `user_review.image_sha256` no longer matches (`review_is_valid` is false). Re-run `record_user_review.py --approve` on the new image (or `--clear` then regenerate) before treating the slide as reviewed; the run-state summary refreshes on the next `record_user_review` or `record_slide_dispatch` call.
 
 Blocker recording:
 
@@ -217,4 +235,4 @@ Final slide image naming rules:
 - Keep rejected variants, drafts, or reference images out of `origin_image/`. If you need to preserve them, place them in the project root or a separate `drafts/` directory.
 - Before assembling, verify every expected `slide_XX.png` exists in `origin_image/`, there are no missing or extra final slide images, and `slide_job_status.py` shows all non-sample slide jobs as `recorded`.
 
-For Chinese decks, explicitly ask the image backend to render Chinese text accurately and avoid garbled characters.
+Ask the image backend to render text accurately for the slide's language. For Chinese slides, require exact CJK rendering. For English slides, do **not** inject a Chinese-only text rule. For mixed slides, require both CJK and Latin-script accuracy. `prepare_slide_prompts.py` injects the matching Universal Constraints line from each slide's resolved language (slide → deck → default English).

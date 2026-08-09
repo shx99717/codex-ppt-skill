@@ -1,0 +1,13 @@
+{
+  "status": "created",
+  "history": [],
+  "user_review": {
+    "approved_slide_ids": [
+      "slide_02"
+    ],
+    "pending_recorded_slide_ids": [],
+    "all_recorded_slides_approved": true,
+    "updated_at": "2026-08-09T15:21:25Z",
+    "marker": "user_reviewed"
+  }
+}

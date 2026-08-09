@@ -9,12 +9,14 @@ from pathlib import Path
 from slide_run_state import (
     deck_dir_from_target,
     find_slide,
+    load_jobs,
     locked_jobs,
     now_iso,
     rel_to_deck,
     resolve_deck_path,
     set_run_status,
     sha256_file,
+    sync_user_review_run_state,
     update_jobs_run_status,
 )
 
@@ -45,6 +47,7 @@ def main() -> int:
         if not prompt_path.exists():
             raise SystemExit(f"Prompt file does not exist: {prompt_path}")
 
+        slide.pop("user_review", None)
         slide["dispatch"] = {
             "agent_id": args.agent_id,
             "agent_nickname": args.agent_nickname,
@@ -55,6 +58,9 @@ def main() -> int:
         slide["status"] = "dispatched"
         update_jobs_run_status(jobs)
         run_status = jobs.get("run_status")
+    # Refresh user_review summary after releasing the jobs lock (cleared approvals
+    # must not leave a sticky T1 marker in slide_run_state.json).
+    sync_user_review_run_state(deck_dir, load_jobs(deck_dir))
     if run_status == "slides_dispatched":
         set_run_status(deck_dir, "slides_dispatched", "all slide jobs dispatched")
     print(f"{slide['slide_id']} -> dispatched")

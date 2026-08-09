@@ -199,3 +199,51 @@ def update_jobs_run_status(jobs: Dict[str, Any]) -> None:
 
 def slide_ids(slides: Iterable[Dict[str, Any]]) -> List[str]:
     return [str(slide.get("slide_id")) for slide in slides]
+
+
+def final_image_path(deck_dir: Path, slide: Dict[str, Any]) -> Path:
+    out_ref = slide.get("out") or f"origin_image/{slide['slide_id']}.png"
+    return resolve_deck_path(deck_dir, out_ref)
+
+
+def review_is_valid(deck_dir: Path, slide: Dict[str, Any]) -> bool:
+    """True when slide.user_review is present, marked user_reviewed, and sha matches the PNG."""
+    review = slide.get("user_review")
+    if not isinstance(review, dict):
+        return False
+    if review.get("status") != "user_reviewed":
+        return False
+    path = final_image_path(deck_dir, slide)
+    if not path.is_file():
+        return False
+    return review.get("image_sha256") == sha256_file(path)
+
+
+def sync_user_review_run_state(deck_dir: Path, jobs: Dict[str, Any]) -> None:
+    """Refresh slide_run_state.json user_review summary from current jobs.
+
+    Emits marker \"user_reviewed\" only while at least one recorded slide still
+    has a valid approval (no sticky T1 marker after clear/re-dispatch).
+    """
+    approved: List[str] = []
+    pending: List[str] = []
+    for slide in jobs.get("slides", []):
+        if slide.get("status") == "accepted":
+            continue
+        if slide.get("status") != "recorded":
+            continue
+        sid = str(slide.get("slide_id"))
+        if review_is_valid(deck_dir, slide):
+            approved.append(sid)
+        else:
+            pending.append(sid)
+    with locked_run_state(deck_dir) as state:
+        summary: Dict[str, Any] = {
+            "approved_slide_ids": approved,
+            "pending_recorded_slide_ids": pending,
+            "all_recorded_slides_approved": bool(approved) and not pending,
+            "updated_at": now_iso(),
+        }
+        if approved:
+            summary["marker"] = "user_reviewed"
+        state["user_review"] = summary
