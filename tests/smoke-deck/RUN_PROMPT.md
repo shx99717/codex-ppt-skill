@@ -13,9 +13,10 @@ keeps fork and installed skill in sync; no commits without your OK):
 
 | Host | Prompt file |
 |------|-------------|
-| Cursor | [`RUN_PROMPT_cursor.md`](RUN_PROMPT_cursor.md) |
-| Claude Code | [`RUN_PROMPT_claude.md`](RUN_PROMPT_claude.md) |
-| Codex | [`RUN_PROMPT_codex.md`](RUN_PROMPT_codex.md) |
+| Cursor (`GenerateImage` hard-pin) | [`RUN_PROMPT_cursor.md`](RUN_PROMPT_cursor.md) |
+| Cursor + `codex-gpt-image` hard-pin | [`RUN_PROMPT_cursor_codex-gpt-image.md`](RUN_PROMPT_cursor_codex-gpt-image.md) |
+| Claude Code (`codex-gpt-image` hard-pin) | [`RUN_PROMPT_claude.md`](RUN_PROMPT_claude.md) |
+| Codex (`image_gen`) | [`RUN_PROMPT_codex.md`](RUN_PROMPT_codex.md) |
 
 See also [`../../docs/fork/DESIGN_PROMPT.md`](../../docs/fork/DESIGN_PROMPT.md) for resuming the *design* work on
 the fork's improvement goals — use that one to pick up a conversation, this one to check a

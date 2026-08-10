@@ -1,7 +1,9 @@
 # Codex — FAST smoke + strict fix loop
 
 Paste the fenced block below **verbatim** into a fresh Codex session.
-This run is pinned to **Codex** only. Do not self-detect another host.
+This run is pinned to **Codex** only (native `image_gen`). Do not self-detect another host.
+
+See also Cursor / Claude bridge variants in [`RUN_PROMPT.md`](RUN_PROMPT.md).
 
 Canonical skill source: `d:/git/codex-ppt-skill/skills/codex-ppt`
 Installed skill this host must run: `~/.codex/skills/codex-ppt`

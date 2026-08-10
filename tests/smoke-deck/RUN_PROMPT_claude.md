@@ -2,16 +2,23 @@
 
 Paste the fenced block below **verbatim** into a fresh Claude Code session.
 This run is pinned to **Claude Code** only. Do not self-detect another host.
+Claude Code has no native image tool; this run expects **`codex-gpt-image`**.
 
 Canonical skill source: `d:/git/codex-ppt-skill/skills/codex-ppt`
 Installed skill this host must run: `~/.claude/skills/codex-ppt`
+Bridge skill required: `~/.claude/skills/codex-gpt-image` (Codex OAuth image path)
+
+See also the Cursor variants:
+[`RUN_PROMPT_cursor.md`](RUN_PROMPT_cursor.md) (`GenerateImage`),
+[`RUN_PROMPT_cursor_codex-gpt-image.md`](RUN_PROMPT_cursor_codex-gpt-image.md).
 
 ---
 
 ```
 You are running the codex-ppt smoke-deck on CLAUDE CODE only, in FAST mode,
-with a strict engineering fix loop. Do not switch hosts. Do not commit or push
-unless I explicitly say so.
+with a strict engineering fix loop, and with the image backend HARD-PINNED to
+`codex-gpt-image`. Do not switch hosts. Do not invent a Claude Code native
+image tool. Do not commit or push unless I explicitly say so.
 
 ## Host pins (fixed)
 
@@ -20,12 +27,16 @@ unless I explicitly say so.
 | Environment | Claude Code |
 | --host | claude-code |
 | Installed skill | ~/.claude/skills/codex-ppt |
+| Bridge skill | ~/.claude/skills/codex-gpt-image |
+| Locked selected_backend | codex-gpt-image |
 | Fork repo root | d:/git/codex-ppt-skill |
 | Canonical skill source | d:/git/codex-ppt-skill/skills/codex-ppt |
 
 Acceptable backends for this host (verifier matrix): `codex-gpt-image`
-(preferred when installed). Claude Code has no native image tool for this
-skill. Unrequested `scripts/image_gen.py` / CLI fallback is a failure unless I
+(preferred / required for this run). Claude Code has no native image tool for
+this skill. **This variant must lock and use only** `codex-gpt-image` for
+sample + all slides (T6 must report `selected_backend='codex-gpt-image'`).
+Unrequested `scripts/image_gen.py` / CLI fallback is a failure unless I
 explicitly ask for `--allow-cli-fallback`.
 
 ## Non-negotiable rules
@@ -50,16 +61,22 @@ explicitly ask for `--allow-cli-fallback`.
    `test_backend_family.py`, `test_slide_language.py`).
    Command from fork root:
    `python -m unittest discover -s skills/codex-ppt/scripts/tests -v`
+7. **codex-gpt-image auth must work** before image generation. From
+   `~/.claude/skills/codex-gpt-image`, run
+   `python scripts/codex_gpt_image.py auth-status`. If missing/expired, run
+   `python scripts/codex_gpt_image.py login --open-browser` and wait for me to
+   finish the device-code flow. Never print tokens from `~/.codex/auth.json`.
 
 ## Pass criteria for THIS fork run
 
 - **BASELINE**: all checks must PASS (exit code of verify_deck.py).
 - **TARGET**: T1 (review recorded), T2 (no hardcoded Chinese rule on EN slide),
-  T3 (per-slide language), T6 (specific selected_backend), and **T7** (no
-  Unix-only `.venv/bin/python` in skill docs; scored on Windows when
-  `--skill-root` is passed) must PASS — those goals are already implemented.
-  Investigate any other TARGET miss (T4/T5); fix if it is a real skill defect;
-  ask me if it looks environment-only (e.g. image width / host tooling).
+  T3 (per-slide language), T6 (specific selected_backend — must be
+  `codex-gpt-image`), and **T7** (no Unix-only `.venv/bin/python` in skill docs;
+  scored on Windows when `--skill-root` is passed) must PASS — those goals are
+  already implemented. Investigate any other TARGET miss (T4/T5); fix if it is
+  a real skill defect; ask me if it looks environment-only (e.g. image width /
+  host tooling).
 
 ## Procedure
 
@@ -67,9 +84,11 @@ explicitly ask for `--allow-cli-fallback`.
 
 1. `cd d:/git/codex-ppt-skill`
 2. Sync fork → `~/.claude/skills/codex-ppt` and confirm match.
-3. `python tests/smoke-deck/verify_deck.py --preflight`
+3. Confirm `~/.claude/skills/codex-gpt-image/SKILL.md` exists.
+4. Run codex-gpt-image `auth-status` (see rule 7). Stop if auth cannot be fixed.
+5. `python tests/smoke-deck/verify_deck.py --preflight`
    If deps missing, run the printed bootstrap, then re-check. Stop if bootstrap fails.
-4. Ask me for `<build_dir>` (suggest
+6. Ask me for `<build_dir>` (suggest
    `tests/smoke-deck/runs/<YYYYMMDD-HHMM>-claude`). Wait for my answer.
 
 ### B. Generate (FAST contract — do not deviate)
@@ -89,11 +108,13 @@ Gate handling:
 - Outline: pre-approved — write `outline.md` and continue
 - Style: pinned — do not offer options
 - Sample: pre-approved — accept first sample and continue
-- Image backend: do NOT assume — probe callable backends in Claude Code
-  (prefer `codex-gpt-image` when present; else document CLI only if that is
-  truly all that is available and stop to ask before using CLI), state what
-  you checked and what you locked as `selected_backend`, then continue without
-  waiting for confirmation when the choice is host-correct
+- Image backend: probe callable backends in Claude Code (no native image tool;
+  confirm `codex-gpt-image` available via probe). State what you checked, then
+  **lock `selected_backend=codex-gpt-image`** and continue without waiting for
+  confirmation. Persist the lock into `deck_spec.json` / prepare with
+  `--selected-backend codex-gpt-image`. Every final slide image must be
+  produced via the `codex-gpt-image` skill/CLI path. If only CLI is available,
+  stop and ask before using `--allow-cli-fallback` — do not silently fall back.
 - Still honor skill rules that require recording user review / run-state for
   the pre-assembly review gate when the skill says to (FAST skips *waiting*,
   not required bookkeeping). If the skill requires a review marker before
@@ -110,12 +131,14 @@ python tests/smoke-deck/verify_deck.py <build_dir>/coffee-extraction \
   --skill-root ~/.claude/skills/codex-ppt
 ```
 
-Show the full BASELINE and TARGET output verbatim.
+Show the full BASELINE and TARGET output verbatim. Confirm T6 reports
+`selected_backend='codex-gpt-image'` (or an equivalent specific label that
+normalizes to the codex-gpt-image family).
 
 ### D. On failure — strict fix loop (repeat until green or blocked)
 
 1. **Reproduce & isolate**: quote the failing check / error; name the layer
-   (skill docs/prose, script, install drift, verifier, host tooling).
+   (skill docs/prose, script, install drift, verifier, host tooling, bridge auth).
 2. **Root cause**: inspect fork source (and unit tests). Do not patch symptoms.
 3. **Failing test first** when the bug is in Python helpers/scripts:
    add or extend a unit test under `skills/codex-ppt/scripts/tests/`, see RED,
@@ -133,7 +156,7 @@ commit), stop and ask me with options.
 
 ### E. Success report
 
-When BASELINE is green and T1/T2/T3/T6/T7 pass: summarize backend used, deck path,
-and any remaining TARGET notes. Remind me that changes are uncommitted until I
-approve a commit.
+When BASELINE is green and T1/T2/T3/T6/T7 pass: summarize backend used
+(`codex-gpt-image`), deck path, and any remaining TARGET notes. Remind me that
+changes are uncommitted until I approve a commit.
 ```
