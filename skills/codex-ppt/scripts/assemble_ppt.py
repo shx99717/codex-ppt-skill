@@ -331,6 +331,13 @@ def create_presentation(
 
 
 def main():
+    # Windows consoles on a non-UTF-8 locale (e.g. GBK/cp936) can't encode the
+    # Chinese status text and check-mark symbols this script prints; force UTF-8
+    # so the process doesn't crash regardless of the ambient console code page.
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8", errors="replace")
+
     parser = argparse.ArgumentParser(
         description='将幻灯片图片组装成 PowerPoint 演示文稿',
         formatter_class=argparse.RawDescriptionHelpFormatter,

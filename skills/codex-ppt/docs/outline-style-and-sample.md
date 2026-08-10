@@ -13,6 +13,7 @@ Create a concise `outline.md` draft before generating images. For each slide, de
 - 3-5 key points
 - Optional visual idea
 - Layout role and intent, such as cover, agenda, section divider, concept explanation, process, comparison, timeline, data evidence, architecture, case study, summary, or Q&A
+- **Language** for that slide (`Chinese`, `English`, `mixed`, or another label). For multilingual/mixed decks, every slide must carry its own language when you write `deck_spec.json` (smoke TARGET T3). Deck-level `language` is a fallback only.
 - Required source images, if any, including the image path or attachment name, its role on the slide, and whether it is a strict input asset or only a style/layout reference
 
 Save the draft to `{base_dir}/{deck_name}/outline.md` once the project directory is known. If the output directory is not known yet, show the outline in chat first and write it to `outline.md` immediately after creating the project directory.
@@ -121,14 +122,14 @@ Sample slide requirements:
 - Demonstrate the intended deck rhythm: the sample should show how the chosen style adapts to a real content page, not just a generic fixed template.
 - Save it directly as the intended final slide filename, such as `{base_dir}/{deck_name}/origin_image/slide_08.png`. In CLI/API fallback mode, use `scripts/image_gen.py generate --out` for that exact path.
 - Show the sample image to the user.
-- Ask the user to confirm the visual style, typography, layout density, and Chinese text quality.
+- Ask the user to confirm the visual style, typography, layout density, and text quality for the slide language.
 
 Do not generate the full deck until the user approves the sample slide. If the user requests changes, revise the style description and regenerate that same `slide_XX.png` file first. Once approved, keep that file as the final slide for its page. Do not create `sample_slide.png` in `origin_image/`, because the assembly step is designed around final `slide_XX` filenames.
 
 After the sample slide is approved, record the sample generation method in `deck_spec.json` before preparing full-deck jobs. This is the contract the parent passes to subagents so they use the same image-generation path as the sample, not a cheaper local rendering path. Include at least:
 
-- `backend_used`: the confirmed backend label, such as `built-in image tool` or `scripts/image_gen.py`.
-- `tool_name`: the actual tool or command used, such as `image_gen`, `image_generate`, or `scripts/image_gen.py`.
+- `backend_used`: the confirmed specific backend label, such as `GenerateImage`, `image_gen`, `codex-gpt-image`, or `scripts/image_gen.py` (never the generic phrase `built-in image tool`, never OpenClaw `image_generate`).
+- `tool_name`: the actual tool or command used, such as `GenerateImage`, `image_gen`, `codex-gpt-image`, or `scripts/image_gen.py`. Do not use OpenClaw `image_generate`.
 - `mode`: `generate` or `edit`.
 - `prompt_source`: where the approved sample prompt came from.
 - `size`, `quality`, and model/config details when the backend exposes them.

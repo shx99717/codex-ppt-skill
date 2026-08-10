@@ -172,7 +172,7 @@ def _ensure_api_key(dry_run: bool) -> None:
     _die(
         "OPENAI_API_KEY is not set for codex-ppt CLI/API fallback.\n"
         f"{target_hint}\n"
-        "Use the built-in image tool if it is available. Otherwise configure the shared runtime once:\n"
+        "Prefer a host-native tool (Codex image_gen / Cursor GenerateImage) or codex-gpt-image if available. Otherwise configure the shared runtime once:\n"
         f"  {command}\n"
         "To use a third-party proxy, set OPENAI_BASE_URL and the provider's model name.\n"
         f"Details: {config_doc}"
@@ -904,6 +904,13 @@ def _add_shared_args(parser: argparse.ArgumentParser) -> None:
 
 
 def main() -> int:
+    # Windows consoles on a non-UTF-8 locale can't encode an arbitrary non-ASCII
+    # --out/deck path this script prints; force UTF-8 so the process doesn't
+    # crash regardless of the ambient console code page.
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8", errors="replace")
+
     _load_runtime_env()
     parser = argparse.ArgumentParser(
         description="Fallback CLI for explicit image generation or editing via GPT Image models"

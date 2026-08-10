@@ -178,6 +178,42 @@ def _slide_number(slide: Dict[str, Any], fallback: int) -> int:
     return number
 
 
+def _normalize_language_kind(value: str) -> str:
+    stripped = value.strip()
+    n = re.sub(r"[^a-z0-9]+", "", stripped.lower())
+    # Exact CJK label BEFORE alnum fold — `中文`.lower() stays CJK and would be stripped to "".
+    if stripped in {"中文"} or n in {"chinese", "zh", "zhcn", "zhtw"}:
+        return "zh"
+    if n in {"english", "en", "enus", "engb"}:
+        return "en"
+    if n in {"mixed", "zhen", "enzh", "bilingual"}:
+        return "mixed"
+    return "other"
+
+
+def _resolve_slide_language(slide: Dict[str, Any], deck: Dict[str, Any]) -> tuple[str, str]:
+    raw = slide.get("language")
+    if not (isinstance(raw, str) and raw.strip()):
+        raw = deck.get("language")
+    if not (isinstance(raw, str) and raw.strip()):
+        raw = "English"
+    display = raw.strip()
+    return display, _normalize_language_kind(display)
+
+
+def _text_quality_constraint(kind: str, display: str) -> str:
+    if kind == "zh":
+        return "- Render Chinese text exactly and legibly; avoid garbled characters.\n"
+    if kind == "en":
+        return "- Render English (Latin-script) text exactly and legibly; avoid garbled characters.\n"
+    if kind == "mixed":
+        return (
+            "- Render both Chinese (CJK) and Latin-script text exactly and legibly; "
+            "avoid garbled characters.\n"
+        )
+    return f"- Render text in {display} exactly and legibly; avoid garbled characters.\n"
+
+
 def _build_prompt(
     *,
     deck: Dict[str, Any],
@@ -188,6 +224,7 @@ def _build_prompt(
 ) -> str:
     title = str(slide.get("title") or f"Slide {number}").strip()
     style = deck.get("style", {})
+    display_lang, lang_kind = _resolve_slide_language(slide, deck)
     images: List[Dict[str, Any]] = []
     if global_style_reference:
         images.append(global_style_reference)
@@ -205,7 +242,7 @@ def _build_prompt(
         "# Codex PPT Slide Image Prompt\n",
         _format_block("Canvas", {
             "type": "16:9 full-slide PowerPoint image",
-            "language": deck.get("language", "Chinese"),
+            "language": display_lang,
             "slide_number": number,
             "render_slide_number": False,
         }),
@@ -259,7 +296,7 @@ def _build_prompt(
     prompt_parts.append(
         "## Universal Constraints\n"
         "- The final image itself must contain the title and key points.\n"
-        "- Render Chinese text exactly and legibly; avoid garbled characters.\n"
+        f"{_text_quality_constraint(lang_kind, display_lang)}"
         "- Keep the confirmed deck style consistent while varying layout by slide role.\n"
         "- No watermark, unrelated logo, or extra slide number.\n"
     )
@@ -283,18 +320,18 @@ def _job_images(
 def _write_template(path: Path) -> None:
     template = {
         "deck_name": "example-deck",
-        "language": "Chinese",
+        "language": "English",
         "goal": "Explain the core idea of the source article.",
         "deck_context": {
             "source_summary": "Short source-wide summary that workers may need when a slide refers to the broader article.",
             "core_claim": "The central thesis that should stay consistent across the deck.",
             "canonical_terms": ["Term one", "Term two", "Term three"],
         },
-        "selected_image_backend": "built-in image tool",
+        "selected_image_backend": "GenerateImage",
         "max_concurrent_slides": 6,
         "sample_generation_method": {
-            "backend_used": "built-in image tool",
-            "tool_name": "image_gen",
+            "backend_used": "GenerateImage",
+            "tool_name": "GenerateImage",
             "mode": "generate",
             "prompt_source": "the approved sample slide job prompt",
             "size": "16:9 landscape, 2560x1440 target",
@@ -307,7 +344,7 @@ def _write_template(path: Path) -> None:
             "name": "手绘技术解释风",
             "visual_direction": "clean hand-drawn technical explainer",
             "color_palette": "white background, black marker lines, pale yellow highlights",
-            "typography": "large readable Chinese headings, compact handwritten annotations",
+            "typography": "large readable headings, compact handwritten annotations",
         },
         "approved_style_reference": {
             "path": "/absolute/path/to/approved-sample-slide.png",
@@ -319,6 +356,7 @@ def _write_template(path: Path) -> None:
                 "number": 1,
                 "title": "Cover",
                 "role": "cover",
+                "language": "Chinese",
                 "intent": "Open the talk",
                 "key_points": ["Point one", "Point two"],
                 "local_context": {
@@ -333,6 +371,7 @@ def _write_template(path: Path) -> None:
                 "number": 2,
                 "title": "Evidence",
                 "role": "data evidence",
+                "language": "English",
                 "intent": "Explain a supplied result figure",
                 "key_points": ["Preserve the original figure", "Add two callouts"],
                 "required_images": [
@@ -357,7 +396,7 @@ def main() -> int:
     parser.add_argument("--write-template", help="Write an example deck spec JSON and exit.")
     parser.add_argument(
         "--selected-backend",
-        help="Confirmed image backend label, such as `built-in image tool` or `scripts/image_gen.py`.",
+        help="Confirmed image backend label, such as `GenerateImage`, `codex-gpt-image`, or `scripts/image_gen.py`.",
     )
     parser.add_argument(
         "--max-concurrent-slides",

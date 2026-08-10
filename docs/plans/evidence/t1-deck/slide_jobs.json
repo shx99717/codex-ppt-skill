@@ -1,0 +1,16 @@
+{
+  "slides": [
+    {
+      "slide_id": "slide_02",
+      "number": 2,
+      "status": "recorded",
+      "job": "prompts/slide_02.json",
+      "out": "origin_image/slide_02.png",
+      "user_review": {
+        "status": "user_reviewed",
+        "reviewed_at": "2026-08-09T15:21:25Z",
+        "image_sha256": "ebf4f635a17d10d6eb46ba680b70142419aa3220f228001a036d311a22ee9d2a"
+      }
+    }
+  ]
+}

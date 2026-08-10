@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import sys
 from collections import Counter, defaultdict
 
 from slide_run_state import (
@@ -20,6 +21,13 @@ from slide_run_state import (
 
 
 def main() -> int:
+    # Windows consoles on a non-UTF-8 locale can't encode arbitrary non-ASCII
+    # deck paths this script prints; force UTF-8 so the process doesn't crash
+    # regardless of the ambient console code page.
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8", errors="replace")
+
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("deck", help="Deck directory or slide_jobs.json")
     parser.add_argument("--json", action="store_true")

@@ -35,6 +35,25 @@ FORBIDDEN_BACKEND_TERMS = (
 )
 
 
+def _normalized_backend_label(value: str) -> str:
+    return re.sub(r"[^a-z0-9]+", "", value.lower())
+
+
+def _is_generic_builtin_label(value: str) -> bool:
+    n = _normalized_backend_label(value)
+    if n in {"builtinimagetool", "builtinimage", "builtin"}:
+        return True
+    if "builtin" in n and "image" in n and "imagegen" not in n and "generateimage" not in n:
+        if "codexgptimage" not in n and "scriptsimagen" not in n and "imagegenpy" not in n:
+            return True
+    return False
+
+
+def _is_unsupported_openclaw_label(value: str) -> bool:
+    n = _normalized_backend_label(value)
+    return "imagegenerate" in n and "generateimage" not in n
+
+
 def _validate_backend(backend: str) -> str:
     value = backend.strip()
     if not value:
@@ -43,29 +62,45 @@ def _validate_backend(backend: str) -> str:
     for term in FORBIDDEN_BACKEND_TERMS:
         if term in lowered:
             raise SystemExit(f"Forbidden backend for final slide image: {backend}")
+    if _is_unsupported_openclaw_label(value):
+        raise SystemExit(
+            f"Unsupported backend `{backend}`: OpenClaw `image_generate` is not allowed. "
+            "Lock a specific supported label such as `GenerateImage`, `image_gen`, "
+            "`codex-gpt-image`, or `scripts/image_gen.py`."
+        )
+    if _is_generic_builtin_label(value):
+        raise SystemExit(
+            f"Unsupported backend `{backend}`: do not use the generic phrase "
+            "`built-in image tool`. Lock a specific label such as `GenerateImage`, "
+            "`image_gen`, `codex-gpt-image`, or `scripts/image_gen.py`."
+        )
     if "image" not in lowered and "built-in" not in lowered:
         raise SystemExit(
             "--backend-used must name the selected image backend, such as "
-            "`built-in image tool` or `scripts/image_gen.py`."
+            "`GenerateImage`, `codex-gpt-image`, `image_gen`, or `scripts/image_gen.py`."
         )
     return value
 
 
 def _backend_family(value: str) -> str:
-    lowered = value.lower()
-    if "image_gen.py" in lowered or "scripts/image_gen" in lowered:
+    n = _normalized_backend_label(value)
+    if "imagegenpy" in n or "scriptsimagen" in n or "scriptsimagegen" in n:
         return "cli-api-fallback"
+    if "codexgptimage" in n:
+        return "codex-gpt-image"
+    if "generateimage" in n:
+        return "generateimage"
+    # OpenClaw image_generate -> imagegenerate would otherwise match imagegen below.
+    if "imagegenerate" in n:
+        return ""
+    if "imagegen" in n or "builtin" in n or "builtinimage" in n:
+        return "builtin-image-gen"
+    lowered = value.lower()
     if "cli" in lowered or "api" in lowered or "fallback" in lowered:
         return "cli-api-fallback"
-    if "built-in" in lowered or "builtin" in lowered or "image_generate" in lowered:
-        return "built-in-image-tool"
-    if "image_gen" in lowered:
-        return "built-in-image-tool"
+    if "built-in" in lowered or "builtin" in lowered:
+        return "builtin-image-gen"
     return ""
-
-
-def _normalized_backend_label(value: str) -> str:
-    return re.sub(r"[^a-z0-9]+", "", value.lower())
 
 
 def _method_backend_labels(method: object) -> list[str]:
@@ -109,9 +144,13 @@ def _matched_expected_backend(backend_used: str, expected_labels: list[str]) -> 
         return None
     used_normalized = _normalized_backend_label(backend_used)
     used_family = _backend_family(backend_used)
+    # Generic built-in labels must not satisfy a specific lock via family match.
+    allow_family = not _is_generic_builtin_label(backend_used)
     for label in expected_labels:
         if _normalized_backend_label(label) == used_normalized:
             return label
+        if not allow_family or _is_generic_builtin_label(label):
+            continue
         expected_family = _backend_family(label)
         if expected_family and expected_family == used_family:
             return label
