@@ -49,13 +49,13 @@ Codex PPT는 Codex용 PPT 생성 skill이며, Claude Code, OpenClaw, Hermes Agen
 
 Codex PPT는 이미지형 PPT를 생성합니다. 시각적 일관성은 높지만, 슬라이드 안의 텍스트, 차트와 도형을 기존 PPT처럼 개별적으로 편집할 수는 없습니다.
 
-편집 가능한 PPT로 추가 변환해야 한다면 생성 후 [image-to-editable-ppt-skill](https://github.com/ningzimu/image-to-editable-ppt-skill)을 사용할 수 있습니다.
+편집 가능한 PPT로 추가 변환해야 한다면 생성 후 [image-to-editable-ppt-skill](https://github.com/shx99717/image-to-editable-ppt-skill)을 사용할 수 있습니다.
 
 `gpt-image-2` 이미지 생성 모델을 사용할 권한이 없다면 이 skill을 사용할 수 없습니다. 자세한 내용은 [설치 및 설정](/ko/installation.md)을 참고하세요.
 
 ## 관련 링크
 
-- GitHub 저장소: https://github.com/ningzimu/codex-ppt-skill
+- GitHub 저장소: https://github.com/shx99717/codex-ppt-skill
 - ClawHub 페이지: https://clawhub.ai/ningzimu/codex-ppt
 - 사용 사례 전시: https://github.com/ningzimu/codex-ppt-skill/issues/34
-- 편집 가능한 PPT 변환 skill: https://github.com/ningzimu/image-to-editable-ppt-skill
+- 편집 가능한 PPT 변환 skill: https://github.com/shx99717/image-to-editable-ppt-skill

@@ -6,7 +6,7 @@
 
 如无必要，请不要转成可编辑 PPT，除非你 Codex 额度充足。
 
-如果需要进一步转换成可编辑 PPT，可以在生成后尝试使用 [image-to-editable-ppt-skill](https://github.com/ningzimu/image-to-editable-ppt-skill)。不过 `image-to-editable-ppt-skill` 目前属于测试版本，且目前只支持 ChatGPT Plus / Pro 会员在 Codex 中使用，不支持其他 agent。如果效果不稳定，请等待后续更新通知。
+如果需要进一步转换成可编辑 PPT，可以在生成后尝试使用 [image-to-editable-ppt-skill](https://github.com/shx99717/image-to-editable-ppt-skill)。不过 `image-to-editable-ppt-skill` 目前属于测试版本，且目前只支持 ChatGPT Plus / Pro 会员在 Codex 中使用，不支持其他 agent。如果效果不稳定，请等待后续更新通知。
 
 注意：图片转可编辑 skill 目前消耗 token 较多，对 Plus 用户不友好，Pro 用户随意。
 

@@ -6,7 +6,7 @@ No. Codex PPT generates image-based presentations in which every slide is a comp
 
 Unless necessary, do not convert the presentation into an editable format unless you have sufficient Codex credits.
 
-If you need an editable presentation, try [image-to-editable-ppt-skill](https://github.com/ningzimu/image-to-editable-ppt-skill) after generation. However, `image-to-editable-ppt-skill` is currently experimental. It currently supports only ChatGPT Plus / Pro subscribers using Codex and does not support other agents. If its results are unstable, wait for future update announcements.
+If you need an editable presentation, try [image-to-editable-ppt-skill](https://github.com/shx99717/image-to-editable-ppt-skill) after generation. However, `image-to-editable-ppt-skill` is currently experimental. It currently supports only ChatGPT Plus / Pro subscribers using Codex and does not support other agents. If its results are unstable, wait for future update announcements.
 
 Note: The image-to-editable skill currently consumes a large number of tokens. It is not friendly to Plus users, while Pro users can use it more freely.
 

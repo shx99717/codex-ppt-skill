@@ -18,7 +18,7 @@ A Codex skill for generating PowerPoint decks. It can also be used in Claude Cod
 ## Friendly Note
 
 > [!TIP]
-> This skill generates image-based PPT decks from articles, reports, outlines, or ideas. It is suitable for strong visual expression, but slide elements are not directly editable. If you need a more editable PPT, you can try converting the generated deck with [image-to-editable-ppt-skill](https://github.com/ningzimu/image-to-editable-ppt-skill).
+> This skill generates image-based PPT decks from articles, reports, outlines, or ideas. It is suitable for strong visual expression, but slide elements are not directly editable. If you need a more editable PPT, you can try converting the generated deck with [image-to-editable-ppt-skill](https://github.com/shx99717/image-to-editable-ppt-skill).
 >
 > For a detailed introduction to `codex-ppt` and `image-to-editable-ppt`, see [skill_duo_intro.pdf](assets/skill_duo_intro.pdf). This deck was generated with the `codex-ppt` skill using the prompt: "请分别阅读 Codex PPT和 Image to Editable PPT 这两个技能的内容，然后用 Codex PPT 帮我做一个PPT吧，20页，每个技能的介绍10页。"
 >
@@ -112,7 +112,7 @@ Use `origin_image/` to review the final image used for each slide. Files are nam
 Recommended: send this sentence to your agent and let it install the skill for you:
 
 ```text
-Please install this codex-ppt skill for me: https://github.com/ningzimu/codex-ppt-skill
+Please install this codex-ppt skill for me: https://github.com/shx99717/codex-ppt-skill
 ```
 
 ### Manual install for Codex
@@ -120,7 +120,7 @@ Please install this codex-ppt skill for me: https://github.com/ningzimu/codex-pp
 To install manually for Codex, use the `skills` CLI to add this skill to Codex's global skills directory:
 
 ```bash
-npx -y skills@latest add ningzimu/codex-ppt-skill \
+npx -y skills@latest add shx99717/codex-ppt-skill \
   --skill codex-ppt \
   --agent codex \
   --global
@@ -155,13 +155,13 @@ These agents can read `SKILL.md` skills. You can also install with the `skills` 
 
 ```bash
 # Claude Code
-npx -y skills@latest add ningzimu/codex-ppt-skill \
+npx -y skills@latest add shx99717/codex-ppt-skill \
   --skill codex-ppt \
   --agent claude-code \
   --global
 
 # Hermes Agent
-npx -y skills@latest add ningzimu/codex-ppt-skill \
+npx -y skills@latest add shx99717/codex-ppt-skill \
   --skill codex-ppt \
   --agent hermes-agent \
   --global
@@ -176,7 +176,7 @@ If you are developing this repository locally, you can use a symlink instead of 
 Re-run the matching install command above to overwrite the installed skill with the latest version, or simply ask your agent to update it:
 
 ```text
-Please update the codex-ppt skill to the latest version. The repository is: https://github.com/ningzimu/codex-ppt-skill
+Please update the codex-ppt skill to the latest version. The repository is: https://github.com/shx99717/codex-ppt-skill
 ```
 
 Restart the agent after updating. Your API key configuration (`~/.codex-ppt-skill/.env`) and personal style library (`~/.codex-ppt-skill/references/`) live outside the skill install directory, so updates and reinstalls never lose them.
@@ -225,7 +225,7 @@ The skill follows this workflow:
 
 ## More Projects
 
-- [image-to-editable-ppt-skill](https://github.com/ningzimu/image-to-editable-ppt-skill): Rebuild slide screenshots, PDF pages, or image-based PPTX files into editable PowerPoint decks, useful after `codex-ppt` generates image-based slides.
+- [image-to-editable-ppt-skill](https://github.com/shx99717/image-to-editable-ppt-skill): Rebuild slide screenshots, PDF pages, or image-based PPTX files into editable PowerPoint decks, useful after `codex-ppt` generates image-based slides.
 - [codex-gpt-image](https://github.com/ningzimu/codex-gpt-image): A `gpt-image-2` image generation skill powered by Codex OAuth / member login.
 - [handdrawn-tech-illustrations](https://github.com/ningzimu/handdrawn-tech-illustrations): A hand-drawn illustration skill for Chinese technical content. It turns technical articles, product notes, screenshots, outlines, or rough ideas into article illustrations, concept explainer graphics, WeChat cover images, and Rednote covers, with a friendly, light-cartoon, Chinese-readable style and moderate information density.
 - [awesome-ai-ppt](https://github.com/ningzimu/awesome-ai-ppt): A curated list of open-source AI PPT projects, organized by workflows such as HTML-first, image-first, PPTX-native, conversion, and automation infrastructure, focused on GitHub projects that help agents or developers create, edit, convert, or inspect PPT decks.
@@ -234,7 +234,7 @@ The skill follows this workflow:
 
 ## Support
 
-Having trouble? Check the [usage documentation](https://ningzimu.github.io/codex-ppt-skill/#/en/), join [CodexPPT](https://t.me/CodexPPT), or [open an issue](https://github.com/ningzimu/codex-ppt-skill/issues/new).
+Having trouble? Check the [usage documentation](https://ningzimu.github.io/codex-ppt-skill/#/en/), join [CodexPPT](https://t.me/CodexPPT), or [open an issue](https://github.com/shx99717/codex-ppt-skill/issues/new).
 
 ## License
 

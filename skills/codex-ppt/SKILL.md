@@ -20,7 +20,7 @@ metadata:
       - name: CODEX_PPT_HOME
         required: false
         description: Runtime home override.
-    homepage: https://github.com/ningzimu/codex-ppt-skill
+    homepage: https://github.com/shx99717/codex-ppt-skill
 ---
 
 # Codex PPT
@@ -160,4 +160,4 @@ Subagents must not edit `outline.md`, `deck_spec.json`, other slide jobs, `origi
 
 ## Documentation and Updates
 
-For source, docs, install, config, and examples, see [ningzimu/codex-ppt-skill](https://github.com/ningzimu/codex-ppt-skill).
+For source, docs, install, config, and examples, see [shx99717/codex-ppt-skill](https://github.com/shx99717/codex-ppt-skill).

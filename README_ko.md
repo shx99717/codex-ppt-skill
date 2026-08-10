@@ -18,7 +18,7 @@ PowerPoint 덱을 생성하는 Codex용 skill입니다. Codex 외에도 Claude C
 ## 참고 사항
 
 > [!TIP]
-> 이 skill은 글, 리포트, 개요, 아이디어로부터 이미지 기반 PPT 덱을 생성합니다. 강한 시각적 표현에 적합하지만, 슬라이드 요소를 직접 편집할 수는 없습니다. 편집 가능한 PPT가 필요하다면 생성된 덱을 [image-to-editable-ppt-skill](https://github.com/ningzimu/image-to-editable-ppt-skill)로 변환해 보세요.
+> 이 skill은 글, 리포트, 개요, 아이디어로부터 이미지 기반 PPT 덱을 생성합니다. 강한 시각적 표현에 적합하지만, 슬라이드 요소를 직접 편집할 수는 없습니다. 편집 가능한 PPT가 필요하다면 생성된 덱을 [image-to-editable-ppt-skill](https://github.com/shx99717/image-to-editable-ppt-skill)로 변환해 보세요.
 >
 > `codex-ppt`와 `image-to-editable-ppt`에 대한 자세한 소개는 [skill_duo_intro.pdf](assets/skill_duo_intro.pdf)를 참고하세요. 이 덱은 `codex-ppt` skill로 다음 프롬프트를 사용해 생성했습니다: "请分别阅读 Codex PPT和 Image to Editable PPT 这两个技能的内容，然后用 Codex PPT 帮我做一个PPT吧，20页，每个技能的介绍10页。"
 >
@@ -112,7 +112,7 @@ skill 설계와 사용에 대한 기본 소개는 [good-skill-design.pptx](asset
 권장: 아래 문장을 에이전트에게 보내 skill을 대신 설치하게 하세요:
 
 ```text
-이 codex-ppt skill을 설치해 줘: https://github.com/ningzimu/codex-ppt-skill
+이 codex-ppt skill을 설치해 줘: https://github.com/shx99717/codex-ppt-skill
 ```
 
 ### Codex 수동 설치
@@ -120,7 +120,7 @@ skill 설계와 사용에 대한 기본 소개는 [good-skill-design.pptx](asset
 Codex에 수동으로 설치하려면 `skills` CLI로 이 skill을 Codex의 전역 skills 디렉터리에 추가하세요:
 
 ```bash
-npx -y skills@latest add ningzimu/codex-ppt-skill \
+npx -y skills@latest add shx99717/codex-ppt-skill \
   --skill codex-ppt \
   --agent codex \
   --global
@@ -155,13 +155,13 @@ OpenClaw skill 허용 목록을 사용한다면 `codex-ppt`를 허용 skill에 �
 
 ```bash
 # Claude Code
-npx -y skills@latest add ningzimu/codex-ppt-skill \
+npx -y skills@latest add shx99717/codex-ppt-skill \
   --skill codex-ppt \
   --agent claude-code \
   --global
 
 # Hermes Agent
-npx -y skills@latest add ningzimu/codex-ppt-skill \
+npx -y skills@latest add shx99717/codex-ppt-skill \
   --skill codex-ppt \
   --agent hermes-agent \
   --global
@@ -176,7 +176,7 @@ npx -y skills@latest add ningzimu/codex-ppt-skill \
 위의 해당 설치 명령을 다시 실행해 설치된 skill을 최신 버전으로 덮어쓰거나, 에이전트에게 업데이트를 요청하기만 하면 됩니다:
 
 ```text
-codex-ppt skill을 최신 버전으로 업데이트해 줘. 저장소는: https://github.com/ningzimu/codex-ppt-skill
+codex-ppt skill을 최신 버전으로 업데이트해 줘. 저장소는: https://github.com/shx99717/codex-ppt-skill
 ```
 
 업데이트 후 에이전트를 재시작하세요. API key 설정(`~/.codex-ppt-skill/.env`)과 개인 스타일 라이브러리(`~/.codex-ppt-skill/references/`)는 skill 설치 디렉터리 밖에 있으므로, 업데이트나 재설치로 사라지지 않습니다.
@@ -225,7 +225,7 @@ skill은 다음 워크플로를 따릅니다:
 
 ## 관련 프로젝트
 
-- [image-to-editable-ppt-skill](https://github.com/ningzimu/image-to-editable-ppt-skill): 슬라이드 스크린샷, PDF 페이지, 이미지 기반 PPTX 파일을 편집 가능한 PowerPoint 덱으로 재구성합니다. `codex-ppt`가 이미지 기반 슬라이드를 생성한 뒤에 유용합니다.
+- [image-to-editable-ppt-skill](https://github.com/shx99717/image-to-editable-ppt-skill): 슬라이드 스크린샷, PDF 페이지, 이미지 기반 PPTX 파일을 편집 가능한 PowerPoint 덱으로 재구성합니다. `codex-ppt`가 이미지 기반 슬라이드를 생성한 뒤에 유용합니다.
 - [codex-gpt-image](https://github.com/ningzimu/codex-gpt-image): Codex OAuth / 멤버 로그인 기반의 `gpt-image-2` 이미지 생성 skill입니다.
 - [handdrawn-tech-illustrations](https://github.com/ningzimu/handdrawn-tech-illustrations): 중국어 기술 콘텐츠를 위한 손그림 일러스트 skill입니다. 기술 아티클, 제품 노트, 스크린샷, 개요, 대략적인 아이디어를 아티클 삽화, 개념 설명 그래픽, WeChat 커버 이미지, Rednote 커버로 변환하며, 친근하고 가벼운 카툰풍에 중국어 가독성이 좋고 적당한 정보 밀도를 갖습니다.
 - [awesome-ai-ppt](https://github.com/ningzimu/awesome-ai-ppt): 오픈소스 AI PPT 프로젝트를 HTML-first, image-first, PPTX-native, 변환, 자동화 인프라 등의 워크플로별로 정리한 큐레이션 목록입니다. 에이전트나 개발자가 PPT 덱을 만들고, 편집하고, 변환하고, 검사하는 데 도움이 되는 GitHub 프로젝트에 초점을 둡니다.
@@ -234,7 +234,7 @@ skill은 다음 워크플로를 따릅니다:
 
 ## 지원
 
-문제가 있나요? [사용 설명서](https://ningzimu.github.io/codex-ppt-skill/#/ko/)를 확인하고, [CodexPPT](https://t.me/CodexPPT)에 참여하거나, [Issue를 등록하세요](https://github.com/ningzimu/codex-ppt-skill/issues/new).
+문제가 있나요? [사용 설명서](https://ningzimu.github.io/codex-ppt-skill/#/ko/)를 확인하고, [CodexPPT](https://t.me/CodexPPT)에 참여하거나, [Issue를 등록하세요](https://github.com/shx99717/codex-ppt-skill/issues/new).
 
 ## 라이선스
 

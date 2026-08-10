@@ -49,13 +49,13 @@ If you are already using the skill and have encountered a problem, see the [FAQ]
 
 Codex PPT generates image-based presentations. They offer strong visual consistency, but the text, charts, and shapes on a slide cannot be edited individually as they can in a traditional PowerPoint file.
 
-If you need to convert the result into an editable presentation, you can use [image-to-editable-ppt-skill](https://github.com/ningzimu/image-to-editable-ppt-skill) after generation.
+If you need to convert the result into an editable presentation, you can use [image-to-editable-ppt-skill](https://github.com/shx99717/image-to-editable-ppt-skill) after generation.
 
 You cannot use this skill without access to the `gpt-image-2` image-generation model. See [Installation and Configuration](/en/installation.md).
 
 ## Related Links
 
-- GitHub repository: https://github.com/ningzimu/codex-ppt-skill
+- GitHub repository: https://github.com/shx99717/codex-ppt-skill
 - ClawHub page: https://clawhub.ai/ningzimu/codex-ppt
 - Use case showcase: https://github.com/ningzimu/codex-ppt-skill/issues/34
-- Editable presentation conversion skill: https://github.com/ningzimu/image-to-editable-ppt-skill
+- Editable presentation conversion skill: https://github.com/shx99717/image-to-editable-ppt-skill

@@ -18,7 +18,7 @@
 ## 温馨提示
 
 > [!TIP]
-> 本 skill 负责从文章、报告、大纲或想法生成图片式 PPT，适合强视觉表达，但页面元素本身不可直接编辑。如果你需要进一步转换成可编辑 PPT，可以在生成完成后尝试使用 [image-to-editable-ppt-skill](https://github.com/ningzimu/image-to-editable-ppt-skill) 进行转换。
+> 本 skill 负责从文章、报告、大纲或想法生成图片式 PPT，适合强视觉表达，但页面元素本身不可直接编辑。如果你需要进一步转换成可编辑 PPT，可以在生成完成后尝试使用 [image-to-editable-ppt-skill](https://github.com/shx99717/image-to-editable-ppt-skill) 进行转换。
 >
 > 关于 `codex-ppt` 和 `image-to-editable-ppt` 这两个技能的详细介绍，参见 [skill_duo_intro.pdf](assets/skill_duo_intro.pdf)。该 PPT 由 `codex-ppt` skill 生成，提示词为：“请分别阅读 Codex PPT和 Image to Editable PPT 这两个技能的内容，然后用 Codex PPT 帮我做一个PPT吧，20页，每个技能的介绍10页。”
 >
@@ -112,7 +112,7 @@
 【推荐】可以直接把下面这句话发给你的 Agent，让它帮你安装：
 
 ```text
-请帮我安装这个 codex-ppt skill，链接是：https://github.com/ningzimu/codex-ppt-skill
+请帮我安装这个 codex-ppt skill，链接是：https://github.com/shx99717/codex-ppt-skill
 ```
 
 ### 手动安装到 Codex
@@ -120,7 +120,7 @@
 如需手动安装到 Codex，可以使用 `skills` CLI 安装到 Codex 的全局 skills 目录：
 
 ```bash
-npx -y skills@latest add ningzimu/codex-ppt-skill \
+npx -y skills@latest add shx99717/codex-ppt-skill \
   --skill codex-ppt \
   --agent codex \
   --global
@@ -155,13 +155,13 @@ ClawHub 页面：[clawhub.ai/ningzimu/codex-ppt](https://clawhub.ai/ningzimu/cod
 
 ```bash
 # Claude Code
-npx -y skills@latest add ningzimu/codex-ppt-skill \
+npx -y skills@latest add shx99717/codex-ppt-skill \
   --skill codex-ppt \
   --agent claude-code \
   --global
 
 # Hermes Agent
-npx -y skills@latest add ningzimu/codex-ppt-skill \
+npx -y skills@latest add shx99717/codex-ppt-skill \
   --skill codex-ppt \
   --agent hermes-agent \
   --global
@@ -176,7 +176,7 @@ npx -y skills@latest add ningzimu/codex-ppt-skill \
 重新执行一遍上面对应的安装命令即可覆盖为最新版本，也可以直接让 agent 帮你更新：
 
 ```text
-请帮我更新 codex-ppt skill 到最新版本，仓库是：https://github.com/ningzimu/codex-ppt-skill
+请帮我更新 codex-ppt skill 到最新版本，仓库是：https://github.com/shx99717/codex-ppt-skill
 ```
 
 更新后重启 agent 生效。API key 配置（`~/.codex-ppt-skill/.env`）和个人风格库（`~/.codex-ppt-skill/references/`）都在 skill 安装目录之外，更新或重装不会丢失。
@@ -225,7 +225,7 @@ skill 会按以下流程执行：
 
 ## 我的其他项目
 
-- [image-to-editable-ppt-skill](https://github.com/ningzimu/image-to-editable-ppt-skill)：把幻灯片截图、PDF 页面或图片版 PPTX 重建为可编辑 PowerPoint，适合在 `codex-ppt` 生成整页图片后继续做可编辑化。
+- [image-to-editable-ppt-skill](https://github.com/shx99717/image-to-editable-ppt-skill)：把幻灯片截图、PDF 页面或图片版 PPTX 重建为可编辑 PowerPoint，适合在 `codex-ppt` 生成整页图片后继续做可编辑化。
 - [codex-gpt-image](https://github.com/ningzimu/codex-gpt-image)：通过 Codex OAuth / 会员登录调用 `gpt-image-2` 的生图 skill。
 - [handdrawn-tech-illustrations](https://github.com/ningzimu/handdrawn-tech-illustrations)：面向中文技术内容的手绘配图 skill，可以把技术文章、产品笔记、截图、大纲或粗略想法生成正文配图、概念解释图、微信公众号封面和小红书封面；风格强调亲和、轻卡通、中文可读和适中的信息密度。
 - [awesome-ai-ppt](https://github.com/ningzimu/awesome-ai-ppt)：精选的 AI PPT 相关开源项目，按 HTML-first、图片生成式、PPTX-native、转换与自动化基础设施等工作流分类，关注能帮助 agent 或开发者创建、编辑、转换、检查 PPT 的 GitHub 仓库。
@@ -234,7 +234,7 @@ skill 会按以下流程执行：
 
 ## 支持
 
-遇到问题？请查看[使用文档](https://ningzimu.github.io/codex-ppt-skill/#/)，加入 [CodexPPT](https://t.me/CodexPPT)，或[提交 Issue](https://github.com/ningzimu/codex-ppt-skill/issues/new)。
+遇到问题？请查看[使用文档](https://ningzimu.github.io/codex-ppt-skill/#/)，加入 [CodexPPT](https://t.me/CodexPPT)，或[提交 Issue](https://github.com/shx99717/codex-ppt-skill/issues/new)。
 
 ## 许可证
 

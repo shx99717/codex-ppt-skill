@@ -5,7 +5,7 @@
 推荐直接把下面这句话发给 Codex，让它帮你安装：
 
 ```text
-请帮我安装这个 codex-ppt skill，链接是：https://github.com/ningzimu/codex-ppt-skill
+请帮我安装这个 codex-ppt skill，链接是：https://github.com/shx99717/codex-ppt-skill
 ```
 
 ## Codex 手动安装
@@ -13,7 +13,7 @@
 在命令行中执行以下命令，将 `codex-ppt` skill 安装到 Codex 全局 skills 目录：
 
 ```bash
-npx -y skills@latest add ningzimu/codex-ppt-skill \
+npx -y skills@latest add shx99717/codex-ppt-skill \
   --skill codex-ppt \
   --agent codex \
   --global
@@ -21,7 +21,7 @@ npx -y skills@latest add ningzimu/codex-ppt-skill \
 
 安装后重启 Codex，让新 skill 生效。
 
-也可以从 [GitHub Releases](https://github.com/ningzimu/codex-ppt-skill/releases) 下载 `codex-ppt-skill-v*.zip`，解压后把其中的 `codex-ppt` 文件夹放到 `~/.codex/skills/codex-ppt`，然后重启 Codex。
+也可以从 [GitHub Releases](https://github.com/shx99717/codex-ppt-skill/releases) 下载 `codex-ppt-skill-v*.zip`，解压后把其中的 `codex-ppt` 文件夹放到 `~/.codex/skills/codex-ppt`，然后重启 Codex。
 
 如果你在本地开发这个仓库，可以把 skill 目录软链接到 Codex skills 目录，方便实时调试修改：
 
@@ -43,7 +43,7 @@ openclaw skills install codex-ppt
 Claude Code：
 
 ```bash
-npx -y skills@latest add ningzimu/codex-ppt-skill \
+npx -y skills@latest add shx99717/codex-ppt-skill \
   --skill codex-ppt \
   --agent claude-code \
   --global
@@ -52,7 +52,7 @@ npx -y skills@latest add ningzimu/codex-ppt-skill \
 Hermes Agent：
 
 ```bash
-npx -y skills@latest add ningzimu/codex-ppt-skill \
+npx -y skills@latest add shx99717/codex-ppt-skill \
   --skill codex-ppt \
   --agent hermes-agent \
   --global
@@ -65,12 +65,12 @@ npx -y skills@latest add ningzimu/codex-ppt-skill \
 推荐直接把下面这句话发给你的 agent，让它帮你更新：
 
 ```text
-请帮我更新 codex-ppt skill 到最新版本，仓库是：https://github.com/ningzimu/codex-ppt-skill
+请帮我更新 codex-ppt skill 到最新版本，仓库是：https://github.com/shx99717/codex-ppt-skill
 ```
 
-手动更新时，重新执行上面对应 agent 的安装命令即可，会用最新版本覆盖已安装的 skill；也可以从 [GitHub Releases](https://github.com/ningzimu/codex-ppt-skill/releases) 下载最新的 `codex-ppt-skill-v*.zip`，解压后替换原来的 `codex-ppt` 目录。更新完成后重启 agent 生效。
+手动更新时，重新执行上面对应 agent 的安装命令即可，会用最新版本覆盖已安装的 skill；也可以从 [GitHub Releases](https://github.com/shx99717/codex-ppt-skill/releases) 下载最新的 `codex-ppt-skill-v*.zip`，解压后替换原来的 `codex-ppt` 目录。更新完成后重启 agent 生效。
 
-更新是安全的：API key 等运行时配置保存在 `~/.codex-ppt-skill/.env`，个人风格库保存在 `~/.codex-ppt-skill/references/`，都在 skill 安装目录之外，更新或重装不会丢失。每个版本的变更内容可以查看 [Releases 页面](https://github.com/ningzimu/codex-ppt-skill/releases)或仓库的 `CHANGELOG.md`。
+更新是安全的：API key 等运行时配置保存在 `~/.codex-ppt-skill/.env`，个人风格库保存在 `~/.codex-ppt-skill/references/`，都在 skill 安装目录之外，更新或重装不会丢失。每个版本的变更内容可以查看 [Releases 页面](https://github.com/shx99717/codex-ppt-skill/releases)或仓库的 `CHANGELOG.md`。
 
 ## 生图模型配置
 

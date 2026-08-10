@@ -49,13 +49,13 @@ Codex PPT 是一个面向 Codex 的 PPT 生成 skill，也可在 Claude Code、O
 
 Codex PPT 生成的是图片式 PPT：视觉一致性强，但页面里的文字、图表和形状不能像传统 PPT 那样逐项编辑。
 
-如果你需要进一步转换成可编辑 PPT，可以在生成后再使用 [image-to-editable-ppt-skill](https://github.com/ningzimu/image-to-editable-ppt-skill)。
+如果你需要进一步转换成可编辑 PPT，可以在生成后再使用 [image-to-editable-ppt-skill](https://github.com/shx99717/image-to-editable-ppt-skill)。
 
 如果你没有 `gpt-image-2` 生图模型的使用权限，则无法使用该 skill，参见[安装与配置](installation.md)。
 
 ## 相关链接
 
-- GitHub 仓库：https://github.com/ningzimu/codex-ppt-skill
+- GitHub 仓库：https://github.com/shx99717/codex-ppt-skill
 - ClawHub 页面：https://clawhub.ai/ningzimu/codex-ppt
 - 使用案例展示区：https://github.com/ningzimu/codex-ppt-skill/issues/34
-- 可编辑 PPT 转换 skill：https://github.com/ningzimu/image-to-editable-ppt-skill
+- 可编辑 PPT 转换 skill：https://github.com/shx99717/image-to-editable-ppt-skill

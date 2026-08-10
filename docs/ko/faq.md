@@ -6,7 +6,7 @@
 
 꼭 필요하지 않다면 편집 가능한 PPT로 변환하지 마세요. Codex 사용량이 충분한 경우에만 고려하세요.
 
-편집 가능한 PPT로 추가 변환해야 한다면 생성 후 [image-to-editable-ppt-skill](https://github.com/ningzimu/image-to-editable-ppt-skill)을 사용해 볼 수 있습니다. 다만 `image-to-editable-ppt-skill`은 현재 테스트 버전이며, ChatGPT Plus / Pro 회원이 Codex에서 사용하는 경우만 지원하고 다른 agent는 지원하지 않습니다. 결과가 불안정하다면 이후 업데이트 안내를 기다려 주세요.
+편집 가능한 PPT로 추가 변환해야 한다면 생성 후 [image-to-editable-ppt-skill](https://github.com/shx99717/image-to-editable-ppt-skill)을 사용해 볼 수 있습니다. 다만 `image-to-editable-ppt-skill`은 현재 테스트 버전이며, ChatGPT Plus / Pro 회원이 Codex에서 사용하는 경우만 지원하고 다른 agent는 지원하지 않습니다. 결과가 불안정하다면 이후 업데이트 안내를 기다려 주세요.
 
 주의: 이미지에서 편집 가능한 PPT로 변환하는 skill은 현재 token을 많이 사용하므로 Plus 사용자에게 부담이 큽니다. Pro 사용자는 자유롭게 사용해도 됩니다.
 
