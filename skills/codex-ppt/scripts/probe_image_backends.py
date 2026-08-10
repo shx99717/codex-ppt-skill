@@ -10,6 +10,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import sys
 from pathlib import Path
 
 
@@ -90,6 +91,13 @@ def build_report(
 
 
 def main() -> int:
+    # Windows consoles on a non-UTF-8 locale can't encode an arbitrary non-ASCII
+    # --home/candidate path this script prints; force UTF-8 so the process
+    # doesn't crash regardless of the ambient console code page.
+    for stream in (sys.stdout, sys.stderr):
+        if hasattr(stream, "reconfigure"):
+            stream.reconfigure(encoding="utf-8", errors="replace")
+
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
         "--home",

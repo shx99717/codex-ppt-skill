@@ -3,6 +3,7 @@
 
 from __future__ import annotations
 
+import io
 import json
 import os
 import subprocess
@@ -15,7 +16,7 @@ SCRIPTS = Path(__file__).resolve().parents[1]
 if str(SCRIPTS) not in sys.path:
     sys.path.insert(0, str(SCRIPTS))
 
-from probe_image_backends import build_report, probe_candidates
+from probe_image_backends import build_report, main, probe_candidates
 
 
 class ProbeImageBackendsTests(unittest.TestCase):
@@ -107,6 +108,40 @@ class ProbeImageBackendsTests(unittest.TestCase):
                 report["preference_hints"]["claude-code"],
                 ["codex-gpt-image", "scripts/image_gen.py"],
             )
+
+    def test_chinese_home_path_does_not_crash_on_non_cjk_console(self) -> None:
+        """--home (or Path.home()) can resolve to a non-ASCII path, and a
+        discovered bridge skill's path under it is embedded verbatim in the
+        printed JSON report (json.dumps(..., ensure_ascii=False)). That must
+        not crash a subprocess whose stdout console can't represent CJK text.
+
+        Note: GBK (the code page a Chinese-locale Windows console actually
+        uses) can represent ordinary Chinese text fine, so this uses cp1252
+        (a common non-Chinese-locale Windows default) instead -- see the
+        matching note in test_slide_job_status.py for why GBK alone doesn't
+        reproduce this class of crash."""
+        with tempfile.TemporaryDirectory() as tmp:
+            home = Path(tmp) / "咖啡萃取的三个变量"
+            skill = home / ".cursor" / "skills" / "codex-gpt-image"
+            skill.mkdir(parents=True)
+            (skill / "SKILL.md").write_text("# bridge\n", encoding="utf-8")
+
+            buffer = io.BytesIO()
+            cp1252_stdout = io.TextIOWrapper(buffer, encoding="cp1252", errors="strict")
+            old_argv, old_stdout = sys.argv, sys.stdout
+            try:
+                sys.argv = ["probe_image_backends.py", "--home", str(home)]
+                sys.stdout = cp1252_stdout
+                exit_code = main()
+            finally:
+                cp1252_stdout.flush()
+                sys.stdout = old_stdout
+                sys.argv = old_argv
+
+        self.assertEqual(exit_code, 0)
+        buffer.seek(0)
+        output = buffer.getvalue().decode("utf-8")
+        self.assertIn("咖啡萃取的三个变量", output)
 
 
 if __name__ == "__main__":

@@ -4,6 +4,10 @@ Release notes are generated from this file. Keep changelog entries in English.
 
 ## Unreleased
 
+### Fixes
+
+- Force UTF-8 stdout/stderr in `assemble_ppt.py`, `probe_image_backends.py`, and `slide_job_status.py` so Chinese status text and non-ASCII paths no longer crash the process with `UnicodeEncodeError` on non-UTF-8 Windows consoles.
+
 ### Documentation
 
 - Replace the redundant QA and community sections with compact documentation, Telegram, and issue support links across all README language versions, and remove the obsolete community QR code. (#92)
