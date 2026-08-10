@@ -6,7 +6,7 @@ Release notes are generated from this file. Keep changelog entries in English.
 
 ### Fixes
 
-- Force UTF-8 stdout/stderr in `assemble_ppt.py`, `probe_image_backends.py`, and `slide_job_status.py` so Chinese status text and non-ASCII paths no longer crash the process with `UnicodeEncodeError` on non-UTF-8 Windows consoles.
+- Force UTF-8 stdout/stderr in `assemble_ppt.py`, `probe_image_backends.py`, `slide_job_status.py`, and `image_gen.py` so Chinese status text and non-ASCII paths no longer crash the process with `UnicodeEncodeError` on non-UTF-8 Windows consoles.
 
 ### Documentation
 
