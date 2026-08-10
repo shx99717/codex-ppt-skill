@@ -8,6 +8,15 @@ and reports BASELINE/TARGET results.
 Use this the same way before and after any change to the skill: it always runs against whatever
 version of `codex-ppt` is currently installed for that host.
 
+**Host-pinned smoke + strict fix loop** (recommended when chasing bugs across agents one by one;
+keeps fork and installed skill in sync; no commits without your OK):
+
+| Host | Prompt file |
+|------|-------------|
+| Cursor | [`RUN_PROMPT_cursor.md`](RUN_PROMPT_cursor.md) |
+| Claude Code | [`RUN_PROMPT_claude.md`](RUN_PROMPT_claude.md) |
+| Codex | [`RUN_PROMPT_codex.md`](RUN_PROMPT_codex.md) |
+
 See also [`../../docs/fork/DESIGN_PROMPT.md`](../../docs/fork/DESIGN_PROMPT.md) for resuming the *design* work on
 the fork's improvement goals — use that one to pick up a conversation, this one to check a
 result.

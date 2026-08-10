@@ -26,10 +26,10 @@ Hard rules:
 - Do not treat sample approval as full-deck image approval.
 - Do not dispatch the next generation wave until every slide in the current wave is user-reviewed via `record_user_review.py`.
 - Do not assemble when any non-sample `recorded` slide lacks a valid `user_review` (matching image sha). `assemble_ppt.py` does not enforce this — the agent must.
-- Skipping the per-slide user-review gate requires an **explicit** user waiver for this deck. If waived, record it in run state (do not invent a silent skip), for example:
+- Skipping the per-slide user-review gate requires an **explicit** user waiver for this deck. If waived, record it in run state (do not invent a silent skip). Let `{runtime_python}` mean the shared venv interpreter under `~/.codex-ppt-skill/.venv` (Windows: `Scripts/python.exe`; Unix/macOS: `bin/python`). Example:
 
 ```bash
-~/.codex-ppt-skill/.venv/bin/python -c "from slide_run_state import deck_dir_from_target, set_run_status; set_run_status(deck_dir_from_target('{base_dir}/{deck_name}'), 'user_review_waived', 'user explicitly waived per-slide review for this deck')"
+{runtime_python} -c "from slide_run_state import deck_dir_from_target, set_run_status; set_run_status(deck_dir_from_target('{base_dir}/{deck_name}'), 'user_review_waived', 'user explicitly waived per-slide review for this deck')"
 ```
 
   Prefer running that from `{skill_root}/scripts` (or with that directory on `PYTHONPATH`) so `slide_run_state` imports resolve. Also state the waiver in the chat report.

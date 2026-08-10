@@ -18,10 +18,10 @@ Do not create these final downstream artifacts before outline approval. If the u
 
 For multilingual or mixed decks, every slide object in `deck_spec.json` must include its own `language` field (`Chinese`, `English`, `mixed`, or another label). Deck-level `language` is only a fallback for prepare; smoke TARGET T3 requires the per-slide field. Do not omit slide languages and assume the Chinese/English default is enough.
 
-Before full production, create structured per-slide image jobs. Prefer the bundled deterministic helper:
+Before full production, create structured per-slide image jobs. Prefer the bundled deterministic helper. Let `{runtime_python}` mean the shared venv interpreter under `~/.codex-ppt-skill/.venv` (Windows: `Scripts/python.exe`; Unix/macOS: `bin/python`):
 
 ```bash
-~/.codex-ppt-skill/.venv/bin/python {skill_root}/scripts/prepare_slide_prompts.py \
+{runtime_python} {skill_root}/scripts/prepare_slide_prompts.py \
   --spec {base_dir}/{deck_name}/deck_spec.json \
   --out-dir {base_dir}/{deck_name} \
   --selected-backend "<confirmed backend label>" \
@@ -167,10 +167,10 @@ Do not continue sequentially after the sample if subagents are part of the confi
 Dispatch loop:
 
 ```bash
-~/.codex-ppt-skill/.venv/bin/python {skill_root}/scripts/slide_job_status.py \
+{runtime_python} {skill_root}/scripts/slide_job_status.py \
   {base_dir}/{deck_name}
 
-~/.codex-ppt-skill/.venv/bin/python {skill_root}/scripts/record_slide_dispatch.py \
+{runtime_python} {skill_root}/scripts/record_slide_dispatch.py \
   {base_dir}/{deck_name} \
   --slide slide_02 \
   --agent-id <agent id> \
@@ -181,7 +181,7 @@ Dispatch loop:
 Result recording:
 
 ```bash
-~/.codex-ppt-skill/.venv/bin/python {skill_root}/scripts/record_slide_result.py \
+{runtime_python} {skill_root}/scripts/record_slide_result.py \
   {base_dir}/{deck_name} \
   --slide slide_02 \
   --agent-id <agent id> \
@@ -193,7 +193,7 @@ Result recording:
 After recording the wave (agent visual check + `record_slide_result.py` for each returned worker), run user review before the next dispatch:
 
 ```bash
-~/.codex-ppt-skill/.venv/bin/python {skill_root}/scripts/record_user_review.py \
+{runtime_python} {skill_root}/scripts/record_user_review.py \
   {base_dir}/{deck_name} \
   --slide slide_02 \
   --approve
@@ -206,7 +206,7 @@ If a final PNG is replaced on disk after approval without `--clear` / re-dispatc
 Blocker recording:
 
 ```bash
-~/.codex-ppt-skill/.venv/bin/python {skill_root}/scripts/record_slide_blocker.py \
+{runtime_python} {skill_root}/scripts/record_slide_blocker.py \
   {base_dir}/{deck_name} \
   --slide slide_02 \
   --agent-id <agent id> \

@@ -29,8 +29,15 @@ loop, and custom styles from the personal style library. All are out of scope by
 
 For repeated runs (e.g. re-checking after every change to the skill), see [`RUN_PROMPT.md`](RUN_PROMPT.md)
 — a single copy-paste prompt that works unedited in Codex, Claude Code, or Cursor. It self-detects the
-host, asks where to put the output, and reports the verifier's result at the end. The manual steps below
-are for when you need more control (e.g. walking the gates by hand in GATED mode).
+host, asks where to put the output, and reports the verifier's result at the end.
+
+When running hosts **one by one** and fixing bugs under a strict fork↔install sync loop (no commits
+without permission), use the host-pinned prompts instead:
+[`RUN_PROMPT_cursor.md`](RUN_PROMPT_cursor.md),
+[`RUN_PROMPT_claude.md`](RUN_PROMPT_claude.md),
+[`RUN_PROMPT_codex.md`](RUN_PROMPT_codex.md).
+
+The manual steps below are for when you need more control (e.g. walking the gates by hand in GATED mode).
 
 ---
 

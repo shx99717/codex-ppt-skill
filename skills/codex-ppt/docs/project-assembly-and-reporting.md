@@ -25,10 +25,10 @@ Use this output structure:
 
 If the user did not specify a destination, use the current working directory or the directory that contains the source file.
 
-You may initialize the directory structure with:
+Let `{runtime_python}` mean the shared venv interpreter under `~/.codex-ppt-skill/.venv` (Windows: `Scripts/python.exe`; Unix/macOS: `bin/python`). You may initialize the directory structure with:
 
 ```bash
-~/.codex-ppt-skill/.venv/bin/python {skill_root}/scripts/assemble_ppt.py {base_dir} {deck_name}.pptx --init
+{runtime_python} {skill_root}/scripts/assemble_ppt.py {base_dir} {deck_name}.pptx --init
 ```
 
 ## Quality Check And Repair
@@ -98,7 +98,7 @@ Use headings that the assembly script can map back to slide numbers:
 
 ## Assembly
 
-Before running `scripts/assemble_ppt.py` or the CLI/API fallback scripts, make sure the shared runtime exists. If `~/.codex-ppt-skill/.venv/bin/python` is missing, or if importing script dependencies fails, create or refresh the environment:
+Before running `scripts/assemble_ppt.py` or the CLI/API fallback scripts, make sure the shared runtime exists. If `{runtime_python}` is missing, or if importing script dependencies fails, create or refresh the environment:
 
 ```bash
 python3 {skill_root}/scripts/codex_ppt_runtime.py bootstrap
@@ -109,7 +109,7 @@ This is an internal setup step for the skill. Do not ask the user to run these c
 Run:
 
 ```bash
-~/.codex-ppt-skill/.venv/bin/python {skill_root}/scripts/assemble_ppt.py {base_dir} {deck_name}.pptx --aspect-ratio 16:9
+{runtime_python} {skill_root}/scripts/assemble_ppt.py {base_dir} {deck_name}.pptx --aspect-ratio 16:9
 ```
 
 Important:

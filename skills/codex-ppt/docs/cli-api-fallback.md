@@ -3,10 +3,11 @@
 Use this reference only after CLI/API fallback has been selected and confirmed with the user. The main `SKILL.md` owns the backend decision rules; this document owns fallback commands, runtime setup, image-input limits, editing, transparency, and troubleshooting.
 
 Let `{skill_root}` mean the directory containing `SKILL.md`.
+Let `{runtime_python}` mean the shared venv interpreter under `~/.codex-ppt-skill/.venv` (Windows: `Scripts/python.exe`; Unix/macOS: `bin/python`).
 
 ## Runtime Setup
 
-CLI/API fallback commands use the shared runtime environment. Before running `scripts/assemble_ppt.py` or fallback image commands, make sure the shared runtime exists. If `~/.codex-ppt-skill/.venv/bin/python` is missing, or if importing script dependencies fails, create or refresh the environment:
+CLI/API fallback commands use the shared runtime environment. Before running `scripts/assemble_ppt.py` or fallback image commands, make sure the shared runtime exists. If `{runtime_python}` is missing, or if importing script dependencies fails, create or refresh the environment:
 
 ```bash
 python3 {skill_root}/scripts/codex_ppt_runtime.py bootstrap
@@ -21,7 +22,7 @@ The fallback CLI loads `~/.codex-ppt-skill/.env` automatically for `OPENAI_API_K
 Basic generation command:
 
 ```bash
-~/.codex-ppt-skill/.venv/bin/python {skill_root}/scripts/image_gen.py generate \
+{runtime_python} {skill_root}/scripts/image_gen.py generate \
   --model gpt-image-2 \
   --prompt-file {prompt_file} \
   --size 2560x1440 \
@@ -35,7 +36,7 @@ When generating from saved `prompts/slide_XX.json` files, use the job's `prompt`
 
 ```bash
 python3 -c 'import json, pathlib; print(json.loads(pathlib.Path("{base_dir}/{deck_name}/prompts/slide_01.json").read_text())["prompt"])' | \
-~/.codex-ppt-skill/.venv/bin/python {skill_root}/scripts/image_gen.py generate \
+{runtime_python} {skill_root}/scripts/image_gen.py generate \
   --prompt-file - \
   --size 2560x1440 \
   --quality medium \
@@ -58,7 +59,7 @@ The fallback CLI defaults to 2K 16:9 landscape output, `2560x1440`, because it k
 If a slide is mostly correct but has a localized issue, use the selected backend's edit capability when available. In CLI/API fallback mode:
 
 ```bash
-~/.codex-ppt-skill/.venv/bin/python {skill_root}/scripts/image_gen.py edit \
+{runtime_python} {skill_root}/scripts/image_gen.py edit \
   --image {slide_path} \
   --prompt {edit_prompt} \
   --out {new_slide_path}

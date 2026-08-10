@@ -217,8 +217,8 @@ def cmd_preflight() -> int:
         print("To create or repair the shared runtime, run:")
         print(f"  python3 <skill_root>/scripts/codex_ppt_runtime.py bootstrap")
         print()
-        print("Note: on Windows the interpreter lives at .venv/Scripts/python.exe,")
-        print("not the .venv/bin/python path the skill docs currently show.")
+        print("Note: on Windows the interpreter lives at .venv/Scripts/python.exe;")
+        print("skill docs should use {runtime_python}, not a Unix-only path.")
     return 0 if ok else 1
 
 
