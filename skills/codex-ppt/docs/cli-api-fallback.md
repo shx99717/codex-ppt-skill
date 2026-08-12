@@ -77,7 +77,7 @@ Transparent-background requests:
 
 ## Assembly And Doctor
 
-`assemble_ppt.py` supports `16:9` and `4:3`. Use `16:9` unless the user requests otherwise.
+`assemble_ppt.py` supports `16:9` and `4:3` for `--template none`. Use `16:9` unless the user requests otherwise. Medavis template mode (`--template medavis|both`) always uses the bundled 16:9 corporate template and requires `--landing-title`.
 
 Run the API doctor only when troubleshooting fallback API access:
 

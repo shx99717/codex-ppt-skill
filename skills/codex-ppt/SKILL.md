@@ -115,6 +115,7 @@ Do not mark a step complete from chat alone; use real files or script-recorded s
 11. Write speaker notes and assemble the PPT.
     - Before writing `speech.md` or running assembly, read `docs/project-assembly-and-reporting.md`.
     - Make sure `outline.md` reflects the final confirmed deck outline. Use `speech.md` headings that map to `Slide N`.
+    - Before assembly, ask the user which template mode to use: **no template** / **medavis** / **both**. If medavis or both, suggest a landing title from the outline, confirm or edit it with the user, then pass `--template` and `--landing-title` to `assemble_ppt.py`. Do not skip this choice.
     - Before assembly, ensure `slide_jobs.json` shows generated slides as `recorded` with a valid `user_review`, and approved samples as `accepted`. If any slide is `pending`, `dispatched`, or `blocked`, or any recorded non-sample slide lacks valid user review, stop.
 
 12. Report the result.

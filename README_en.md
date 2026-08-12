@@ -89,7 +89,8 @@ Each PPT is generated into an independent project directory:
 │   └── ...                 # Additional slide images, named in slide order
 ├── outline.md              # Confirmed outline, slide count, titles, and key points
 ├── speech.md               # Speaker notes written into the PPT
-└── {deck_name}.pptx        # Final assembled PowerPoint file
+├── {deck_name}.pptx        # No-template assembly output (default)
+└── {deck_name}-medavis.pptx  # Optional: medavis corporate template output
 ```
 
 Use `origin_image/` to review the final image used for each slide. Files are named in order as `slide_01.png`, `slide_02.png`, and so on, which makes it easy to preview the deck visually or ask for one specific slide to be revised.
@@ -210,7 +211,7 @@ The skill follows this workflow:
 7. Generate all slide images one by one with the same image backend.
 8. Check text readability, style consistency, and content completeness.
 9. Generate `speech.md`.
-10. Assemble the `.pptx` with `assemble_ppt.py`.
+10. Assemble the `.pptx` with `assemble_ppt.py` (ask first: no template / medavis / both; confirm landing title for medavis).
 11. Optional: if you really like the generated PPT style, save it to the style library; if it already uses a built-in style, you do not need to save it again.
 
 ## Usage Tips

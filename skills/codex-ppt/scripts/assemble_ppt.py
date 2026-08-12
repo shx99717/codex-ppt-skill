@@ -3,7 +3,8 @@
 PPT 组装脚本
 
 将一个目录中的幻灯片图片组装成 PowerPoint 演示文稿。
-每张图片会被插入为一页幻灯片，充满整个页面。
+默认模式：每张图片插入为一页空白幻灯片并充满整个页面。
+可选 medavis 模板模式：落地页标题 + 内容页在页眉下方白区贴图。
 """
 
 import argparse
@@ -12,6 +13,29 @@ import re
 import sys
 import tempfile
 from typing import Dict, List, Optional, Tuple
+
+# Bundled medavis 16:9 template geometry (EMU). Do not cover the logo band.
+MEDAVIS_CONTENT_LEFT = 0
+MEDAVIS_CONTENT_TOP = 700000
+MEDAVIS_LOGO_BAND_BOTTOM = 627534
+MEDAVIS_TITLE_LEFT = -14853
+MEDAVIS_TITLE_TOP = 2850965
+MEDAVIS_TITLE_WIDTH = 9152438
+MEDAVIS_TITLE_HEIGHT = 728897
+MEDAVIS_TITLE_COLOR = (0x42, 0x63, 0x7B)
+
+
+def skill_root_dir() -> str:
+    return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+
+
+def medavis_template_path() -> str:
+    return os.path.join(
+        skill_root_dir(),
+        "assets",
+        "templates",
+        "medavis_ppt_template_2026_en_16-9.pptx",
+    )
 
 
 def dependency_hint() -> str:
@@ -330,6 +354,124 @@ def create_presentation(
         return False
 
 
+def set_medavis_landing_title(slide, title: str) -> None:
+    from pptx.dml.color import RGBColor
+    from pptx.util import Pt
+
+    box = slide.shapes.add_textbox(
+        MEDAVIS_TITLE_LEFT,
+        MEDAVIS_TITLE_TOP,
+        MEDAVIS_TITLE_WIDTH,
+        MEDAVIS_TITLE_HEIGHT,
+    )
+    tf = box.text_frame
+    tf.clear()
+    tf.word_wrap = True
+    p = tf.paragraphs[0]
+    p.text = title
+    p.font.size = Pt(32)
+    p.font.color.rgb = RGBColor(*MEDAVIS_TITLE_COLOR)
+
+
+def add_medavis_content_image(slide, image_path: str, prs) -> None:
+    slide.shapes.add_picture(
+        image_path,
+        left=MEDAVIS_CONTENT_LEFT,
+        top=MEDAVIS_CONTENT_TOP,
+        width=prs.slide_width,
+        height=prs.slide_height - MEDAVIS_CONTENT_TOP,
+    )
+
+
+def create_medavis_presentation(
+    image_files: List[str],
+    output_path: str,
+    landing_title: str,
+    speaker_notes: Optional[Dict[int, str]] = None,
+) -> bool:
+    """Build a medavis-templated PPTX: landing slide + N content slides."""
+    temp_files_to_cleanup: List[str] = []
+    try:
+        try:
+            from pptx import Presentation
+        except ImportError:
+            print("错误：未安装 python-pptx 库")
+            print(dependency_hint())
+            return False
+
+        template = medavis_template_path()
+        if not os.path.exists(template):
+            print(f"错误：未找到 medavis 模板: {template}")
+            return False
+
+        # Open for reading only; never save back to the bundled asset.
+        prs = Presentation(template)
+        if len(prs.slides) < 2:
+            print("错误：medavis 模板至少需要 2 页（落地页 + 内容母版）")
+            return False
+
+        set_medavis_landing_title(prs.slides[0], landing_title)
+        content_layout = prs.slides[1].slide_layout
+        speaker_notes = speaker_notes or {}
+
+        for i, image_path in enumerate(image_files):
+            if not os.path.exists(image_path):
+                print(f"警告：图片文件不存在: {image_path}")
+                continue
+
+            slide = prs.slides[1] if i == 0 else prs.slides.add_slide(content_layout)
+            compressed_path = compress_image_if_needed(image_path, max_size_mb=2.0)
+            image_to_use = compressed_path if compressed_path else image_path
+            if compressed_path:
+                temp_files_to_cleanup.append(compressed_path)
+
+            add_medavis_content_image(slide, image_to_use, prs)
+
+            note_text = speaker_notes.get(i + 1)
+            if note_text:
+                notes_frame = slide.notes_slide.notes_text_frame
+                notes_frame.clear()
+                notes_frame.text = note_text
+
+            print(f"✓ 已添加 medavis 内容页 {i + 1}: {os.path.basename(image_path)}")
+
+        output_dir = os.path.dirname(output_path)
+        if output_dir and not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+
+        if os.path.abspath(output_path) == os.path.abspath(template):
+            print("错误：拒绝覆盖捆绑的 medavis 模板文件")
+            return False
+
+        prs.save(output_path)
+        print(f"\n✓ medavis PPT 已保存: {output_path}")
+        print(f"  总页数: {1 + len(image_files)} (1 落地页 + {len(image_files)} 内容页)")
+        if speaker_notes:
+            matched_notes = sum(1 for i in range(1, len(image_files) + 1) if speaker_notes.get(i))
+            print(f"  已写入备注: {matched_notes}/{len(image_files)} 内容页")
+
+        for temp_file in temp_files_to_cleanup:
+            try:
+                if os.path.exists(temp_file):
+                    os.remove(temp_file)
+            except Exception as e:
+                print(f"警告：清理临时文件失败 {temp_file}: {e}")
+
+        return True
+
+    except Exception as e:
+        print(f"错误：创建 medavis PPT 失败: {e}")
+        import traceback
+        traceback.print_exc()
+        for temp_file in temp_files_to_cleanup:
+            try:
+                if os.path.exists(temp_file):
+                    os.remove(temp_file)
+            except Exception:
+                pass
+        return False
+
+
 def main():
     # Windows consoles on a non-UTF-8 locale (e.g. GBK/cp936) can't encode the
     # Chinese status text and check-mark symbols this script prints; force UTF-8
@@ -343,13 +485,18 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog='''
 示例用法:
-  # 基本用法
-  # 会在 /path/to/base/ 下查找 MyPresentation/ 文件夹
-  # 从 MyPresentation/origin_image/ 读取图片
-  # 将 PPT 保存为 MyPresentation/MyPresentation.pptx
+  # 基本用法（无模板，整页贴图）
   python assemble_ppt.py /path/to/base/ MyPresentation.pptx
 
-  # 指定 4:3 宽高比
+  # medavis 模板（输出 MyPresentation-medavis.pptx）
+  python assemble_ppt.py /path/to/base/ MyPresentation.pptx \\
+    --template medavis --landing-title "Deck Title"
+
+  # 同时输出无模板与 medavis 两个文件
+  python assemble_ppt.py /path/to/base/ MyPresentation.pptx \\
+    --template both --landing-title "Deck Title"
+
+  # 指定 4:3 宽高比（仅对 none 模板生效）
   python assemble_ppt.py /path/to/base/ MyPresentation.pptx --aspect-ratio 4:3
 
   # 只初始化目录，不生成 PPT
@@ -362,15 +509,16 @@ def main():
   │   ├── slide_02.png
   │   └── ...
   ├── speech.md (可选，将写入 PPT 备注)
-  └── MyPresentation.pptx (将在此生成)
+  ├── MyPresentation.pptx (none / both 时生成)
+  └── MyPresentation-medavis.pptx (medavis / both 时生成)
 
 注意：
   - 图片文件必须放在 origin_image 子目录中
   - 只会读取 slide_01.png、slide_02.png 这类正式图片，其他图片会被忽略
   - 图片文件按页码排序
-  - 建议图片文件命名为: slide_01.png, slide_02.png, ...
-  - 每张图片会充满整个幻灯片页面
-  - 如果项目目录下存在 speech.md，会按 Slide N 标题写入每页备注
+  - none 模式：每张图片充满整个幻灯片页面
+  - medavis 模式：落地页 + 内容页白区贴图（保留页眉 logo）；假定图片为 16:9
+  - 如果项目目录下存在 speech.md，会按 Slide N 标题写入备注
         '''
     )
 
@@ -379,7 +527,14 @@ def main():
     parser.add_argument('--aspect-ratio', '--ar',
                         choices=['16:9', '4:3'],
                         default='16:9',
-                        help='幻灯片宽高比 (默认: 16:9)')
+                        help='幻灯片宽高比 (默认: 16:9；仅 none 模式使用)')
+    parser.add_argument('--template',
+                        choices=['none', 'medavis', 'both'],
+                        default='none',
+                        help='组装模板：none=无模板整页贴图；medavis=medavis 公司模板；both=两者都生成')
+    parser.add_argument('--landing-title',
+                        default=None,
+                        help='medavis/both 落地页标题（必填）')
     parser.add_argument('--init',
                         action='store_true',
                         help='只创建 PPT 项目目录和 origin_image 子目录，不生成 PPT')
@@ -404,6 +559,10 @@ def main():
         print(f"✓ 幻灯片图片目录已准备好: {origin_image_dir}")
         sys.exit(0)
 
+    if args.template in ('medavis', 'both') and not (args.landing_title and args.landing_title.strip()):
+        print("错误：--template medavis/both 需要提供非空的 --landing-title")
+        sys.exit(1)
+
     if not os.path.exists(ppt_project_dir):
         print(f"错误：PPT 项目目录不存在: {ppt_project_dir}")
         print("如需初始化目录，请添加 --init 参数")
@@ -414,8 +573,8 @@ def main():
         print("如需初始化目录，请添加 --init 参数")
         sys.exit(1)
 
-    # 设置输出路径
-    output_path = os.path.join(ppt_project_dir, output_filename)
+    plain_output_path = os.path.join(ppt_project_dir, f"{ppt_name}.pptx")
+    medavis_output_path = os.path.join(ppt_project_dir, f"{ppt_name}-medavis.pptx")
 
     # 获取幻灯片图片
     print(f"正在扫描 PPT 项目目录: {ppt_project_dir}")
@@ -432,11 +591,24 @@ def main():
     if speaker_notes:
         print(f"找到 {len(speaker_notes)} 页备注: {os.path.join(ppt_project_dir, 'speech.md')}\n")
 
-    # 创建演示文稿
-    print(f"正在创建 PPT (宽高比: {args.aspect_ratio})...")
-    print("-" * 50)
+    success = True
 
-    success = create_presentation(image_files, output_path, args.aspect_ratio, speaker_notes)
+    if args.template in ('none', 'both'):
+        print(f"正在创建 PPT (模板: none, 宽高比: {args.aspect_ratio})...")
+        print("-" * 50)
+        success = create_presentation(
+            image_files, plain_output_path, args.aspect_ratio, speaker_notes
+        ) and success
+
+    if args.template in ('medavis', 'both'):
+        print(f"正在创建 PPT (模板: medavis, 落地标题: {args.landing_title})...")
+        print("-" * 50)
+        success = create_medavis_presentation(
+            image_files,
+            medavis_output_path,
+            args.landing_title.strip(),
+            speaker_notes,
+        ) and success
 
     sys.exit(0 if success else 1)
 

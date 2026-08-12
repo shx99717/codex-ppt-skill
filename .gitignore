@@ -57,6 +57,8 @@ examples/
 !assets/skill_duo_intro.pdf
 !assets/style-previews/
 !assets/style-previews/*.png
+!skills/codex-ppt/assets/templates/
+!skills/codex-ppt/assets/templates/*.pptx
 
 # Test outputs
 tests/*

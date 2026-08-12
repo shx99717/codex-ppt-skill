@@ -62,7 +62,7 @@ agent 会给出 2-3 个风格方向并推荐一个。候选风格来自 12 种�
 
 ## 阶段 8：演讲稿与组装
 
-生成 `speech.md` 演讲稿，然后用 `assemble_ppt.py` 组装成 `.pptx`，演讲稿会自动写入每页 PPT 的备注区。
+生成 `speech.md` 演讲稿后，会先询问你要哪种 PPT 输出（**无模板** / **medavis 模板** / **两者都要**）。若选择 medavis 或两者，会根据大纲建议落地页标题并请你确认，再用对应的 `--template` 与 `--landing-title` 调用 `assemble_ppt.py`。演讲稿会写入内容页备注。medavis 模式假定幻灯片图片为 16:9。
 
 ## 阶段 9（可选）：保存风格
 

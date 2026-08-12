@@ -62,7 +62,7 @@ Before assembly, the agent reviews every slide for text clarity, consistency wit
 
 ## Stage 8: Speaker Notes and Assembly
 
-The agent generates the speaker notes in `speech.md`, then uses `assemble_ppt.py` to assemble the presentation into a `.pptx` file. The speaker notes are automatically added to the notes section of each slide.
+The agent generates the speaker notes in `speech.md`, then asks which PPT output to build (**no template** / **medavis template** / **both**). For medavis or both, it suggests a landing-page title, confirms it with you, and runs `assemble_ppt.py` with the matching `--template` and `--landing-title` flags. Speaker notes are written into the notes section of each content slide. Medavis wrapping assumes 16:9 slide images.
 
 ## Stage 9 (Optional): Save the Style
 

@@ -112,6 +112,50 @@ Run:
 {runtime_python} {skill_root}/scripts/assemble_ppt.py {base_dir} {deck_name}.pptx --aspect-ratio 16:9
 ```
 
+### Template mode (required user choice)
+
+Before running `assemble_ppt.py`, ask the user which PPT output to build:
+
+- **No template** — current behavior: full-bleed slide images only (`{deck_name}.pptx`)
+- **Medavis template** — corporate wrap using the bundled medavis 16:9 template (`{deck_name}-medavis.pptx`)
+- **Both** — generate both files
+
+If the user chooses medavis or both:
+
+1. Suggest a landing-page title from `outline.md` / the deck topic.
+2. Ask the user to confirm or edit that title.
+3. Pass `--template medavis|both` and `--landing-title "..."` to `assemble_ppt.py`.
+
+Medavis output structure:
+
+- Slide 1 = landing page with the confirmed title
+- Slides 2..N+1 = content pages cloned from the template’s content layout; each generated image is placed in the white area under the header so the medavis logo remains visible; speaker notes from `speech.md` Slide K are written on content slide K
+
+Medavis mode assumes the deck’s generated images are **16:9** (the skill default). Do not use medavis wrapping for a 4:3 deck in v1 without an explicit user decision to regenerate at 16:9.
+
+Do not skip the template-mode question by assuming “no template”. Do not invent a custom template path in v1 — use the bundled medavis asset only.
+
+Do not:
+
+- Write the medavis deck over `{deck_name}.pptx` (always use `{deck_name}-medavis.pptx`)
+- Full-bleed content images over the medavis logo / header band
+- Treat “both” as a single file — always produce both `{deck_name}.pptx` and `{deck_name}-medavis.pptx`
+
+Example commands:
+
+```bash
+# none (default)
+{runtime_python} {skill_root}/scripts/assemble_ppt.py {base_dir} {deck_name}.pptx --aspect-ratio 16:9
+
+# medavis only
+{runtime_python} {skill_root}/scripts/assemble_ppt.py {base_dir} {deck_name}.pptx \
+  --template medavis --landing-title "Confirmed Title Here"
+
+# both
+{runtime_python} {skill_root}/scripts/assemble_ppt.py {base_dir} {deck_name}.pptx \
+  --template both --landing-title "Confirmed Title Here"
+```
+
 Important:
 
 - `{base_dir}` is the parent directory of `{deck_name}/`.
@@ -121,21 +165,24 @@ Important:
 - Before running assembly, `slide_jobs.json` should show every generated slide as `recorded` with a valid `user_review` (status `user_reviewed` and `image_sha256` matching the current `origin_image/slide_XX.png`), and every approved sample slide as `accepted`. If any slide is `pending`, `dispatched`, or `blocked`, or any non-sample recorded slide lacks valid user review, stop and report that state. `assemble_ppt.py` does not enforce the user-review marker — the agent must.
 - Do not regenerate only a named slide without impact analysis (other slides / planned narrative / visuals) and user confirmation when scope expands.
 - If `{base_dir}/{deck_name}/speech.md` exists and uses `Slide N` headings, the script writes those notes into the corresponding PPT speaker notes.
-- The script writes `{base_dir}/{deck_name}/{deck_name}.pptx`.
+- For `--template none` (default), the script writes `{base_dir}/{deck_name}/{deck_name}.pptx`.
+- For `--template medavis`, the script writes `{base_dir}/{deck_name}/{deck_name}-medavis.pptx`.
+- For `--template both`, the script writes both files.
 
-`assemble_ppt.py` supports `16:9` and `4:3`. Use `16:9` unless the user requests otherwise. `image_gen.py` loads `~/.codex-ppt-skill/.env` automatically for `OPENAI_API_KEY`, `OPENAI_BASE_URL`, and `CODEX_PPT_IMAGE_MODEL`. Run `python3 {skill_root}/scripts/codex_ppt_runtime.py doctor --check-api` when troubleshooting API access.
+`assemble_ppt.py` supports `16:9` and `4:3` for `--template none` only. Use `16:9` unless the user requests otherwise. Medavis mode always uses the bundled 16:9 template and ignores `--aspect-ratio`. `image_gen.py` loads `~/.codex-ppt-skill/.env` automatically for `OPENAI_API_KEY`, `OPENAI_BASE_URL`, and `CODEX_PPT_IMAGE_MODEL`. Run `python3 {skill_root}/scripts/codex_ppt_runtime.py doctor --check-api` when troubleshooting API access.
 
 ## Final Report
 
 Report:
 
 - Project directory
-- PPT file path
+- PPT file path(s) — include `{deck_name}.pptx` and/or `{deck_name}-medavis.pptx` for every file actually generated
+- For a medavis deck, also note slide count as landing + content (`1 + N`)
 - Slide image directory
 - `outline.md` path
 - `speech.md` path
 - `slide_jobs.json` path
-- Number of slides
+- Number of slides (for none: N content slides; for medavis: `1 + N`)
 - Confirm which image backend was used and that every non-sample slide result was recorded with `record_slide_result.py`.
 - Confirm that speaker notes from `speech.md` were written into the PPT, if applicable
 - Any slides that were regenerated, blocked, or still have known limitations

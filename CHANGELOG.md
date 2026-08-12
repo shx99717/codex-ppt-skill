@@ -4,6 +4,10 @@ Release notes are generated from this file. Keep changelog entries in English.
 
 ## Unreleased
 
+### Features
+
+- Add optional medavis corporate template assembly (`--template none|medavis|both` with `--landing-title`), bundling the medavis 16:9 template and writing `{deck}-medavis.pptx` while keeping the no-template path unchanged.
+
 ### Fixes
 
 - Force UTF-8 stdout/stderr in `assemble_ppt.py`, `probe_image_backends.py`, `slide_job_status.py`, and `image_gen.py` so Chinese status text and non-ASCII paths no longer crash the process with `UnicodeEncodeError` on non-UTF-8 Windows consoles.
