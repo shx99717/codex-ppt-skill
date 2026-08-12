@@ -53,5 +53,56 @@ class VerifyDeckBackendTests(unittest.TestCase):
         self.assertTrue(self.v.is_specific_backend_label("scripts/image_gen.py"))
 
 
+class VerifyDeckMedavisChecksTests(unittest.TestCase):
+    @classmethod
+    def setUpClass(cls) -> None:
+        cls.v = _load_verify_deck()
+
+    def test_medavis_checks_skipped_when_file_absent(self) -> None:
+        import tempfile
+        from pathlib import Path
+
+        with tempfile.TemporaryDirectory() as tmp:
+            deck = Path(tmp)
+            r = self.v.Report()
+            self.v.check_medavis_pptx(deck, r)
+            self.assertEqual(r.baseline_failed, 0)
+            self.assertTrue(any("not present" in note for note in r.info))
+
+    def test_medavis_checks_pass_on_assembled_deck(self) -> None:
+        import sys
+        import tempfile
+        from pathlib import Path
+
+        from PIL import Image
+
+        scripts = Path(__file__).resolve().parents[1] / ".." / "skills" / "codex-ppt" / "scripts"
+        scripts = scripts.resolve()
+        if str(scripts) not in sys.path:
+            sys.path.insert(0, str(scripts))
+        import assemble_ppt
+
+        with tempfile.TemporaryDirectory() as tmp:
+            deck = Path(tmp) / "coffee-extraction"
+            origin = deck / "origin_image"
+            origin.mkdir(parents=True)
+            for i in range(1, 4):
+                Image.new("RGB", (32, 18), color=(i * 40, 80, 120)).save(origin / f"slide_{i:02d}.png")
+            (deck / "speech.md").write_text(
+                "## Slide 1: A\n\nNote one.\n\n## Slide 2: B\n\nNote two.\n\n## Slide 3: C\n\nNote three.\n",
+                encoding="utf-8",
+            )
+            ok = assemble_ppt.create_medavis_presentation(
+                [str(origin / f"slide_{i:02d}.png") for i in range(1, 4)],
+                str(deck / "coffee-extraction-medavis.pptx"),
+                "Coffee Extraction",
+                assemble_ppt.load_speaker_notes(str(deck)),
+            )
+            self.assertTrue(ok)
+            r = self.v.Report()
+            self.v.check_medavis_pptx(deck, r)
+            self.assertEqual(r.baseline_failed, 0, r.baseline)
+
+
 if __name__ == "__main__":
     unittest.main()

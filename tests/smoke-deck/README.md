@@ -18,6 +18,8 @@ Every pass generates **exactly 3 images**.
 - Multilingual decks: slide 1 Chinese, slide 2 English, slide 3 mixed CJK+Latin
 - Layout variation (the "don't repeat the same blueprint" rule)
 - Speaker-note mapping from `speech.md` into the PPT
+- **GATED / interactive assembly:** template-mode ask (prefer **both** so baseline plain `.pptx` and medavis `{deck}-medavis.pptx` are produced); verifier checks the medavis file when present
+- **FAST assembly:** stays on **no template** (plain `{deck}.pptx` only) so unattended runs do not wait on template choice
 
 ## What it does not cover
 
@@ -105,14 +107,16 @@ Gate handling for this run:
 - Image backend: do NOT assume. Actively check which image generation backends are callable in this
   environment, state what you checked and what you selected, then proceed without waiting for my
   confirmation.
+- Template mode: pre-approved **no template** (`--template none`). Do not ask; assemble plain `{deck}.pptx` only.
 
 Generate speaker notes, assemble the .pptx, and report the deck directory when done.
 ```
 
 ### GATED mode
 
-Use this when you are actively working on the review gate or the backend selection menu. Nothing is
-pre-approved; you walk every gate.
+Use this when you are actively walking gates interactively (outline, backend, sample, pre-assembly
+review, **template mode**). Nothing is pre-approved except the fixed deck contract above; you answer
+each ask live.
 
 Invocation prompt (copy verbatim, replacing `<run-id>`):
 
@@ -132,6 +136,11 @@ Fixed contract for this deck — do not deviate:
 Titles, key points, layout roles and composition are yours to decide from the source content.
 
 Stop at every approval gate and wait for me.
+
+At assembly, ask template mode (no template / medavis / both). For this smoke deck, **prefer both**
+unless I pick otherwise: produce `coffee-extraction.pptx` and `coffee-extraction-medavis.pptx`.
+Suggest a landing title from the outline (or "Coffee Extraction") and confirm it with me before
+passing `--template both --landing-title "..."`.
 ```
 
 #### Gate checklist
@@ -141,7 +150,8 @@ Stop at every approval gate and wait for me.
 | **Outline** | `outline.md` written at `runs/<run-id>/coffee-extraction/`, 3 slides, per-slide language honored — and it **stops** before creating `deck_spec.json`, `speech.md`, or `prompts/` |
 | **Backend** | Did it actually probe, or assume from the agent name? Does it name a host-correct backend (see matrix)? Does its stated reasoning match reality? *This is where the Cursor detection bug surfaces.* |
 | **Sample** | Text legible, especially CJK. Style matches 清爽专业风. 16:9. No stray slide number. |
-| **Pre-assembly review** | *Placeholder — this gate does not exist yet. Target assertion T1 fails until it does.* |
+| **Pre-assembly review** | User review markers recorded before assemble when the skill requires them. |
+| **Template mode** | Agent asks none/medavis/both; for smoke prefer **both** + confirmed landing title; verifier checks `-medavis.pptx` when present. |
 
 ---
 

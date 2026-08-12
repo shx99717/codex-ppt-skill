@@ -454,6 +454,94 @@ def check_pptx(deck: Path, r: Report) -> None:
            f"empty on slide(s): {', '.join(no_notes)}" if no_notes else "")
 
 
+# Medavis content images must sit below the logo band (matches assemble_ppt.MEDAVIS_CONTENT_TOP).
+MEDAVIS_CONTENT_TOP_MIN = 700000
+MEDAVIS_PPTX_NAME = f"{DECK_NAME}-medavis.pptx"
+
+
+def check_medavis_pptx(deck: Path, r: Report) -> None:
+    """When coffee-extraction-medavis.pptx exists, validate landing + content wrap.
+
+    Absent file = skip (FAST / none-only runs). Present file = baseline checks so
+    interactive/both runs do not silently ship a broken medavis deck.
+    """
+    path = deck / MEDAVIS_PPTX_NAME
+    if not path.exists():
+        r.note(f"{MEDAVIS_PPTX_NAME} not present — skipping medavis pptx checks")
+        return
+
+    try:
+        from pptx import Presentation
+    except ImportError:
+        r.base(False, "medavis pptx structure", "python-pptx not importable; run via the shared runtime python")
+        return
+
+    try:
+        from pptx.enum.shapes import MSO_SHAPE_TYPE
+
+        picture_type = MSO_SHAPE_TYPE.PICTURE
+    except ImportError:  # pragma: no cover
+        picture_type = 13
+
+    expected_slides = 1 + SLIDE_COUNT
+    prs = Presentation(str(path))
+    slides = list(prs.slides)
+    r.base(
+        len(slides) == expected_slides,
+        f"medavis pptx has {expected_slides} slides (1 landing + {SLIDE_COUNT} content)",
+        f"found {len(slides)}",
+    )
+
+    ratio = prs.slide_width / prs.slide_height if prs.slide_height else 0
+    r.base(abs(ratio - 16 / 9) < 0.02, "medavis pptx page size is 16:9", f"ratio={ratio:.4f}")
+
+    landing = slides[0] if slides else None
+    if landing is not None:
+        landing_text = " ".join(
+            (shape.text_frame.text or "").strip()
+            for shape in landing.shapes
+            if getattr(shape, "has_text_frame", False)
+        ).strip()
+        r.base(
+            bool(landing_text),
+            "medavis landing slide has title text",
+            "" if landing_text else "no text shapes with content",
+        )
+        landing_notes = ""
+        if landing.has_notes_slide:
+            landing_notes = (landing.notes_slide.notes_text_frame.text or "").strip()
+        r.base(
+            not landing_notes,
+            "medavis landing slide has empty speaker notes",
+            f"notes={landing_notes[:40]!r}" if landing_notes else "",
+        )
+
+    bad_pic_top, no_picture, no_notes = [], [], []
+    for index, slide in enumerate(slides[1:], start=2):
+        pictures = [shape for shape in slide.shapes if shape.shape_type == picture_type]
+        if not pictures:
+            no_picture.append(str(index))
+        else:
+            pic = pictures[0]
+            if pic.top < MEDAVIS_CONTENT_TOP_MIN:
+                bad_pic_top.append(f"{index}(top={pic.top})")
+        text = ""
+        if slide.has_notes_slide:
+            text = (slide.notes_slide.notes_text_frame.text or "").strip()
+        if not text:
+            no_notes.append(str(index))
+
+    r.base(not no_picture, "every medavis content slide carries a picture",
+           f"missing on slide(s): {', '.join(no_picture)}" if no_picture else "")
+    r.base(
+        not bad_pic_top,
+        "medavis content pictures sit below header band",
+        f"too high on slide(s): {', '.join(bad_pic_top)}" if bad_pic_top else "",
+    )
+    r.base(not no_notes, "every medavis content slide carries speaker notes",
+           f"empty on slide(s): {', '.join(no_notes)}" if no_notes else "")
+
+
 def check_images(deck: Path, r: Report) -> None:
     """Image dimensions are reported as INFO; only the resolution target is scored."""
     try:
@@ -554,6 +642,7 @@ def main() -> int:
     check_deck_spec(deck, r)
     check_speech(deck, r)
     check_pptx(deck, r)
+    check_medavis_pptx(deck, r)
     check_images(deck, r)
     check_targets(deck, skill_root, r)
     r.render()

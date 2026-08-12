@@ -73,6 +73,7 @@ Gate handling for this run:
   for my confirmation.
 
 Generate speaker notes and assemble the .pptx.
+Template mode: pre-approved **no template** (`--template none`). Do not ask; plain `{deck}.pptx` only.
 
 ## Verify and report
 

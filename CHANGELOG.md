@@ -8,6 +8,10 @@ Release notes are generated from this file. Keep changelog entries in English.
 
 - Add optional medavis corporate template assembly (`--template none|medavis|both` with `--landing-title`), bundling the medavis 16:9 template and writing `{deck}-medavis.pptx` while keeping the no-template path unchanged.
 
+### Improvements
+
+- Smoke-deck GATED/interactive prompts prefer template mode **both**; `verify_deck.py` validates `coffee-extraction-medavis.pptx` when present (landing + content placement/notes). FAST stays on no-template.
+
 ### Fixes
 
 - Force UTF-8 stdout/stderr in `assemble_ppt.py`, `probe_image_backends.py`, `slide_job_status.py`, and `image_gen.py` so Chinese status text and non-ASCII paths no longer crash the process with `UnicodeEncodeError` on non-UTF-8 Windows consoles.

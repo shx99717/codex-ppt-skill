@@ -123,6 +123,10 @@ Gate handling:
   ready, without inventing a new protocol.
 
 Generate speaker notes and assemble the `.pptx`.
+For this smoke deck, ask template mode but **prefer both** unless I say otherwise:
+produce `coffee-extraction.pptx` and `coffee-extraction-medavis.pptx`. Suggest a landing
+title from the outline (or "Coffee Extraction"), confirm with me, then pass
+`--template both --landing-title "..."`.
 
 ### C. Verify
 
