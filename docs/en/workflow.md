@@ -36,7 +36,7 @@ After a style is selected, the entire presentation should maintain a consistent 
 
 ## Stage 4: Confirm PPT Ratio, Then the Image-Generation Backend
 
-The agent asks you to pick the final PPT ratio (`16:9` / `4:3` / `3:2`; recommend 3:2 on Cursor, 16:9 on Codex / Claude Code) **before** locking a backend, then only offers tools that can produce that ratio. Cursor `GenerateImage` is 3:2-only. gpt-image-2 tools must pass `--size` `2560x1440` (16:9), `2560x1920` (4:3), or `2400x1600` (3:2).
+The agent asks you to pick the final PPT ratio (`16:9` / `4:3` / `3:2`; recommend 3:2 on Cursor, 16:9 on Codex / Claude Code) **before** locking a backend, then only offers tools that can produce that ratio. Cursor `GenerateImage` is 3:2-only in **pixels** (a `16:9` or `4:3` argument may still return 1536×1024). The tool enum may omit `3:2`; for a 3:2-locked deck, inspect the schema, pass a legal landscape value if needed, and measure pixels. Do not use it for 16:9 / 4:3 locks. gpt-image-2 tools must pass `--size` `2560x1440` (16:9), `2560x1920` (4:3), or `2400x1600` (3:2).
 
 Once the image backend is confirmed, the entire presentation should use the same backend without switching midway.
 

@@ -217,7 +217,7 @@ The skill follows this workflow:
 
 ## Usage Tips
 
-- Codex subscribers use the built-in image generation tool by default. Cursor `GenerateImage` is 3:2 in practice and must not be used for 16:9 / 4:3. For a matching ratio, use gpt-image-2 (`codex-gpt-image` / `image_gen.py`) and pass `--size`: 16:9=`2560x1440`, 4:3=`2560x1920`, 3:2=`2400x1600`. Assembly refuses mismatched images instead of stretching them.
+- Codex subscribers use the built-in image generation tool by default. Cursor `GenerateImage` is 3:2 in **pixels** (a `16:9` or `4:3` argument may still return 1536×1024). The tool enum may omit `3:2`; for a 3:2-locked deck, inspect the schema, pass a legal landscape value if needed, and measure pixels. Do not use it for 16:9 / 4:3 locks. For a matching ratio, use gpt-image-2 (`codex-gpt-image` / `image_gen.py`) and pass `--size`: 16:9=`2560x1440`, 4:3=`2560x1920`, 3:2=`2400x1600`. Assembly refuses mismatched images instead of stretching them.
 - If you are unhappy with one specific slide's content, layout, colors, or wording, ask the current agent to refine that slide in detail instead of regenerating the whole deck.
 
 ![Single-slide revision example: open the PPT, click annotation, and mark the area to revise](assets/single-slide-revision-example.png)

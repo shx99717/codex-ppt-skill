@@ -30,7 +30,7 @@ Filter first: **do not list a backend that cannot produce the locked ratio.** Na
 
 | Backend | Underlying model | Shown when |
 |---|---|---|
-| `GenerateImage` | Cursor native image tool (no gpt-image-2 size API; observed 1536×1024) | **3:2 only** |
+| `GenerateImage` | Cursor native image tool (no gpt-image-2 size API; pixels observed 1536×1024 even when argument is `16:9` or `4:3`; schema may lack `3:2`) | **3:2 only** |
 | `image_gen` | Codex native gpt-image-2 | all ratios **if** the tool schema accepts `WIDTHxHEIGHT`; pass `--size` `2560x1440` / `2560x1920` / `2400x1600`. If the schema cannot express the locked ratio, **omit** `image_gen` from that menu and ask the user — do not invent pixel sizes. |
 | `codex-gpt-image` | gpt-image-2 via Codex OAuth | all ratios; `--size` from the table above |
 | `scripts/image_gen.py` | gpt-image-2 via API key | all ratios; `--size` from the table; last among *available* options |
@@ -52,6 +52,20 @@ When presenting options, annotate each available choice with resolution/capabili
 - **Forbidden locks:** generic `"built-in image tool"`; OpenClaw / `image_generate`; invented Claude Code native names.
 - After the user locks a label, write it into `deck_spec.json` *before* `prepare_slide_prompts.py` via `sample_generation_method` (`backend_used` / `tool_name`) and/or `selected_image_backend`, and persist `aspect_ratio`. Prefer also passing `--selected-backend <exact label>` to prepare. That copies into `slide_jobs.json` → `selected_backend` / `aspect_ratio` / per-job `expected_backend`.
 - Keep the lock for the whole deck. Subagents must not switch backends.
+
+## GenerateImage call recipe
+
+Cursor `GenerateImage` is 3:2-only in pixels. Offer it only when the locked ratio is 3:2. It has no gpt-image-2 `--size` API. Prose-check the live `GenerateImage` schema enum. If `3:2` is in the enum, pass `aspect_ratio="3:2"`. If not, pass a schema-legal landscape value (prefer `16:9`) and measure pixels. Do not pass `3:2` when the schema rejects it. A successful `4:3` or `16:9` argument is not proof of that ratio (2026-08-13: both returned 1536×1024). Gate `|(w/h)/1.5 - 1| <= 0.02`. If pixels are wrong: blocker. Do not assemble, stretch, letterbox, crop, or switch backends unless the user says so.
+
+Keep `sample_generation_method.aspect_ratio` as the locked deck ratio (`3:2`). Store the GenerateImage tool argument in `tool_aspect_ratio_argument` and pixels in `measured_size`.
+
+Red flags:
+
+- Schema lists `4:3` ≠ pixels are 4:3.
+- Enum rejects `3:2` ≠ GenerateImage is unavailable for a 3:2 deck.
+- Do not omit `aspect_ratio` and put 3:2 only in the prompt — prompt text is not enough.
+- Do not switch to CLI just because the enum lacks `3:2`.
+- Do not stretch 3:2 pixels onto a 4:3/16:9 canvas.
 
 ## When CLI is allowed
 
@@ -79,7 +93,7 @@ Cursor 3:2 example:
 
 ```text
 Host: Cursor. Locked ratio: 3:2. Probe + prose check found:
-  A) GenerateImage (Cursor native image tool; pass aspect_ratio=3:2; recommended)
+  A) GenerateImage (Cursor native image tool; 3:2 pixels; if schema has no 3:2, pass 16:9 then measure; recommended)
   B) codex-gpt-image (gpt-image-2 via Codex OAuth; pass --size 2400x1600)
   C) scripts/image_gen.py (gpt-image-2 via API key; pass --size 2400x1600)
 I recommend A. Which backend should we lock for this deck?

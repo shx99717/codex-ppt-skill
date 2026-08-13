@@ -16,6 +16,7 @@ Release notes are generated from this file. Keep changelog entries in English.
 
 ### Fixes
 
+- Cursor `GenerateImage`: do not instruct `aspect_ratio="3:2"` when the live schema rejects it; inspect the enum, pass a legal landscape value if needed, and gate on measured 3:2 pixels (schema `4:3`/`16:9` still returned 1536×1024).
 - Do not stretch slide images by setting picture width and height independently to the slide box.
 - Replace `<PPT-Title>` run text instead of adding a second landing title box; medavis honors `--aspect-ratio`.
 - Force UTF-8 stdout/stderr in `assemble_ppt.py`, `probe_image_backends.py`, `slide_job_status.py`, and `image_gen.py` so Chinese status text and non-ASCII paths no longer crash the process with `UnicodeEncodeError` on non-UTF-8 Windows consoles.
@@ -24,6 +25,7 @@ Release notes are generated from this file. Keep changelog entries in English.
 
 ### Documentation
 
+- Document GenerateImage schema-vs-pixels (enum may lack `3:2`; 4:3/16:9 arguments are not pixel proof) in skill docs, worker prompt, Cursor smoke prompt, and zh/en/ko README plus usage workflow pages.
 - Document user-chosen 16:9 / 4:3 / 3:2 canvases, backend filtering, gpt-image-2 `--size` table, and matching Medavis `N+2` wrap across zh/en/ko README and usage docs.
 - Ask ratio before backend in root README workflow lists and feature bullets; report medavis slide count as `N+2`; align FAQ with Codex `image_gen` schema honor/hide.
 - Replace the redundant QA and community sections with compact documentation, Telegram, and issue support links across all README language versions, and remove the obsolete community QR code. (#92)

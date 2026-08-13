@@ -1,7 +1,7 @@
 # Memory: Medavis PPT Template Assembly Option
 
 **Generated**: 2026-08-12 15:08 UTC+8
-**Last updated**: 2026-08-13 19:15 UTC+8
+**Last updated**: 2026-08-13 19:55 UTC+8
 **Project**: D:/git/codex-ppt-skill
 **Focus**: User-chosen PPT ratio (16:9 / 4:3 / 3:2), matching Medavis templates, backend filter, no stretch, ratio hard gates
 
@@ -37,6 +37,7 @@ Let the user pick the final PPT ratio (16:9, 4:3, or 3:2) before backend lock. F
 20. **Approved design (approach A):** one ratio-keyed pipeline. `aspect_ratio` in `deck_spec.json`/`slide_jobs.json` is the single source of truth for canvas EMU, Medavis file, prompt canvas, gpt-image-2 `--size`, and record/assemble gates. Shared `slide_image_ratio.py`. Filtered backend menu names the underlying model. 3-page wrap + logo overlay on every matching template. T5 ≥1920px stays a smoke *target*, not a baseline.
 21. **Handoff plan:** `docs/plans/2026-08-13-improve-ppt-ratios.md` + `docs/plans/2026-08-13-improve-ppt-ratios-PROMPT-execute.md`.
 23. **Execute session 2026-08-13:** Implemented the multi-ratio plan on `feature/SQ5GEN-195-improve-ppt-ratios` without commit. User confirmed review focus (plan alignment, pipeline, tests, no-stretch gates, skill-doc counters).
+24. **Approved approach A (2026-08-13 evening):** Docs/worker/Cursor-smoke recipe fix only. Keep GenerateImage 3:2-only policy. Do not add a Python helper. Do not omit GenerateImage just because the schema enum lacks `3:2`. Do not try to make GenerateImage emit 4:3.
 
 ---
 
@@ -58,6 +59,7 @@ Let the user pick the final PPT ratio (16:9, 4:3, or 3:2) before backend lock. F
 - Do not change the slide size baked into each Medavis template file; pick the matching file instead.
 - Do not ask the landing title after PPTX exists.
 - Do not offer GenerateImage for 16:9 or 4:3.
+- Do not treat a successful GenerateImage `4:3` / `16:9` argument as pixel proof of that ratio.
 - Do not require returned images to match the requested pixel box.
 - Do not re-probe `--size` after implementation.
 
@@ -72,6 +74,7 @@ Let the user pick the final PPT ratio (16:9, 4:3, or 3:2) before backend lock. F
 - `python-pptx` `add_slide` appends after the ending page; extra content slides must be reordered before the last slide.
 - Setting `paragraph.text` in python-pptx can wipe placeholder formatting; prefer replacing run text.
 - Cursor GenerateImage (two probes, including stronger 16:9 prompt): always **1536×1024 (3:2)**.
+- Cursor GenerateImage live schema (2026-08-13 19:47 UTC+8): enum is `1:1 | 4:3 | 3:4 | 16:9 | 9:16` — **`3:2` is rejected**. Passing `16:9` (sample slide) and `4:3` (dedicated test `assets/generateimage-ratio-test-4x3.png` under the Cursor project) both returned **1536×1024 exact 3:2**. Schema accepts 4:3; pixels do not honor it.
 - `codex-gpt-image --size` live lock probes (2026-08-13): `2560x1440` → 1672×941 (16:9, 0.05% off); `2560x1920` → 1448×1086 (exact 4:3); `2400x1600` → 1536×1024 (exact 3:2). API accepts the size; returned pixels are smaller; ratio matches.
 - User research images: `ratio-test-codex-gpt-image-20260813.png` 1672×941; `-4x3-` 1448×1086; `-3x2-` 1536×1024.
 - `scripts/image_gen.py` default is already `2560x1440` if `--size` is omitted. `codex-gpt-image` default is `auto`. GenerateImage has no pixel size field.
@@ -85,8 +88,8 @@ Let the user pick the final PPT ratio (16:9, 4:3, or 3:2) before backend lock. F
 ## Current State (required)
 
 - **Working**: Multi-ratio pipeline on `feature/SQ5GEN-195-improve-ppt-ratios` (uncommitted). Review findings Important-1..4 and Minor-1,2,3,5,6,7 applied. 75 script tests + 10 smoke verifier tests PASS.
-- **Pending**: User accepted current state after two review-fix cycles. Commit only if asked (`[SQ5GEN-195]`)
-- **Blocked**: none
+- **Pending**: Approach A implemented (uncommitted docs). FAST Cursor GenerateImage smoke still paused at `tests/smoke-deck/runs/20260813-1945-cursor/coffee-extraction/` (slide_02.png 1536×1024). Commit only if asked (`[SQ5GEN-195]`).
+- **Blocked**: none for the doc fix. Smoke wait: user chose to design the skill fix before generating slides 1 and 3.
 
 ---
 
@@ -99,6 +102,10 @@ Let the user pick the final PPT ratio (16:9, 4:3, or 3:2) before backend lock. F
 5. [x] Finish code review / receiving-code-review if findings exist (applied ACCEPTED set; Minor-4 rejected)
 6. [x] Follow-up review of applied fixes if user confirms
 7. [ ] Commit only if user asks (`[SQ5GEN-195]`)
+8. [x] Implement approach A: GenerateImage call-recipe docs (schema workaround + pixel gate)
+9. [ ] Resume FAST Cursor smoke (slides 1+3, assemble, verify) after install re-sync
+
+Handoff plan written 2026-08-13: `docs/plans/2026-08-13-generateimage-schema-workaround.md` + `docs/plans/2026-08-13-generateimage-schema-workaround-PROMPT-execute.md`.
 
 ---
 
@@ -125,8 +132,9 @@ Let the user pick the final PPT ratio (16:9, 4:3, or 3:2) before backend lock. F
 - `skills/codex-ppt/scripts/slide_image_ratio.py`
 - `skills/codex-ppt/SKILL.md`
 - `tests/smoke-deck/verify_deck.py`
-- `docs/plans/evidence/2026-08-13-ppt-ratios-green.md` — execute GREEN evidence
+- `docs/plans/2026-08-13-generateimage-schema-workaround.md` — GenerateImage schema-vs-pixels docs fix (handoff)
+- `docs/plans/2026-08-13-generateimage-schema-workaround-PROMPT-execute.md` — paste into a new session
 
 ---
 
-**Confirmed at**: 2026-08-13 19:15 UTC+8
+**Confirmed at**: 2026-08-13 19:55 UTC+8

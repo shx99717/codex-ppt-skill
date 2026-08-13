@@ -105,8 +105,16 @@ Gate handling:
   `selected_backend=GenerateImage`** and continue without waiting for
   confirmation. Do **not** lock `codex-gpt-image` or CLI in this run. Persist
   the lock into `deck_spec.json` / prepare with `--selected-backend
-  GenerateImage`. Pass `aspect_ratio="3:2"` on GenerateImage. Every final slide image must be produced via Cursor
-  `GenerateImage` (same method for sample + remaining slides).
+  GenerateImage`. Prose-check the live GenerateImage schema. If `3:2` is in the enum, pass
+  it. If not, pass `aspect_ratio="16:9"` (do not pass `3:2` — the tool
+  rejects it). Measure the first sample: pixels must be 3:2 within 2%
+  relative (observed 1536×1024 even for 16:9 and 4:3 arguments). Persist
+  locked deck `aspect_ratio` as 3:2. On `sample_generation_method`, keep
+  `aspect_ratio` as the locked 3:2; set `tool_aspect_ratio_argument` to the
+  value actually passed (often `16:9`) and `measured_size` to e.g. `1536x1024`.
+  Every final slide image must still be produced via Cursor
+  `GenerateImage` (same method for sample + remaining slides). Do not switch to `codex-gpt-image` or
+  CLI because the enum lacks `3:2`.
 - Still honor skill rules that require recording user review / run-state for
   the pre-assembly review gate when the skill says to (FAST skips *waiting*,
   not required bookkeeping). If the skill requires a review marker before
