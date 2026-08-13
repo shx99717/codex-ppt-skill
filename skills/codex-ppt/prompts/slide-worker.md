@@ -25,7 +25,12 @@ Input images already prepared by the parent:
 Read the JSON job file, then follow its `prompt` field exactly. Use the selected image backend and the recorded sample generation method only.
 You must produce the final slide candidate by calling the selected image generation backend:
 - Use the exact locked tool/label from the parent (for example Cursor GenerateImage, Codex image_gen, codex-gpt-image, or scripts/image_gen.py).
-- CLI/API fallback mode: use `scripts/image_gen.py` with the saved job prompt and required image inputs.
+- The locked backend must emit the **locked PPT ratio** from `deck_spec.json` / `slide_jobs.json` (`aspect_ratio`). Gate 2% relative ratio, not exact pixels.
+- Cursor GenerateImage: only when locked ratio is 3:2; pass `aspect_ratio="3:2"`. Prompt text is not enough. If the parent locked 16:9 or 4:3, return a blocker instead of calling GenerateImage.
+- gpt-image-2 tools (`image_gen`, `codex-gpt-image`, `scripts/image_gen.py`): pass `--size` `2560x1440` (16:9), `2560x1920` (4:3), or `2400x1600` (3:2). Do not use `auto`.
+- If a style or `references/*.md` file says 16:9 but `deck_spec.aspect_ratio` is 4:3 or 3:2, follow the spec Canvas / locked ratio.
+- CLI/API fallback mode: use `scripts/image_gen.py` with the saved job prompt, required image inputs, and the ratio `--size`.
+- If the tool cannot produce the locked ratio, stop and return `blocker=<reason>` instead of stretching, letterboxing, or cropping.
 
 Forbidden for final slide image creation:
 - local drawing or rendering scripts

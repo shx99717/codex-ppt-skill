@@ -96,7 +96,7 @@ Fixed contract for this deck — do not deviate:
 - Slide 2 must be written in English
 - Slide 3 must mix Chinese and Latin script on the same slide
 - Visual style: use the built-in style 清爽专业风
-- Aspect ratio: 16:9
+- Aspect ratio: 16:9 is the default locked ratio unless the run recorded another. Old 3:2 image folders fail the 16:9 baseline.
 
 Titles, key points, layout roles and composition are yours to decide from the source content.
 
@@ -131,7 +131,7 @@ Fixed contract for this deck — do not deviate:
 - Slide 2 must be written in English
 - Slide 3 must mix Chinese and Latin script on the same slide
 - Visual style: use the built-in style 清爽专业风
-- Aspect ratio: 16:9
+- Aspect ratio: ask `16:9` / `4:3` / `3:2` **before** backend lock. Recommend 3:2 on Cursor, 16:9 on Codex / Claude Code.
 
 Titles, key points, layout roles and composition are yours to decide from the source content.
 
@@ -139,8 +139,9 @@ Stop at every approval gate and wait for me.
 
 At assembly, ask template mode (no template / medavis / both). For this smoke deck, **prefer both**
 unless I pick otherwise: produce `coffee-extraction.pptx` and `coffee-extraction-medavis.pptx`.
-Suggest a landing title from the outline (or "Coffee Extraction") and confirm it with me before
-passing `--template both --landing-title "..."`.
+Suggest a landing title from the outline (or "Coffee Extraction") and confirm it with me **before**
+the PPTX exists, then pass `--template both --landing-title "..." --aspect-ratio <locked>`.
+Verifier expects medavis `N+2` slides.
 ```
 
 #### Gate checklist
@@ -148,10 +149,11 @@ passing `--template both --landing-title "..."`.
 | Gate | What you are checking |
 |---|---|
 | **Outline** | `outline.md` written at `runs/<run-id>/coffee-extraction/`, 3 slides, per-slide language honored — and it **stops** before creating `deck_spec.json`, `speech.md`, or `prompts/` |
-| **Backend** | Did it actually probe, or assume from the agent name? Does it name a host-correct backend (see matrix)? Does its stated reasoning match reality? *This is where the Cursor detection bug surfaces.* |
-| **Sample** | Text legible, especially CJK. Style matches 清爽专业风. 16:9. No stray slide number. |
+| **Ratio** | Ask 16:9 / 4:3 / 3:2 **before** backend. Cursor: recommend 3:2. Codex/Claude: recommend 16:9. |
+| **Backend** | Only tools that can produce the locked ratio; each option names the model (GenerateImage = Cursor native, 3:2 only; image_gen / codex-gpt-image / image_gen.py = gpt-image-2 + `--size`). |
+| **Sample** | Text legible, especially CJK. Style matches 清爽专业风. Matches locked ratio (2% relative). No stray slide number. |
 | **Pre-assembly review** | User review markers recorded before assemble when the skill requires them. |
-| **Template mode** | Agent asks none/medavis/both; for smoke prefer **both** + confirmed landing title; verifier checks `-medavis.pptx` when present. |
+| **Template mode** | Agent asks none/medavis/both + landing title **before** PPTX exists; for smoke prefer **both**; verifier checks `-medavis.pptx` when present (`N+2` slides). |
 
 ---
 
@@ -161,7 +163,7 @@ passing `--template both --landing-title "..."`.
 |---|---|
 | Codex | built-in `image_gen` |
 | Claude Code | `codex-gpt-image` |
-| Cursor | `GenerateImage` **or** `codex-gpt-image` |
+| Cursor | `GenerateImage` **(3:2 only)** or `codex-gpt-image` |
 
 **An unrequested fallback to `scripts/image_gen.py` is a failure on every host.** `codex-gpt-image` is
 expected to be installed on all three, so falling through to the CLI/API path without being asked can

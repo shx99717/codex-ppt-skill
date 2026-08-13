@@ -124,8 +124,8 @@ Gate handling:
 Generate speaker notes and assemble the `.pptx`.
 For this smoke deck, ask template mode but **prefer both** unless I say otherwise:
 produce `coffee-extraction.pptx` and `coffee-extraction-medavis.pptx`. Suggest a landing
-title from the outline (or "Coffee Extraction"), confirm with me, then pass
-`--template both --landing-title "..."`.
+title from the outline (or "Coffee Extraction"), confirm with me **before** any PPTX of this run exists, then pass
+`--template both --landing-title "..." --aspect-ratio 16:9`. Pass gpt-image-2 `--size` for the locked ratio (16:9=2560x1440). Medavis wrap is N+2 slides (landing + content + ending).
 
 ### C. Verify
 

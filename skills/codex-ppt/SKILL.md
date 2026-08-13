@@ -27,11 +27,11 @@ metadata:
 
 ## Overview
 
-This skill creates image-based PowerPoint decks from source material. Each slide is a complete 16:9 generated image. Final images are assembled into `.pptx` with `scripts/assemble_ppt.py`.
+This skill creates image-based PowerPoint decks from source material. Each slide is a complete generated image at the **locked** PPT ratio (`16:9`, `4:3`, or `3:2`). Final images are assembled into `.pptx` with `scripts/assemble_ppt.py`.
 
 Use this when the user wants a visually unified presentation and accepts full-slide image pages. Do not use it when every textbox, chart, or shape must remain separately editable.
 
-Prefer a real host-native image tool when one exists (Cursor `GenerateImage`, Codex `image_gen`). On Claude Code there is no native image tool — prefer `codex-gpt-image` when installed, else `scripts/image_gen.py`. Run `scripts/probe_image_backends.py` and follow `docs/backend-selection.md` before locking a specific backend label for the deck. Do not lock the generic phrase `built-in image tool`, and do not use OpenClaw `image_generate`.
+Prefer a real host-native image tool **that can produce the locked ratio**. Cursor `GenerateImage` is 3:2-only (observed 1536×1024 even with `aspect_ratio=16:9`) — do not offer it for 16:9 or 4:3. Codex `image_gen`, `codex-gpt-image`, and `scripts/image_gen.py` are gpt-image-2 and support all three ratios via `--size`. On Claude Code there is no native image tool — prefer `codex-gpt-image` when installed, else `scripts/image_gen.py`. Run `scripts/probe_image_backends.py` and follow `docs/backend-selection.md` before locking a specific backend label for the deck. Do not lock the generic phrase `built-in image tool`, and do not use OpenClaw `image_generate`.
 
 ## Hard Constraints
 
@@ -45,6 +45,11 @@ Prefer a real host-native image tool when one exists (Cursor `GenerateImage`, Co
 - After sample approval, record how the approved sample was generated and pass that exact method to every slide subagent.
 - Slide dispatch and result state must be recorded with the bundled scripts. Chat messages alone do not make a slide dispatched or complete.
 - If a required subagent, image backend, or required-image path is unavailable, stop and report a blocker with the slide id and evidence. Do not create a lower-quality replacement.
+- Ask **PPT ratio** (`16:9` / `4:3` / `3:2`) **before** backend lock. Recommend 3:2 on Cursor (unlocks GenerateImage), 16:9 on Codex / Claude Code. Persist `aspect_ratio` in `deck_spec.json` and `slide_jobs.json`.
+- Backend menu: only tools that can produce the locked ratio; each option names the underlying model. Cursor `GenerateImage` (Cursor native image tool, no gpt-image-2 `--size` API) **only** for 3:2, and pass `aspect_ratio="3:2"`. `image_gen` / `codex-gpt-image` / `scripts/image_gen.py` are gpt-image-2 — **must** pass `--size` `2560x1440` (16:9), `2560x1920` (4:3), or `2400x1600` (3:2). If Codex `image_gen` schema cannot take `WIDTHxHEIGHT` for the locked ratio, omit that backend from the menu and ask the user.
+- After save, verify 2% relative ratio (`|(w/h)/expected - 1| <= 0.02`) or use `record_slide_result.py`. If wrong, regenerate — do not assemble, stretch, letterbox, or crop. Exact pixel box is not required.
+- If a style file or `references/*.md` canvas says 16:9 but `deck_spec.aspect_ratio` is 4:3 or 3:2, **follow the locked ratio**. Do not triplicate style files.
+- Template + landing title: ask **immediately before** `assemble_ppt.py`. PPTX of this run must not exist yet. Pass the **same** `--aspect-ratio` as the locked value. Medavis uses the matching 3-page template (landing + content + ending = `N+2` slides). Replace `<PPT-Title>` run text; do not add a second title box.
 
 ## Visible Progress
 
@@ -75,11 +80,12 @@ Do not mark a step complete from chat alone; use real files or script-recorded s
    - Before offering style options or using files from `references/`, read `docs/outline-style-and-sample.md`.
    - Offer 2-3 concrete style directions, recommend one, wait for confirmation, then keep one visual identity while varying layouts by page role.
 
-4. Confirm the image backend.
+4. Confirm PPT ratio, then the image backend.
+   - Ask `16:9` / `4:3` / `3:2` **before** backend lock. Recommend 3:2 on Cursor, 16:9 on Codex / Claude Code. Persist `aspect_ratio`.
    - Before generating any slide image, read `docs/backend-selection.md`.
-   - Run `scripts/probe_image_backends.py`, prose-check real host-native tools only, present an annotated menu of *available* options, recommend one, and wait for the user to lock a **specific** label.
-   - Persist the lock into `deck_spec.json` (`sample_generation_method` and/or `selected_image_backend`) before `prepare_slide_prompts.py`; prefer `--selected-backend <exact label>`.
-   - Do not invent a Claude Code native image tool. Do not lock OpenClaw `image_generate` or the generic phrase `built-in image tool`.
+   - Run `scripts/probe_image_backends.py`, prose-check real host-native tools only, present an annotated menu of *available* options **filtered to the locked ratio** (each option names the underlying model), recommend one, and wait for the user to lock a **specific** label.
+   - Persist the lock into `deck_spec.json` (`sample_generation_method` and/or `selected_image_backend`, plus `aspect_ratio`) before `prepare_slide_prompts.py`; prefer `--selected-backend <exact label>`.
+   - Do not invent a Claude Code native image tool. Do not lock OpenClaw `image_generate` or the generic phrase `built-in image tool`. Do not offer GenerateImage for 16:9 or 4:3.
    - If CLI/API fallback is selected, read `docs/cli-api-fallback.md`. Read `docs/image-model-configuration.md` only after config errors or explicit API-setting requests.
 
 5. Generate one sample slide for approval.
@@ -115,7 +121,7 @@ Do not mark a step complete from chat alone; use real files or script-recorded s
 11. Write speaker notes and assemble the PPT.
     - Before writing `speech.md` or running assembly, read `docs/project-assembly-and-reporting.md`.
     - Make sure `outline.md` reflects the final confirmed deck outline. Use `speech.md` headings that map to `Slide N`.
-    - Before assembly, ask the user which template mode to use: **no template** / **medavis** / **both**. If medavis or both, suggest a landing title from the outline, confirm or edit it with the user, then pass `--template` and `--landing-title` to `assemble_ppt.py`. Do not skip this choice.
+    - Before assembly, ask the user which template mode to use: **no template** / **medavis** / **both**. If medavis or both, suggest a landing title from the outline, confirm or edit it with the user, then pass `--template`, `--landing-title`, and the **locked** `--aspect-ratio` to `assemble_ppt.py`. Do this **immediately before** assemble; PPTX of this run must not exist yet. Do not skip this choice. Medavis loads the matching 3-page template (16-9 / 4-3 / 3-2); expected slide count is `N+2`.
     - Before assembly, ensure `slide_jobs.json` shows generated slides as `recorded` with a valid `user_review`, and approved samples as `accepted`. If any slide is `pending`, `dispatched`, or `blocked`, or any recorded non-sample slide lacks valid user review, stop.
 
 12. Report the result.

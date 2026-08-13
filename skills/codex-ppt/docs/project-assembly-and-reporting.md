@@ -109,51 +109,61 @@ This is an internal setup step for the skill. Do not ask the user to run these c
 Run:
 
 ```bash
-{runtime_python} {skill_root}/scripts/assemble_ppt.py {base_dir} {deck_name}.pptx --aspect-ratio 16:9
+{runtime_python} {skill_root}/scripts/assemble_ppt.py {base_dir} {deck_name}.pptx --aspect-ratio {locked_ratio}
 ```
 
 ### Template mode (required user choice)
 
+Ask template mode and landing title **immediately before** `assemble_ppt.py`. PPTX of this run must not exist yet. Pass the **same** `--aspect-ratio` as `deck_spec.json` / `slide_jobs.json`.
+
 Before running `assemble_ppt.py`, ask the user which PPT output to build:
 
-- **No template** — current behavior: full-bleed slide images only (`{deck_name}.pptx`)
-- **Medavis template** — corporate wrap using the bundled medavis 16:9 template (`{deck_name}-medavis.pptx`)
+- **No template** — full-slide contain (no stretch) (`{deck_name}.pptx`)
+- **Medavis template** — matching 3-page bundled file for the locked ratio (`{deck_name}-medavis.pptx`)
 - **Both** — generate both files
 
 If the user chooses medavis or both:
 
 1. Suggest a landing-page title from `outline.md` / the deck topic.
 2. Ask the user to confirm or edit that title.
-3. Pass `--template medavis|both` and `--landing-title "..."` to `assemble_ppt.py`.
+3. Pass `--template medavis|both`, `--landing-title "..."`, and `--aspect-ratio {locked_ratio}` to `assemble_ppt.py`.
 
-Medavis output structure:
+Medavis files:
 
-- Slide 1 = landing page with the confirmed title
-- Slides 2..N+1 = content pages cloned from the template’s content layout; each generated image is placed in the white area under the header so the medavis logo remains visible; speaker notes from `speech.md` Slide K are written on content slide K
+- `16:9` → `medavis_ppt_template_2026_en_16-9.pptx`
+- `4:3` → `medavis_ppt_template_2026_en_4-3.pptx`
+- `3:2` → `medavis_ppt_template_2026_en_3-2.pptx`
 
-Medavis mode assumes the deck’s generated images are **16:9** (the skill default). Do not use medavis wrapping for a 4:3 deck in v1 without an explicit user decision to regenerate at 16:9.
+Medavis output structure (`N+2` slides):
 
-Do not skip the template-mode question by assuming “no template”. Do not invent a custom template path in v1 — use the bundled medavis asset only.
+- Slide 1 = landing page; replace `<PPT-Title>` **run text** (do not add a second title box)
+- Slides 2..N+1 = content pages cloned from the blank page-2 layout; each generated image is placed with **one uniform scale** (contain, usually full-page when the ratio matches); overlay `medavis-logo-small.png` top-right (10px equal margin) on content pages only
+- Last slide = ending page, unmodified (no content image, no small-logo overlay, no `speech.md` notes)
+
+`assemble_ppt.py` and `record_slide_result.py` refuse images whose pixel ratio is outside 2% relative of the locked ratio. Do not stretch, letterbox, or crop as a success path — regenerate.
+
+Do not skip the template-mode question by assuming “no template”. Do not invent a custom template path — use the matching bundled medavis file only.
 
 Do not:
 
 - Write the medavis deck over `{deck_name}.pptx` (always use `{deck_name}-medavis.pptx`)
-- Full-bleed content images over the medavis logo / header band
+- Stretch pictures by setting width and height independently to the slide box
+- Restore header-band placement or cover the ending page with content
 - Treat “both” as a single file — always produce both `{deck_name}.pptx` and `{deck_name}-medavis.pptx`
 
 Example commands:
 
 ```bash
 # none (default)
-{runtime_python} {skill_root}/scripts/assemble_ppt.py {base_dir} {deck_name}.pptx --aspect-ratio 16:9
+{runtime_python} {skill_root}/scripts/assemble_ppt.py {base_dir} {deck_name}.pptx --aspect-ratio {locked_ratio}
 
 # medavis only
 {runtime_python} {skill_root}/scripts/assemble_ppt.py {base_dir} {deck_name}.pptx \
-  --template medavis --landing-title "Confirmed Title Here"
+  --template medavis --landing-title "Confirmed Title Here" --aspect-ratio {locked_ratio}
 
 # both
 {runtime_python} {skill_root}/scripts/assemble_ppt.py {base_dir} {deck_name}.pptx \
-  --template both --landing-title "Confirmed Title Here"
+  --template both --landing-title "Confirmed Title Here" --aspect-ratio {locked_ratio}
 ```
 
 Important:
@@ -169,7 +179,7 @@ Important:
 - For `--template medavis`, the script writes `{base_dir}/{deck_name}/{deck_name}-medavis.pptx`.
 - For `--template both`, the script writes both files.
 
-`assemble_ppt.py` supports `16:9` and `4:3` for `--template none` only. Use `16:9` unless the user requests otherwise. Medavis mode always uses the bundled 16:9 template and ignores `--aspect-ratio`. `image_gen.py` loads `~/.codex-ppt-skill/.env` automatically for `OPENAI_API_KEY`, `OPENAI_BASE_URL`, and `CODEX_PPT_IMAGE_MODEL`. Run `python3 {skill_root}/scripts/codex_ppt_runtime.py doctor --check-api` when troubleshooting API access.
+`assemble_ppt.py` supports `16:9`, `4:3`, and `3:2` for none **and** medavis. Pass the locked `--aspect-ratio`. Medavis loads the matching bundled 3-page template. `image_gen.py` loads `~/.codex-ppt-skill/.env` automatically for `OPENAI_API_KEY`, `OPENAI_BASE_URL`, and `CODEX_PPT_IMAGE_MODEL`. Run `python3 {skill_root}/scripts/codex_ppt_runtime.py doctor --check-api` when troubleshooting API access.
 
 ## Final Report
 
@@ -177,12 +187,12 @@ Report:
 
 - Project directory
 - PPT file path(s) — include `{deck_name}.pptx` and/or `{deck_name}-medavis.pptx` for every file actually generated
-- For a medavis deck, also note slide count as landing + content (`1 + N`)
+- For a medavis deck, also note slide count as landing + content + ending (`N+2`)
 - Slide image directory
 - `outline.md` path
 - `speech.md` path
 - `slide_jobs.json` path
-- Number of slides (for none: N content slides; for medavis: `1 + N`)
+- Number of slides (for none: N content slides; for medavis: `N+2`)
 - Confirm which image backend was used and that every non-sample slide result was recorded with `record_slide_result.py`.
 - Confirm that speaker notes from `speech.md` were written into the PPT, if applicable
 - Any slides that were regenerated, blocked, or still have known limitations

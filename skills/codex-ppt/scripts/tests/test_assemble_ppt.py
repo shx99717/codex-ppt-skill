@@ -60,20 +60,44 @@ def _run_main(argv: list[str]) -> tuple[int, str]:
     return exit_code, buffer.getvalue()
 
 
-def _make_deck(tmp: str, name: str = "demo-deck", slides: int = 2, with_notes: bool = False) -> Path:
+def _make_deck_ratio(
+    tmp: str,
+    size: tuple[int, int],
+    name: str = "demo-deck",
+    slides: int = 2,
+    with_notes: bool = False,
+) -> Path:
     from PIL import Image
 
     deck_dir = Path(tmp) / name
     origin = deck_dir / "origin_image"
     origin.mkdir(parents=True)
     for i in range(1, slides + 1):
-        Image.new("RGB", (32, 18), color=(i * 40, 80, 120)).save(origin / f"slide_{i:02d}.png")
+        Image.new("RGB", size, color=(i * 40, 80, 120)).save(origin / f"slide_{i:02d}.png")
     if with_notes:
         (deck_dir / "speech.md").write_text(
             "## Slide 1: One\n\nNote for slide one.\n\n## Slide 2: Two\n\nNote for slide two.\n",
             encoding="utf-8",
         )
     return deck_dir
+
+
+def _make_deck(tmp: str, name: str = "demo-deck", slides: int = 2, with_notes: bool = False) -> Path:
+    return _make_deck_ratio(tmp, (32, 18), name=name, slides=slides, with_notes=with_notes)
+
+
+def _picture_ratio_ok(pic, expected: float, tol: float = 0.02) -> bool:
+    return abs((pic.width / pic.height) / expected - 1.0) <= tol
+
+
+def _template_path(filename: str) -> Path:
+    return Path(assemble_ppt.skill_root_dir()) / "assets" / "templates" / filename
+
+
+def _assert_template_unmutated(test: unittest.TestCase, path: Path, before) -> None:
+    after = path.stat()
+    test.assertEqual(before.st_size, after.st_size)
+    test.assertEqual(before.st_mtime_ns, after.st_mtime_ns)
 
 
 class InitStdoutEncodingTests(unittest.TestCase):
@@ -141,8 +165,7 @@ class MedavisTemplateAssemblyTests(unittest.TestCase):
                 pic = pictures[0]
                 self.assertEqual(pic.left, 0)
                 self.assertEqual(pic.top, 0)
-                self.assertEqual(pic.width, prs.slide_width)
-                self.assertEqual(pic.height, prs.slide_height)
+                self.assertTrue(_picture_ratio_ok(pic, 16 / 9))
 
     def test_medavis_writes_suffix_file_only(self) -> None:
         from pptx import Presentation
@@ -166,7 +189,7 @@ class MedavisTemplateAssemblyTests(unittest.TestCase):
             self.assertFalse(plain.exists())
             self.assertTrue(medavis.exists())
             prs = Presentation(str(medavis))
-            self.assertEqual(len(prs.slides), 3)  # landing + 2 content
+            self.assertEqual(len(prs.slides), 4)  # landing + 2 content + ending
 
     def test_both_writes_plain_and_medavis(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -205,17 +228,20 @@ class MedavisTemplateAssemblyTests(unittest.TestCase):
             self.assertEqual(exit_code, 0)
             prs = Presentation(str(Path(tmp) / "demo-deck" / "demo-deck-medavis.pptx"))
             landing = prs.slides[0]
+            landing_text = "\n".join(
+                s.text_frame.text for s in landing.shapes if s.has_text_frame
+            )
+            self.assertIn("Demo Title", landing_text)
+            self.assertNotIn("<PPT-Title>", landing_text)
             title_shapes = [
                 s for s in landing.shapes if s.has_text_frame and "Demo Title" in s.text_frame.text
             ]
             self.assertTrue(title_shapes, "landing title text missing")
-            shape = title_shapes[0]
-            self.assertEqual(shape.left, assemble_ppt.MEDAVIS_TITLE_LEFT)
-            self.assertEqual(shape.top, assemble_ppt.MEDAVIS_TITLE_TOP)
-            self.assertEqual(shape.width, assemble_ppt.MEDAVIS_TITLE_WIDTH)
-            self.assertEqual(shape.height, assemble_ppt.MEDAVIS_TITLE_HEIGHT)
-            color = shape.text_frame.paragraphs[0].font.color.rgb
-            self.assertEqual((color[0], color[1], color[2]), assemble_ppt.MEDAVIS_TITLE_COLOR)
+            alignment = title_shapes[0].text_frame.paragraphs[0].alignment
+            if alignment is not None:
+                from pptx.enum.text import PP_ALIGN
+
+                self.assertEqual(alignment, PP_ALIGN.CENTER)
 
     def test_medavis_content_image_placement(self) -> None:
         from pptx import Presentation
@@ -236,17 +262,18 @@ class MedavisTemplateAssemblyTests(unittest.TestCase):
             )
             self.assertEqual(exit_code, 0)
             prs = Presentation(str(Path(tmp) / "demo-deck" / "demo-deck-medavis.pptx"))
-            for idx in range(1, len(prs.slides)):
+            for idx in range(1, len(prs.slides) - 1):
                 slide = prs.slides[idx]
                 pictures = [s for s in slide.shapes if s.shape_type == MSO_SHAPE_TYPE.PICTURE]
-                self.assertTrue(pictures)
+                self.assertGreaterEqual(len(pictures), 2, "content image + overlay logo")
                 pic = pictures[0]
-                self.assertGreaterEqual(pic.top, assemble_ppt.MEDAVIS_CONTENT_TOP)
-                self.assertGreater(pic.top, assemble_ppt.MEDAVIS_LOGO_BAND_BOTTOM)
-                self.assertNotEqual(pic.top, 0)
-                self.assertEqual(pic.left, assemble_ppt.MEDAVIS_CONTENT_LEFT)
-                self.assertEqual(pic.width, prs.slide_width)
-                self.assertEqual(pic.top + pic.height, prs.slide_height)
+                self.assertEqual(pic.left, 0)
+                self.assertEqual(pic.top, 0)
+                self.assertTrue(_picture_ratio_ok(pic, 16 / 9))
+                logo = pictures[1]
+                self.assertAlmostEqual(logo.top, 95250, delta=2)
+                self.assertAlmostEqual(logo.width, 1362456, delta=2)
+                self.assertAlmostEqual(logo.height, 274320, delta=2)
 
     def test_medavis_notes_mapping(self) -> None:
         from pptx import Presentation
@@ -272,6 +299,8 @@ class MedavisTemplateAssemblyTests(unittest.TestCase):
             self.assertIn("Note for slide one", content1)
             content2 = prs.slides[2].notes_slide.notes_text_frame.text
             self.assertIn("Note for slide two", content2)
+            last_notes = prs.slides[len(prs.slides) - 1].notes_slide.notes_text_frame.text.strip()
+            self.assertEqual(last_notes, "")
 
     def test_medavis_requires_landing_title(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
@@ -292,11 +321,11 @@ class MedavisTemplateAssemblyTests(unittest.TestCase):
             self.assertFalse((Path(tmp) / "demo-deck" / "demo-deck.pptx").exists())
             self.assertFalse((Path(tmp) / "demo-deck" / "demo-deck-medavis.pptx").exists())
 
-    def test_medavis_ignores_aspect_ratio_4_3(self) -> None:
+    def test_medavis_uses_4_3_template(self) -> None:
         from pptx import Presentation
 
         with tempfile.TemporaryDirectory() as tmp:
-            _make_deck(tmp, slides=1)
+            _make_deck_ratio(tmp, (32, 24), slides=1)
             exit_code, _ = _run_main(
                 [
                     "assemble_ppt.py",
@@ -313,12 +342,15 @@ class MedavisTemplateAssemblyTests(unittest.TestCase):
             self.assertEqual(exit_code, 0)
             prs = Presentation(str(Path(tmp) / "demo-deck" / "demo-deck-medavis.pptx"))
             self.assertEqual(prs.slide_width, 9144000)
-            self.assertEqual(prs.slide_height, 5143500)
+            self.assertEqual(prs.slide_height, 6858000)
 
     def test_medavis_does_not_mutate_bundled_template(self) -> None:
-        template = Path(assemble_ppt.medavis_template_path())
-        self.assertTrue(template.exists())
-        before_stat = template.stat()
+        templates = [
+            _template_path("medavis_ppt_template_2026_en_16-9.pptx"),
+            _template_path("medavis_ppt_template_2026_en_4-3.pptx"),
+            _template_path("medavis_ppt_template_2026_en_3-2.pptx"),
+        ]
+        before = {path: path.stat() for path in templates}
         with tempfile.TemporaryDirectory() as tmp:
             _make_deck(tmp, slides=1)
             exit_code, _ = _run_main(
@@ -333,9 +365,243 @@ class MedavisTemplateAssemblyTests(unittest.TestCase):
                 ]
             )
             self.assertEqual(exit_code, 0)
-        after_stat = template.stat()
-        self.assertEqual(before_stat.st_size, after_stat.st_size)
-        self.assertEqual(before_stat.st_mtime_ns, after_stat.st_mtime_ns)
+        for path in templates:
+            _assert_template_unmutated(self, path, before[path])
+
+    def test_none_refuses_mismatched_ratio(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            _make_deck_ratio(tmp, (1536, 1024), slides=1)
+            exit_code, output = _run_main(
+                [
+                    "assemble_ppt.py",
+                    tmp,
+                    "demo-deck.pptx",
+                    "--template",
+                    "none",
+                    "--aspect-ratio",
+                    "16:9",
+                ]
+            )
+            self.assertNotEqual(exit_code, 0)
+            self.assertFalse((Path(tmp) / "demo-deck" / "demo-deck.pptx").exists())
+            self.assertIn("1536", output)
+            self.assertIn("1024", output)
+
+    def test_medavis_refuses_mismatched_ratio(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            _make_deck_ratio(tmp, (1536, 1024), slides=1)
+            exit_code, output = _run_main(
+                [
+                    "assemble_ppt.py",
+                    tmp,
+                    "demo-deck.pptx",
+                    "--template",
+                    "medavis",
+                    "--landing-title",
+                    "Demo Title",
+                    "--aspect-ratio",
+                    "16:9",
+                ]
+            )
+            self.assertNotEqual(exit_code, 0)
+            self.assertFalse((Path(tmp) / "demo-deck" / "demo-deck-medavis.pptx").exists())
+            self.assertIn("1536", output)
+            self.assertIn("1024", output)
+
+    def test_none_3_2_accepted(self) -> None:
+        from pptx import Presentation
+        from pptx.enum.shapes import MSO_SHAPE_TYPE
+
+        with tempfile.TemporaryDirectory() as tmp:
+            _make_deck_ratio(tmp, (48, 32), slides=1)
+            exit_code, _ = _run_main(
+                [
+                    "assemble_ppt.py",
+                    tmp,
+                    "demo-deck.pptx",
+                    "--template",
+                    "none",
+                    "--aspect-ratio",
+                    "3:2",
+                ]
+            )
+            self.assertEqual(exit_code, 0)
+            prs = Presentation(str(Path(tmp) / "demo-deck" / "demo-deck.pptx"))
+            self.assertEqual(prs.slide_width, 9144000)
+            self.assertEqual(prs.slide_height, 6096000)
+            pic = [
+                s for s in prs.slides[0].shapes if s.shape_type == MSO_SHAPE_TYPE.PICTURE
+            ][0]
+            self.assertEqual(pic.left, 0)
+            self.assertEqual(pic.top, 0)
+            self.assertTrue(_picture_ratio_ok(pic, 3 / 2))
+
+    def test_none_4_3_accepted(self) -> None:
+        from pptx import Presentation
+        from pptx.enum.shapes import MSO_SHAPE_TYPE
+
+        with tempfile.TemporaryDirectory() as tmp:
+            _make_deck_ratio(tmp, (32, 24), slides=1)
+            exit_code, _ = _run_main(
+                [
+                    "assemble_ppt.py",
+                    tmp,
+                    "demo-deck.pptx",
+                    "--template",
+                    "none",
+                    "--aspect-ratio",
+                    "4:3",
+                ]
+            )
+            self.assertEqual(exit_code, 0)
+            prs = Presentation(str(Path(tmp) / "demo-deck" / "demo-deck.pptx"))
+            self.assertEqual(prs.slide_width, 9144000)
+            self.assertEqual(prs.slide_height, 6858000)
+            pic = [
+                s for s in prs.slides[0].shapes if s.shape_type == MSO_SHAPE_TYPE.PICTURE
+            ][0]
+            self.assertEqual(pic.left, 0)
+            self.assertEqual(pic.top, 0)
+            self.assertTrue(_picture_ratio_ok(pic, 4 / 3))
+
+    def test_none_16_9_rejected_for_aspect_4_3(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            _make_deck_ratio(tmp, (32, 18), slides=1)
+            exit_code, _ = _run_main(
+                [
+                    "assemble_ppt.py",
+                    tmp,
+                    "demo-deck.pptx",
+                    "--template",
+                    "none",
+                    "--aspect-ratio",
+                    "4:3",
+                ]
+            )
+            self.assertNotEqual(exit_code, 0)
+            self.assertFalse((Path(tmp) / "demo-deck" / "demo-deck.pptx").exists())
+
+    def test_medavis_3_2_uses_matching_template(self) -> None:
+        from pptx import Presentation
+        from pptx.enum.shapes import MSO_SHAPE_TYPE
+
+        with tempfile.TemporaryDirectory() as tmp:
+            _make_deck_ratio(tmp, (48, 32), slides=1)
+            exit_code, _ = _run_main(
+                [
+                    "assemble_ppt.py",
+                    tmp,
+                    "demo-deck.pptx",
+                    "--template",
+                    "medavis",
+                    "--landing-title",
+                    "Demo Title",
+                    "--aspect-ratio",
+                    "3:2",
+                ]
+            )
+            self.assertEqual(exit_code, 0)
+            prs = Presentation(str(Path(tmp) / "demo-deck" / "demo-deck-medavis.pptx"))
+            self.assertEqual(prs.slide_width, 9144000)
+            self.assertEqual(prs.slide_height, 6096000)
+            self.assertEqual(len(prs.slides), 3)
+            last = prs.slides[2]
+            last_text = "\n".join(s.text_frame.text for s in last.shapes if s.has_text_frame)
+            self.assertIn("Thank You For Your Patience", last_text)
+            content = prs.slides[1]
+            pictures = [s for s in content.shapes if s.shape_type == MSO_SHAPE_TYPE.PICTURE]
+            self.assertGreaterEqual(len(pictures), 2)
+            self.assertEqual(pictures[0].top, 0)
+            self.assertAlmostEqual(pictures[1].top, 95250, delta=2)
+
+    def test_medavis_ending_stays_last(self) -> None:
+        from pptx import Presentation
+
+        with tempfile.TemporaryDirectory() as tmp:
+            _make_deck(tmp, slides=2)
+            exit_code, _ = _run_main(
+                [
+                    "assemble_ppt.py",
+                    tmp,
+                    "demo-deck.pptx",
+                    "--template",
+                    "medavis",
+                    "--landing-title",
+                    "Demo Title",
+                ]
+            )
+            self.assertEqual(exit_code, 0)
+            prs = Presentation(str(Path(tmp) / "demo-deck" / "demo-deck-medavis.pptx"))
+            last = prs.slides[len(prs.slides) - 1]
+            last_text = "\n".join(s.text_frame.text for s in last.shapes if s.has_text_frame)
+            self.assertIn("Thank You For Your Patience", last_text)
+            from pptx.enum.shapes import MSO_SHAPE_TYPE
+
+            pictures = [s for s in last.shapes if s.shape_type == MSO_SHAPE_TYPE.PICTURE]
+            overlay = [
+                pic for pic in pictures
+                if abs(pic.top - 95250) <= 2 and abs(pic.width - 1362456) <= 2
+            ]
+            self.assertEqual(overlay, [], "ending page must not get the small-logo overlay")
+            self.assertEqual(len(pictures), 2, "ending page pictures must stay as in the template")
+
+    def test_medavis_logo_geometry(self) -> None:
+        from pptx import Presentation
+        from pptx.enum.shapes import MSO_SHAPE_TYPE
+
+        with tempfile.TemporaryDirectory() as tmp:
+            _make_deck(tmp, slides=1)
+            exit_code, _ = _run_main(
+                [
+                    "assemble_ppt.py",
+                    tmp,
+                    "demo-deck.pptx",
+                    "--template",
+                    "medavis",
+                    "--landing-title",
+                    "Demo Title",
+                ]
+            )
+            self.assertEqual(exit_code, 0)
+            prs = Presentation(str(Path(tmp) / "demo-deck" / "demo-deck-medavis.pptx"))
+            pictures = [
+                s for s in prs.slides[1].shapes if s.shape_type == MSO_SHAPE_TYPE.PICTURE
+            ]
+            self.assertGreaterEqual(len(pictures), 2)
+            logo = pictures[1]
+            expected_left = prs.slide_width - 1362456 - 95250
+            self.assertAlmostEqual(logo.left, expected_left, delta=2)
+            self.assertAlmostEqual(logo.top, 95250, delta=2)
+            self.assertAlmostEqual(logo.width, 1362456, delta=2)
+            self.assertAlmostEqual(logo.height, 274320, delta=2)
+
+    def test_none_16_9_picture_is_uniform_full_page(self) -> None:
+        from pptx import Presentation
+        from pptx.enum.shapes import MSO_SHAPE_TYPE
+
+        with tempfile.TemporaryDirectory() as tmp:
+            _make_deck(tmp, slides=1)
+            exit_code, _ = _run_main(
+                [
+                    "assemble_ppt.py",
+                    tmp,
+                    "demo-deck.pptx",
+                    "--template",
+                    "none",
+                    "--aspect-ratio",
+                    "16:9",
+                ]
+            )
+            self.assertEqual(exit_code, 0)
+            prs = Presentation(str(Path(tmp) / "demo-deck" / "demo-deck.pptx"))
+            pic = [
+                s for s in prs.slides[0].shapes if s.shape_type == MSO_SHAPE_TYPE.PICTURE
+            ][0]
+            self.assertEqual(pic.left, 0)
+            self.assertEqual(pic.top, 0)
+            self.assertEqual(pic.width, prs.slide_width)
+            self.assertEqual(pic.height, prs.slide_height)
+            self.assertTrue(_picture_ratio_ok(pic, 16 / 9))
 
 
 if __name__ == "__main__":

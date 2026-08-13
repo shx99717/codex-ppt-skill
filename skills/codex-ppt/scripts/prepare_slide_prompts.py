@@ -21,6 +21,17 @@ from slide_run_state import (
     save_jobs,
     set_run_status,
 )
+from slide_image_ratio import gpt_image_size
+
+
+def _locked_aspect_ratio(spec: Dict[str, Any]) -> str:
+    raw = spec.get("aspect_ratio")
+    if raw is None or str(raw).strip() == "":
+        return "16:9"
+    label = str(raw).strip()
+    if label not in {"16:9", "4:3", "3:2"}:
+        _die(f"aspect_ratio must be 16:9, 4:3, or 3:2 (got {label!r})")
+    return label
 
 
 def _die(message: str) -> None:
@@ -119,17 +130,13 @@ def _slide_images(slide: Dict[str, Any], *, slide_number: int, base_dir: Path) -
     return images
 
 
-def _sample_generation_method(spec: Dict[str, Any], *, base_dir: Path) -> Optional[Dict[str, Any]]:
-    method = spec.get("sample_generation_method") or spec.get("image_generation_method")
-    if method is None:
-        return None
-    if not isinstance(method, dict):
-        _die("sample_generation_method must be an object when present.")
-    method = dict(method)
-    for key in ("approved_sample_path", "sample_slide_path", "sample_output_path"):
-        if isinstance(method.get(key), str):
-            method[key] = _resolve_image_path(method[key], base_dir=base_dir)
-    return method
+def _is_gpt_image_2_backend(label: Optional[str]) -> bool:
+    if not label:
+        return False
+    n = re.sub(r"[^a-z0-9]+", "", label.lower())
+    if "generateimage" in n:
+        return False
+    return "imagegen" in n or "codexgptimage" in n or "gptimage" in n
 
 
 def _method_backend_label(method: Optional[Dict[str, Any]]) -> Optional[str]:
@@ -140,6 +147,28 @@ def _method_backend_label(method: Optional[Dict[str, Any]]) -> Optional[str]:
         if isinstance(value, str) and value.strip():
             return value.strip()
     return None
+
+
+def _sample_generation_method(spec: Dict[str, Any], *, base_dir: Path) -> Optional[Dict[str, Any]]:
+    method = spec.get("sample_generation_method") or spec.get("image_generation_method")
+    if method is None:
+        return None
+    if not isinstance(method, dict):
+        _die("sample_generation_method must be an object when present.")
+    method = dict(method)
+    for key in ("approved_sample_path", "sample_slide_path", "sample_output_path"):
+        if isinstance(method.get(key), str):
+            method[key] = _resolve_image_path(method[key], base_dir=base_dir)
+    label = _locked_aspect_ratio(spec)
+    backend = _method_backend_label(method)
+    if _is_gpt_image_2_backend(backend):
+        method["size"] = f"gpt-image-2 --size {gpt_image_size(label)}"
+    else:
+        method["aspect_ratio"] = label
+        size = method.get("size")
+        if isinstance(size, str) and "gpt-image-2 --size" in size:
+            del method["size"]
+    return method
 
 
 def _format_block(title: str, value: Any) -> str:
@@ -241,10 +270,11 @@ def _build_prompt(
     prompt_parts = [
         "# Codex PPT Slide Image Prompt\n",
         _format_block("Canvas", {
-            "type": "16:9 full-slide PowerPoint image",
+            "type": f"{_locked_aspect_ratio(deck)} full-slide PowerPoint image",
             "language": display_lang,
             "slide_number": number,
             "render_slide_number": False,
+            "gpt_image_2_size": gpt_image_size(_locked_aspect_ratio(deck)),
         }),
         _format_block("Deck Goal", deck.get("goal")),
         _format_block("Required Background", required_background),
@@ -321,6 +351,7 @@ def _write_template(path: Path) -> None:
     template = {
         "deck_name": "example-deck",
         "language": "English",
+        "aspect_ratio": "3:2",
         "goal": "Explain the core idea of the source article.",
         "deck_context": {
             "source_summary": "Short source-wide summary that workers may need when a slide refers to the broader article.",
@@ -334,7 +365,7 @@ def _write_template(path: Path) -> None:
             "tool_name": "GenerateImage",
             "mode": "generate",
             "prompt_source": "the approved sample slide job prompt",
-            "size": "16:9 landscape, 2560x1440 target",
+            "aspect_ratio": "3:2",
             "quality": "medium",
             "approved_sample_path": "/absolute/path/to/approved-sample-slide.png",
             "input_context_preparation": "view_image local required images before built-in generation",
@@ -527,6 +558,7 @@ def main() -> int:
         "run_status": "jobs_prepared",
         "deck_name": spec.get("deck_name"),
         "selected_backend": selected_backend,
+        "aspect_ratio": _locked_aspect_ratio(spec),
         "sample_generation_method": sample_generation_method,
         "max_concurrent_slides": max_concurrent_slides,
         "slides": slide_job_entries,

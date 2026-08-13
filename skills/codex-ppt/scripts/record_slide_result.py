@@ -186,6 +186,15 @@ def main() -> int:
         expected_backend_labels = _expected_backend_labels(jobs, slide, prompt_job)
         matched_expected_backend = _matched_expected_backend(backend_used, expected_backend_labels)
         source = ensure_file(Path(args.selected_source).expanduser().resolve(), "selected source image")
+        from slide_image_ratio import RATIO_BY_LABEL, require_image_ratio
+
+        label = str(jobs.get("aspect_ratio") or "").strip()
+        if label not in RATIO_BY_LABEL:
+            raise SystemExit("slide_jobs.json is missing a valid aspect_ratio (16:9, 4:3, or 3:2)")
+        try:
+            require_image_ratio(str(source), RATIO_BY_LABEL[label], label)
+        except ValueError as exc:
+            raise SystemExit(str(exc)) from exc
         out_ref = slide.get("out") or f"origin_image/{slide['slide_id']}.png"
         target = resolve_deck_path(deck_dir, out_ref)
         try:

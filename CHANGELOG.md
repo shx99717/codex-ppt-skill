@@ -6,18 +6,26 @@ Release notes are generated from this file. Keep changelog entries in English.
 
 ### Features
 
-- Add optional medavis corporate template assembly (`--template none|medavis|both` with `--landing-title`), bundling the medavis 16:9 template and writing `{deck}-medavis.pptx` while keeping the no-template path unchanged.
+- Let the user pick the final PPT ratio (`16:9` / `4:3` / `3:2`) before backend lock, persist `aspect_ratio`, and assemble none-mode plus matching 3-page Medavis templates (landing + content + ending, overlay logo).
+- Filter image backends by locked ratio (Cursor `GenerateImage` is 3:2-only) and require gpt-image-2 `--size` `2560x1440` / `2560x1920` / `2400x1600`.
 
 ### Improvements
 
+- Hard-gate saved images and PPT assembly on 2% relative ratio; refuse stretch, letterbox, and crop as success paths.
 - Smoke-deck GATED/interactive prompts prefer template mode **both**; `verify_deck.py` validates `coffee-extraction-medavis.pptx` when present (landing + content placement/notes). FAST stays on no-template.
 
 ### Fixes
 
+- Do not stretch slide images by setting picture width and height independently to the slide box.
+- Replace `<PPT-Title>` run text instead of adding a second landing title box; medavis honors `--aspect-ratio`.
 - Force UTF-8 stdout/stderr in `assemble_ppt.py`, `probe_image_backends.py`, `slide_job_status.py`, and `image_gen.py` so Chinese status text and non-ASCII paths no longer crash the process with `UnicodeEncodeError` on non-UTF-8 Windows consoles.
+- Reject unknown `aspect_ratio` labels at prepare time instead of coercing canvas to 16:9 while persisting the typo into `slide_jobs.json`.
+- Do not copy a gpt-image-2 `--size` string onto Cursor `GenerateImage` sample methods; record `aspect_ratio=3:2` instead.
 
 ### Documentation
 
+- Document user-chosen 16:9 / 4:3 / 3:2 canvases, backend filtering, gpt-image-2 `--size` table, and matching Medavis `N+2` wrap across zh/en/ko README and usage docs.
+- Ask ratio before backend in root README workflow lists and feature bullets; report medavis slide count as `N+2`; align FAQ with Codex `image_gen` schema honor/hide.
 - Replace the redundant QA and community sections with compact documentation, Telegram, and issue support links across all README language versions, and remove the obsolete community QR code. (#92)
 - Add a Korean translation of the README (`README_ko.md`) and a language badge linking to it from `README.md` and `README_en.md`. (#90)
 - Replace README language badges with a consistent text-based language switcher across all translations. (#91)

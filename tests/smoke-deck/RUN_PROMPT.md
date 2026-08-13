@@ -60,7 +60,7 @@ Fixed contract for this deck -- do not deviate:
 - Slide 2 must be written in English
 - Slide 3 must mix Chinese and Latin script on the same slide
 - Visual style: use the built-in style 清爽专业风
-- Aspect ratio: 16:9
+- Aspect ratio: 16:9 is the default locked ratio unless the run recorded another in `deck_spec.json` / `slide_jobs.json`. Old 3:2 image folders fail the 16:9 baseline.
 
 Titles, key points, layout roles, and composition are yours to decide from the source content.
 

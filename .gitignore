@@ -59,6 +59,7 @@ examples/
 !assets/style-previews/*.png
 !skills/codex-ppt/assets/templates/
 !skills/codex-ppt/assets/templates/*.pptx
+!skills/codex-ppt/assets/templates/*.png
 
 # Test outputs
 tests/*
