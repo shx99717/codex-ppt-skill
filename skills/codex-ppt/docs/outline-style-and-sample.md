@@ -136,3 +136,5 @@ After the sample slide is approved, record the sample generation method in `deck
 - `approved_sample_path`: the approved `origin_image/slide_XX.png` path.
 - `input_context_preparation`: how local source/style images were made available, such as `view_image` for built-in mode.
 - `handoff_rule`: subagents must use the same backend/tool/mode and return a blocker if that path is unavailable.
+- `aspect_ratio`: the **locked deck** ratio (`16:9` / `4:3` / `3:2`), not a GenerateImage tool argument. `prepare_slide_prompts.py` overwrites this field to the locked label for non-gpt-image-2 backends.
+- For Cursor `GenerateImage`: `tool_aspect_ratio_argument` (the value actually passed to the tool, e.g. `16:9` when the schema lacks `3:2`) and `measured_size` (e.g. `1536x1024`). Do not store the tool argument in `aspect_ratio`.

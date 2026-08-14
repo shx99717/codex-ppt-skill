@@ -2,7 +2,7 @@
 
 ## Overview
 
-The Codex PPT workflow emphasizes staged confirmation. Instead of immediately generating the entire presentation, it first confirms the outline, style, image backend, and sample slide to reduce rework.
+The Codex PPT workflow emphasizes staged confirmation. Instead of immediately generating the entire presentation, it first confirms the outline, style, PPT ratio, image backend, and sample slide to reduce rework.
 
 ## Stage 1: Review the Source Material
 
@@ -34,9 +34,9 @@ The agent proposes 2-3 style directions and recommends one. Candidates come from
 
 After a style is selected, the entire presentation should maintain a consistent visual language, while individual slide layouts may vary according to the content.
 
-## Stage 4: Confirm the Image-Generation Backend
+## Stage 4: Confirm PPT Ratio, Then the Image-Generation Backend
 
-The Codex built-in image-generation tool is preferred. The workflow switches to `scripts/image_gen.py` only when the built-in tool is unavailable, the user explicitly requests an API/CLI fallback, or the current capability cannot satisfy the request.
+The agent asks you to pick the final PPT ratio (`16:9` / `4:3` / `3:2`; recommend 3:2 on Cursor, 16:9 on Codex / Claude Code) **before** locking a backend, then only offers tools that can produce that ratio. Cursor `GenerateImage` is 3:2-only in **pixels** (a `16:9` or `4:3` argument may still return 1536×1024). The tool enum may omit `3:2`; for a 3:2-locked deck, inspect the schema, pass a legal landscape value if needed, and measure pixels. Do not use it for 16:9 / 4:3 locks. gpt-image-2 tools must pass `--size` `2560x1440` (16:9), `2560x1920` (4:3), or `2400x1600` (3:2).
 
 Once the image backend is confirmed, the entire presentation should use the same backend without switching midway.
 
@@ -62,7 +62,7 @@ Before assembly, the agent reviews every slide for text clarity, consistency wit
 
 ## Stage 8: Speaker Notes and Assembly
 
-The agent generates the speaker notes in `speech.md`, then asks which PPT output to build (**no template** / **medavis template** / **both**). For medavis or both, it suggests a landing-page title, confirms it with you, and runs `assemble_ppt.py` with the matching `--template` and `--landing-title` flags. Speaker notes are written into the notes section of each content slide. Medavis wrapping assumes 16:9 slide images.
+The agent generates the speaker notes in `speech.md`, then asks which PPT output to build (**no template** / **medavis template** / **both**). For medavis or both, it suggests a landing-page title, confirms it with you **before** this run's PPTX exists, and runs `assemble_ppt.py` with `--template`, `--landing-title`, and the locked `--aspect-ratio`. Medavis uses the matching 3-page template (landing + content + ending, `N+2` slides). Speaker notes go on content slides only. Mismatched-ratio images are refused; they are not stretched.
 
 ## Stage 9 (Optional): Save the Style
 

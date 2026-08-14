@@ -52,6 +52,19 @@ class VerifyDeckBackendTests(unittest.TestCase):
         self.assertEqual(self.v.backend_family("scripts/image_gen.py"), "cli-api-fallback")
         self.assertTrue(self.v.is_specific_backend_label("scripts/image_gen.py"))
 
+    def test_ratio_constants_come_from_shared_helper(self) -> None:
+        import sys
+        from pathlib import Path
+
+        scripts = Path(__file__).resolve().parents[1] / ".." / "skills" / "codex-ppt" / "scripts"
+        scripts = scripts.resolve()
+        if str(scripts) not in sys.path:
+            sys.path.insert(0, str(scripts))
+        import slide_image_ratio
+
+        self.assertIs(self.v.RATIO_BY_LABEL, slide_image_ratio.RATIO_BY_LABEL)
+        self.assertEqual(self.v.RATIO_RELATIVE_TOLERANCE, slide_image_ratio.RATIO_RELATIVE_TOLERANCE)
+
 
 class VerifyDeckMedavisChecksTests(unittest.TestCase):
     @classmethod
@@ -82,6 +95,10 @@ class VerifyDeckMedavisChecksTests(unittest.TestCase):
             sys.path.insert(0, str(scripts))
         import assemble_ppt
 
+        for stream in (sys.stdout, sys.stderr):
+            if hasattr(stream, "reconfigure"):
+                stream.reconfigure(encoding="utf-8", errors="replace")
+
         with tempfile.TemporaryDirectory() as tmp:
             deck = Path(tmp) / "coffee-extraction"
             origin = deck / "origin_image"
@@ -97,6 +114,7 @@ class VerifyDeckMedavisChecksTests(unittest.TestCase):
                 str(deck / "coffee-extraction-medavis.pptx"),
                 "Coffee Extraction",
                 assemble_ppt.load_speaker_notes(str(deck)),
+                "16:9",
             )
             self.assertTrue(ok)
             r = self.v.Report()

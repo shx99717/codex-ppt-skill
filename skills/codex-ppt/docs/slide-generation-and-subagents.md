@@ -70,12 +70,14 @@ Keep the deck visually coherent but vary slide layouts according to page semanti
 
 Avoid generating every slide as the same three-card layout. For each slide, choose a layout that fits its content and explain that choice in the `layout.intent` field.
 
+The Canvas `type` / `aspect_ratio` in saved prompts comes from `deck_spec.aspect_ratio` (default `16:9` if missing). If a style JSON or this example says 16:9 but the locked ratio is 4:3 or 3:2, **follow the locked ratio**. Do not triplicate style files.
+
 ```json
 {
-  "type": "16:9 full-slide PowerPoint image",
+  "type": "{locked ratio} full-slide PowerPoint image",
   "language": "{resolved slide language: Chinese | English | mixed | ...}",
   "canvas": {
-    "aspect_ratio": "16:9",
+    "aspect_ratio": "{16:9 | 4:3 | 3:2 from deck_spec}",
     "use_full_canvas": true,
     "slide_number": "do not render a slide number"
   },

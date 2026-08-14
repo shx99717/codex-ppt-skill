@@ -91,8 +91,8 @@ Gate handling:
 - Style: pinned — do not offer options
 - Sample: pre-approved — accept first sample and continue
 - Image backend: do NOT assume — probe callable backends in Codex (expect
-  native `image_gen`), state what you checked and what you locked as
-  `selected_backend`, then continue without waiting for confirmation
+  native `image_gen` = host-native gpt-image-2). Pass `--size 2560x1440` for this 16:9 run.
+  State what you checked and what you locked as `selected_backend`, then continue without waiting for confirmation. Do not offer Cursor GenerateImage.
 - Still honor skill rules that require recording user review / run-state for
   the pre-assembly review gate when the skill says to (FAST skips *waiting*,
   not required bookkeeping). If the skill requires a review marker before
@@ -102,8 +102,8 @@ Gate handling:
 Generate speaker notes and assemble the `.pptx`.
 For this smoke deck, ask template mode but **prefer both** unless I say otherwise:
 produce `coffee-extraction.pptx` and `coffee-extraction-medavis.pptx`. Suggest a landing
-title from the outline (or "Coffee Extraction"), confirm with me, then pass
-`--template both --landing-title "..."`.
+title from the outline (or "Coffee Extraction"), confirm with me **before** any PPTX of this run exists, then pass
+`--template both --landing-title "..." --aspect-ratio 16:9`. Pass gpt-image-2 `--size` for the locked ratio (16:9=2560x1440). Medavis wrap is N+2 slides (landing + content + ending).
 
 ### C. Verify
 

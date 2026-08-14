@@ -32,6 +32,8 @@ HOST_ACCEPTABLE = {
     # so a doc-compliant subagent reporting "built-in image tool" on these hosts must still pass.
     # The specific-tool names (codex-gpt-image, GenerateImage) are also accepted when present;
     # rewarding that specificity is what TARGET T6 measures.
+    # Cursor GenerateImage is 3:2-only; a 16:9/4:3 GenerateImage run still fails the image-ratio
+    # baseline when pixels are 1536x1024. This matrix is host-label acceptance, not a ratio gate.
     "claude-code": {"builtin-image-gen", "codex-gpt-image"},
     "cursor": {"builtin-image-gen", "generateimage", "codex-gpt-image"},
 }
@@ -46,6 +48,15 @@ SPEECH_HEADING_RE = re.compile(
 )
 
 PASS, FAIL, SKIP, INFO = "[PASS]", "[FAIL]", "[SKIP]", "[INFO]"
+
+_SCRIPTS = Path(__file__).resolve().parents[2] / "skills" / "codex-ppt" / "scripts"
+if str(_SCRIPTS) not in sys.path:
+    sys.path.insert(0, str(_SCRIPTS))
+from slide_image_ratio import RATIO_BY_LABEL, RATIO_RELATIVE_TOLERANCE, is_ratio
+
+MEDAVIS_LOGO_TOP_EMU = 95250
+MEDAVIS_LOGO_WIDTH_EMU = 1362456
+PPT_TITLE_TOKEN = "<PPT-Title>"
 
 
 # --------------------------------------------------------------------------- helpers
@@ -114,6 +125,26 @@ def cjk_ratio(text: str) -> float:
 
 def read_json(path: Path) -> Any:
     return json.loads(path.read_text(encoding="utf-8"))
+
+
+def ratio_matches(width: float, height: float, expected: float, tol: float = RATIO_RELATIVE_TOLERANCE) -> bool:
+    return is_ratio(width, height, expected, tol)
+
+
+def locked_aspect_ratio(deck: Path) -> str:
+    for name in ("deck_spec.json", "slide_jobs.json"):
+        path = deck / name
+        if not path.exists():
+            continue
+        try:
+            data = read_json(path)
+        except (OSError, json.JSONDecodeError, TypeError):
+            continue
+        if isinstance(data, dict):
+            label = str(data.get("aspect_ratio") or "").strip()
+            if label in RATIO_BY_LABEL:
+                return label
+    return "16:9"
 
 
 def runtime_python() -> Path:
@@ -435,8 +466,10 @@ def check_pptx(deck: Path, r: Report) -> None:
     slides = list(prs.slides)
     r.base(len(slides) == SLIDE_COUNT, "pptx has 3 slides", f"found {len(slides)}")
 
-    ratio = prs.slide_width / prs.slide_height if prs.slide_height else 0
-    r.base(abs(ratio - 16 / 9) < 0.02, "pptx page size is 16:9", f"ratio={ratio:.4f}")
+    label = locked_aspect_ratio(deck)
+    expected = RATIO_BY_LABEL[label]
+    ok = ratio_matches(float(prs.slide_width), float(prs.slide_height), expected)
+    r.base(ok, f"pptx page size is {label}", f"ratio={float(prs.slide_width) / float(prs.slide_height):.4f}")
 
     no_picture, no_notes = [], []
     for index, slide in enumerate(slides, start=1):
@@ -454,8 +487,7 @@ def check_pptx(deck: Path, r: Report) -> None:
            f"empty on slide(s): {', '.join(no_notes)}" if no_notes else "")
 
 
-# Medavis content images must sit below the logo band (matches assemble_ppt.MEDAVIS_CONTENT_TOP).
-MEDAVIS_CONTENT_TOP_MIN = 700000
+# Medavis wrap: landing + N content + ending. Overlay logo sits at 10px top margin.
 MEDAVIS_PPTX_NAME = f"{DECK_NAME}-medavis.pptx"
 
 
@@ -483,17 +515,19 @@ def check_medavis_pptx(deck: Path, r: Report) -> None:
     except ImportError:  # pragma: no cover
         picture_type = 13
 
-    expected_slides = 1 + SLIDE_COUNT
+    expected_slides = 1 + SLIDE_COUNT + 1
     prs = Presentation(str(path))
     slides = list(prs.slides)
     r.base(
         len(slides) == expected_slides,
-        f"medavis pptx has {expected_slides} slides (1 landing + {SLIDE_COUNT} content)",
+        f"medavis pptx has {expected_slides} slides (1 landing + {SLIDE_COUNT} content + 1 ending)",
         f"found {len(slides)}",
     )
 
-    ratio = prs.slide_width / prs.slide_height if prs.slide_height else 0
-    r.base(abs(ratio - 16 / 9) < 0.02, "medavis pptx page size is 16:9", f"ratio={ratio:.4f}")
+    label = locked_aspect_ratio(deck)
+    expected = RATIO_BY_LABEL[label]
+    ok = ratio_matches(float(prs.slide_width), float(prs.slide_height), expected)
+    r.base(ok, f"medavis pptx page size is {label}", f"ratio={float(prs.slide_width) / float(prs.slide_height):.4f}")
 
     landing = slides[0] if slides else None
     if landing is not None:
@@ -503,9 +537,9 @@ def check_medavis_pptx(deck: Path, r: Report) -> None:
             if getattr(shape, "has_text_frame", False)
         ).strip()
         r.base(
-            bool(landing_text),
-            "medavis landing slide has title text",
-            "" if landing_text else "no text shapes with content",
+            bool(landing_text) and PPT_TITLE_TOKEN not in landing_text,
+            "medavis landing slide has title text (not <PPT-Title>)",
+            "" if landing_text and PPT_TITLE_TOKEN not in landing_text else f"text={landing_text[:80]!r}",
         )
         landing_notes = ""
         if landing.has_notes_slide:
@@ -516,15 +550,24 @@ def check_medavis_pptx(deck: Path, r: Report) -> None:
             f"notes={landing_notes[:40]!r}" if landing_notes else "",
         )
 
-    bad_pic_top, no_picture, no_notes = [], [], []
-    for index, slide in enumerate(slides[1:], start=2):
+    content_slides = slides[1:1 + SLIDE_COUNT]
+    bad_pic_top, no_picture, no_notes, no_logo = [], [], [], []
+    for offset, slide in enumerate(content_slides):
+        index = offset + 2
         pictures = [shape for shape in slide.shapes if shape.shape_type == picture_type]
         if not pictures:
             no_picture.append(str(index))
         else:
             pic = pictures[0]
-            if pic.top < MEDAVIS_CONTENT_TOP_MIN:
+            if pic.top != 0:
                 bad_pic_top.append(f"{index}(top={pic.top})")
+            overlay = [
+                p for p in pictures[1:]
+                if abs(int(p.top) - MEDAVIS_LOGO_TOP_EMU) <= 2
+                and abs(int(p.width) - MEDAVIS_LOGO_WIDTH_EMU) <= 2
+            ]
+            if not overlay:
+                no_logo.append(str(index))
         text = ""
         if slide.has_notes_slide:
             text = (slide.notes_slide.notes_text_frame.text or "").strip()
@@ -535,22 +578,52 @@ def check_medavis_pptx(deck: Path, r: Report) -> None:
            f"missing on slide(s): {', '.join(no_picture)}" if no_picture else "")
     r.base(
         not bad_pic_top,
-        "medavis content pictures sit below header band",
-        f"too high on slide(s): {', '.join(bad_pic_top)}" if bad_pic_top else "",
+        "medavis content pictures are full-page (top==0)",
+        f"not at top on slide(s): {', '.join(bad_pic_top)}" if bad_pic_top else "",
+    )
+    r.base(
+        not no_logo,
+        "medavis content slides have overlay logo near top=95250",
+        f"missing on slide(s): {', '.join(no_logo)}" if no_logo else "",
     )
     r.base(not no_notes, "every medavis content slide carries speaker notes",
            f"empty on slide(s): {', '.join(no_notes)}" if no_notes else "")
 
+    if slides:
+        ending = slides[-1]
+        ending_notes = ""
+        if ending.has_notes_slide:
+            ending_notes = (ending.notes_slide.notes_text_frame.text or "").strip()
+        r.base(
+            not ending_notes,
+            "medavis ending slide has empty speaker notes",
+            f"notes={ending_notes[:40]!r}" if ending_notes else "",
+        )
+        ending_text = " ".join(
+            (shape.text_frame.text or "").strip()
+            for shape in ending.shapes
+            if getattr(shape, "has_text_frame", False)
+        )
+        r.base(
+            "Thank You" in ending_text or "Geduld" in ending_text,
+            "medavis last slide is the ending page",
+            "" if ending_text else "no ending text",
+        )
+
 
 def check_images(deck: Path, r: Report) -> None:
-    """Image dimensions are reported as INFO; only the resolution target is scored."""
+    """Locked-ratio mismatch is a baseline failure. T5 >=1920px stays a target."""
     try:
         from PIL import Image
     except ImportError:
+        r.base(False, "slide images match locked ratio", "Pillow not importable")
         r.targ(None, "T5 all slide images >=1920px wide", "Pillow not importable")
         return
 
+    label = locked_aspect_ratio(deck)
+    expected = RATIO_BY_LABEL[label]
     widths: list[int] = []
+    mismatches: list[str] = []
     for i in range(1, SLIDE_COUNT + 1):
         path = deck / "origin_image" / f"slide_{i:02d}.png"
         if not path.exists():
@@ -558,13 +631,19 @@ def check_images(deck: Path, r: Report) -> None:
         with Image.open(path) as img:
             width, height = img.size
         widths.append(width)
-        ratio = width / height if height else 0
-        flag = "" if abs(ratio - 16 / 9) < 0.03 else "  <-- not 16:9"
-        r.note(f"slide_{i:02d}.png  {width}x{height}  ratio={ratio:.3f}{flag}")
+        if not ratio_matches(width, height, expected):
+            mismatches.append(f"slide_{i:02d}.png {width}x{height}")
+        r.note(f"slide_{i:02d}.png  {width}x{height}  locked={label}")
 
     if not widths:
+        r.base(False, f"slide images match locked {label} ratio", "no images found")
         r.targ(None, "T5 all slide images >=1920px wide", "no images found")
         return
+    r.base(
+        not mismatches,
+        f"slide images match locked {label} ratio (2% relative)",
+        "; ".join(mismatches) if mismatches else "",
+    )
     r.targ(min(widths) >= 1920, "T5 all slide images >=1920px wide", f"min width={min(widths)}")
 
 

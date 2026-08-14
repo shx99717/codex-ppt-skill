@@ -38,9 +38,9 @@ After confirming that the model works, ask the AI to address specific issues suc
 
 ## Q: What Should I Do If the Generated Slide Images Are Blurry?
 
-Codex subscribers use the built-in image-generation tool by default. Its generated images have a relatively low resolution, which currently cannot be specified manually. For higher-resolution images, use the `gpt-image-2` API instead—the API/CLI fallback—and configure the API key, base URL, and model name. See [Installation and Configuration](/en/installation.md).
+Codex subscribers use the built-in `image_gen` tool by default. If the tool schema accepts `WIDTHxHEIGHT`, pass `--size` for the locked ratio: `2560x1440` (16:9), `2560x1920` (4:3), or `2400x1600` (3:2). If the schema cannot express the locked ratio, omit `image_gen` and ask the user. Returned pixels may be smaller than the requested box; gate on 2% relative ratio, not exact pixels.
 
-With the API/CLI fallback, the script defaults to 2K resolution in a 16:9 landscape format. If the image is still blurry, especially on slides with substantial text, ask the AI to generate it at 4K resolution.
+The API/CLI fallback (`codex-gpt-image` / `image_gen.py`) must pass the same `--size` table. For a 16:9 deck that is still blurry on text-heavy slides, ask the AI to generate at 4K. See [Installation and Configuration](/en/installation.md) for API key setup.
 
 ## Q: Why Confirm the Outline First?
 

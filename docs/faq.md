@@ -38,9 +38,9 @@
 
 ## Q：生成的幻灯片图片比较模糊怎么办？
 
-Codex 会员默认使用内置生图工具，其生成的图片分辨率比较低，且目前不能手动指定分辨率。如果需要更高分辨率的图像，需要改用 `gpt-image-2` API 的方式生成（即 API/CLI fallback，配置 API key、base URL 和模型名，参见[安装与配置](installation.md)）。
+Codex 会员默认使用内置生图工具 `image_gen`。若当前工具 schema 接受 `WIDTHxHEIGHT`，必须按锁定比例传入 `--size`：16:9=`2560x1440`，4:3=`2560x1920`，3:2=`2400x1600`。若 schema 无法表达该锁定比例，不要使用 `image_gen`，改问用户。返回像素可能小于请求框；以 2% 相对比例为准，不要求与请求框像素完全一致。
 
-API/CLI fallback 场景下，脚本默认分辨率是 2K 16:9 横屏。如果图片仍然模糊，尤其是文字较多的页面，可以让 AI 改用 4K 分辨率生成。
+API/CLI fallback（`codex-gpt-image` / `image_gen.py`）同样必须传入上表 `--size`。16:9 且文字很密时，可以让 AI 改用 4K。
 
 ## Q：为什么要先确认大纲？
 

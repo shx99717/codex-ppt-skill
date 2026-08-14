@@ -94,20 +94,27 @@ Use the **installed** codex-ppt skill to build from
 - Exactly 3 slides
 - Slide 1 Chinese; slide 2 English; slide 3 mixed Chinese + Latin
 - Visual style: built-in `清爽专业风` (do not offer style options)
-- Aspect ratio: 16:9
+- Aspect ratio: 3:2 (required for Cursor `GenerateImage`; persist `aspect_ratio`)
 - Titles / points / layout / composition: decide from the source
 
 Gate handling:
 - Outline: pre-approved — write `outline.md` and continue
 - Style: pinned — do not offer options
 - Sample: pre-approved — accept first sample and continue
-- Image backend: probe callable backends in Cursor (prose-check `GenerateImage`,
-  run `probe_image_backends.py`). State what you checked, then **lock
+- Image backend: **after** the ratio is locked to 3:2, probe callable backends in Cursor (prose-check `GenerateImage` — Cursor native image tool, 3:2 only; `codex-gpt-image` — gpt-image-2 via Codex OAuth; `scripts/image_gen.py` — gpt-image-2 via API key). State what you checked, then **lock
   `selected_backend=GenerateImage`** and continue without waiting for
   confirmation. Do **not** lock `codex-gpt-image` or CLI in this run. Persist
   the lock into `deck_spec.json` / prepare with `--selected-backend
-  GenerateImage`. Every final slide image must be produced via Cursor
-  `GenerateImage` (same method for sample + remaining slides).
+  GenerateImage`. Prose-check the live GenerateImage schema. If `3:2` is in the enum, pass
+  it. If not, pass `aspect_ratio="16:9"` (do not pass `3:2` — the tool
+  rejects it). Measure the first sample: pixels must be 3:2 within 2%
+  relative (observed 1536×1024 even for 16:9 and 4:3 arguments). Persist
+  locked deck `aspect_ratio` as 3:2. On `sample_generation_method`, keep
+  `aspect_ratio` as the locked 3:2; set `tool_aspect_ratio_argument` to the
+  value actually passed (often `16:9`) and `measured_size` to e.g. `1536x1024`.
+  Every final slide image must still be produced via Cursor
+  `GenerateImage` (same method for sample + remaining slides). Do not switch to `codex-gpt-image` or
+  CLI because the enum lacks `3:2`.
 - Still honor skill rules that require recording user review / run-state for
   the pre-assembly review gate when the skill says to (FAST skips *waiting*,
   not required bookkeeping). If the skill requires a review marker before
@@ -117,8 +124,8 @@ Gate handling:
 Generate speaker notes and assemble the `.pptx`.
 For this smoke deck, ask template mode but **prefer both** unless I say otherwise:
 produce `coffee-extraction.pptx` and `coffee-extraction-medavis.pptx`. Suggest a landing
-title from the outline (or "Coffee Extraction"), confirm with me, then pass
-`--template both --landing-title "..."`.
+title from the outline (or "Coffee Extraction"), confirm with me **before** any PPTX of this run exists, then pass
+`--template both --landing-title "..." --aspect-ratio 3:2`. Medavis wrap is N+2 slides (landing + content + ending).
 
 ### C. Verify
 

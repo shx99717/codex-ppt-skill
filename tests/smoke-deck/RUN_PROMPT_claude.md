@@ -8,6 +8,9 @@ Canonical skill source: `d:/git/codex-ppt-skill/skills/codex-ppt`
 Installed skill this host must run: `~/.claude/skills/codex-ppt`
 Bridge skill required: `~/.claude/skills/codex-gpt-image` (Codex OAuth image path)
 
+Interactive (GATED) sibling — stop at every gate and wait:
+[`RUN_PROMPT_claude_interactive.md`](RUN_PROMPT_claude_interactive.md).
+
 See also the Cursor variants:
 [`RUN_PROMPT_cursor.md`](RUN_PROMPT_cursor.md) (`GenerateImage`),
 [`RUN_PROMPT_cursor_codex-gpt-image.md`](RUN_PROMPT_cursor_codex-gpt-image.md).
@@ -124,8 +127,8 @@ Gate handling:
 Generate speaker notes and assemble the `.pptx`.
 For this smoke deck, ask template mode but **prefer both** unless I say otherwise:
 produce `coffee-extraction.pptx` and `coffee-extraction-medavis.pptx`. Suggest a landing
-title from the outline (or "Coffee Extraction"), confirm with me, then pass
-`--template both --landing-title "..."`.
+title from the outline (or "Coffee Extraction"), confirm with me **before** any PPTX of this run exists, then pass
+`--template both --landing-title "..." --aspect-ratio 16:9`. Pass gpt-image-2 `--size` for the locked ratio (16:9=2560x1440). Medavis wrap is N+2 slides (landing + content + ending).
 
 ### C. Verify
 

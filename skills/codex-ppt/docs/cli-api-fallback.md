@@ -25,7 +25,7 @@ Basic generation command:
 {runtime_python} {skill_root}/scripts/image_gen.py generate \
   --model gpt-image-2 \
   --prompt-file {prompt_file} \
-  --size 2560x1440 \
+  --size {2560x1440|2560x1920|2400x1600} \
   --quality medium \
   --out {base_dir}/{deck_name}/origin_image/slide_01.png
 ```
@@ -38,7 +38,7 @@ When generating from saved `prompts/slide_XX.json` files, use the job's `prompt`
 python3 -c 'import json, pathlib; print(json.loads(pathlib.Path("{base_dir}/{deck_name}/prompts/slide_01.json").read_text())["prompt"])' | \
 {runtime_python} {skill_root}/scripts/image_gen.py generate \
   --prompt-file - \
-  --size 2560x1440 \
+  --size {2560x1440|2560x1920|2400x1600} \
   --quality medium \
   --out {base_dir}/{deck_name}/origin_image/slide_01.png
 ```
@@ -52,7 +52,7 @@ The fallback CLI supports:
 - `generate`: create one or more images from a prompt.
 - `edit`: edit one or more existing images, optionally with a mask.
 
-The fallback CLI defaults to 2K 16:9 landscape output, `2560x1440`, because it keeps slide text clearer while staying below the `gpt-image-2` pixel limit. For 4K landscape slides, use `--size 3840x2160 --quality high` only when the user asks for 4K, text-heavy slides need sharper output, or the default result is blurry. For portrait assets, use `--size 2160x3840` only if the user requests portrait output.
+The fallback CLI must pass gpt-image-2 `--size` for the **locked** ratio: `2560x1440` (16:9), `2560x1920` (4:3), `2400x1600` (3:2). Do not rely on prompt text or `--size auto`. Gate saved images on 2% relative ratio, not exact pixels. For 4K, use `--size 3840x2160 --quality high` only when the user asks for 4K **and** the locked ratio is 16:9. Do not use portrait `--size` for slide canvases.
 
 ## Editing Slides
 
@@ -77,7 +77,7 @@ Transparent-background requests:
 
 ## Assembly And Doctor
 
-`assemble_ppt.py` supports `16:9` and `4:3` for `--template none`. Use `16:9` unless the user requests otherwise. Medavis template mode (`--template medavis|both`) always uses the bundled 16:9 corporate template and requires `--landing-title`.
+`assemble_ppt.py` supports `16:9`, `4:3`, and `3:2` for `--template none|medavis|both`. Pass the locked `--aspect-ratio`. Medavis template mode requires `--landing-title` and loads the matching bundled 3-page file.
 
 Run the API doctor only when troubleshooting fallback API access:
 

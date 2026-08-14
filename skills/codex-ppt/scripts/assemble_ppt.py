@@ -3,8 +3,8 @@
 PPT 组装脚本
 
 将一个目录中的幻灯片图片组装成 PowerPoint 演示文稿。
-默认模式：每张图片插入为一页空白幻灯片并充满整个页面。
-可选 medavis 模板模式：落地页标题 + 内容页在页眉下方白区贴图。
+默认模式：每张图片插入为一页空白幻灯片，按锁定比例均匀 contain。
+可选 medavis 模板模式：匹配比例的 3 页模板 + 内容页整页贴图 + 小 logo 叠加。
 """
 
 import argparse
@@ -14,28 +14,37 @@ import sys
 import tempfile
 from typing import Dict, List, Optional, Tuple
 
-# Bundled medavis 16:9 template geometry (EMU). Do not cover the logo band.
-MEDAVIS_CONTENT_LEFT = 0
-MEDAVIS_CONTENT_TOP = 700000
-MEDAVIS_LOGO_BAND_BOTTOM = 627534
-MEDAVIS_TITLE_LEFT = -14853
-MEDAVIS_TITLE_TOP = 2850965
-MEDAVIS_TITLE_WIDTH = 9152438
-MEDAVIS_TITLE_HEIGHT = 728897
-MEDAVIS_TITLE_COLOR = (0x42, 0x63, 0x7B)
+from slide_image_ratio import RATIO_BY_LABEL, require_image_ratio, uniform_picture_box
+
+MEDAVIS_LOGO_MARGIN_EMU = 95250
+MEDAVIS_LOGO_WIDTH_EMU = 1362456
+MEDAVIS_LOGO_HEIGHT_EMU = 274320
+PPT_TITLE_TOKEN = "<PPT-Title>"
+SLIDE_EMU = {
+    "16:9": (9144000, 5143500),
+    "4:3": (9144000, 6858000),
+    "3:2": (9144000, 6096000),
+}
+MEDAVIS_TEMPLATE_NAME = {
+    "16:9": "medavis_ppt_template_2026_en_16-9.pptx",
+    "4:3": "medavis_ppt_template_2026_en_4-3.pptx",
+    "3:2": "medavis_ppt_template_2026_en_3-2.pptx",
+}
 
 
 def skill_root_dir() -> str:
     return os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 
-def medavis_template_path() -> str:
-    return os.path.join(
-        skill_root_dir(),
-        "assets",
-        "templates",
-        "medavis_ppt_template_2026_en_16-9.pptx",
-    )
+def medavis_template_path(aspect_ratio: str = "16:9") -> str:
+    name = MEDAVIS_TEMPLATE_NAME.get(aspect_ratio)
+    if not name:
+        raise KeyError(aspect_ratio)
+    return os.path.join(skill_root_dir(), "assets", "templates", name)
+
+
+def medavis_logo_path() -> str:
+    return os.path.join(skill_root_dir(), "assets", "templates", "medavis-logo-small.png")
 
 
 def dependency_hint() -> str:
@@ -233,6 +242,81 @@ def compress_image_if_needed(
         return None
 
 
+def _validate_images_for_ratio(image_files: List[str], aspect_ratio: str) -> None:
+    if aspect_ratio not in RATIO_BY_LABEL:
+        raise ValueError(f"unsupported aspect_ratio: {aspect_ratio}")
+    expected = RATIO_BY_LABEL[aspect_ratio]
+    for image_path in image_files:
+        if not os.path.exists(image_path):
+            raise ValueError(f"图片文件不存在: {image_path}")
+        require_image_ratio(image_path, expected, aspect_ratio)
+
+
+def add_content_picture(slide, image_path: str, prs, aspect_ratio: str) -> None:
+    expected = RATIO_BY_LABEL[aspect_ratio]
+    width, height = require_image_ratio(image_path, expected, aspect_ratio)
+    left, top, box_w, box_h = uniform_picture_box(
+        width, height, int(prs.slide_width), int(prs.slide_height)
+    )
+    slide.shapes.add_picture(image_path, left=left, top=top, width=box_w, height=box_h)
+
+
+def add_medavis_logo(slide, prs) -> None:
+    logo = medavis_logo_path()
+    if not os.path.exists(logo):
+        raise FileNotFoundError(logo)
+    left = int(prs.slide_width) - MEDAVIS_LOGO_WIDTH_EMU - MEDAVIS_LOGO_MARGIN_EMU
+    slide.shapes.add_picture(
+        logo,
+        left=left,
+        top=MEDAVIS_LOGO_MARGIN_EMU,
+        width=MEDAVIS_LOGO_WIDTH_EMU,
+        height=MEDAVIS_LOGO_HEIGHT_EMU,
+    )
+
+
+def set_medavis_landing_title(slide, title: str) -> None:
+    for shape in slide.shapes:
+        if not getattr(shape, "has_text_frame", False):
+            continue
+        if PPT_TITLE_TOKEN not in (shape.text_frame.text or ""):
+            continue
+        replaced = False
+        for paragraph in shape.text_frame.paragraphs:
+            runs = paragraph.runs
+            if not runs:
+                continue
+            if not replaced:
+                runs[0].text = title
+                replaced = True
+                for extra in runs[1:]:
+                    extra.text = ""
+            else:
+                for run in runs:
+                    run.text = ""
+        if not replaced:
+            shape.text_frame.paragraphs[0].text = title
+        return
+    raise RuntimeError("medavis landing page is missing the <PPT-Title> placeholder")
+
+
+def move_slide(prs, old_index: int, new_index: int) -> None:
+    sld_id_lst = prs.slides._sldIdLst
+    elements = list(sld_id_lst)
+    el = elements[old_index]
+    sld_id_lst.remove(el)
+    sld_id_lst.insert(new_index, el)
+
+
+def _cleanup_temp_files(temp_files: List[str]) -> None:
+    for temp_file in temp_files:
+        try:
+            if os.path.exists(temp_file):
+                os.remove(temp_file)
+        except Exception as e:
+            print(f"警告：清理临时文件失败 {temp_file}: {e}")
+
+
 def create_presentation(
     image_files: List[str],
     output_path: str,
@@ -245,151 +329,11 @@ def create_presentation(
     Args:
         image_files: 幻灯片图片文件列表
         output_path: 输出 PPT 文件路径
-        aspect_ratio: 幻灯片宽高比（16:9 或 4:3）
+        aspect_ratio: 幻灯片宽高比（16:9、4:3 或 3:2）
 
     Returns:
         bool: 成功返回 True，失败返回 False
     """
-    try:
-        try:
-            from pptx import Presentation
-            from pptx.util import Inches
-        except ImportError:
-            print("错误：未安装 python-pptx 库")
-            print(dependency_hint())
-            return False
-
-        # 创建演示文稿
-        prs = Presentation()
-
-        # 设置幻灯片尺寸
-        if aspect_ratio == "16:9":
-            prs.slide_width = Inches(10)
-            prs.slide_height = Inches(5.625)
-        elif aspect_ratio == "4:3":
-            prs.slide_width = Inches(10)
-            prs.slide_height = Inches(7.5)
-        else:
-            print(f"警告：不支持的宽高比 {aspect_ratio}，使用默认值 16:9")
-            prs.slide_width = Inches(10)
-            prs.slide_height = Inches(5.625)
-
-        speaker_notes = speaker_notes or {}
-
-        # 添加每一页幻灯片
-        temp_files_to_cleanup = []
-        for i, image_path in enumerate(image_files, 1):
-            if not os.path.exists(image_path):
-                print(f"警告：图片文件不存在: {image_path}")
-                continue
-
-            # 压缩图片（如果需要）
-            compressed_path = compress_image_if_needed(image_path, max_size_mb=2.0)
-
-            # 使用压缩后的图片或原图
-            image_to_use = compressed_path if compressed_path else image_path
-
-            # 记录临时文件以便后续清理
-            if compressed_path:
-                temp_files_to_cleanup.append(compressed_path)
-
-            # 使用空白布局（索引 6）
-            blank_slide_layout = prs.slide_layouts[6]
-            slide = prs.slides.add_slide(blank_slide_layout)
-
-            # 将图片添加到幻灯片，充满整个页面
-            slide.shapes.add_picture(
-                image_to_use,
-                left=0,
-                top=0,
-                width=prs.slide_width,
-                height=prs.slide_height
-            )
-
-            note_text = speaker_notes.get(i)
-            if note_text:
-                notes_frame = slide.notes_slide.notes_text_frame
-                notes_frame.clear()
-                notes_frame.text = note_text
-
-            print(f"✓ 已添加第 {i} 页: {os.path.basename(image_path)}")
-
-        # 确保输出目录存在
-        output_dir = os.path.dirname(output_path)
-        if output_dir and not os.path.exists(output_dir):
-            os.makedirs(output_dir)
-
-        # 保存演示文稿
-        prs.save(output_path)
-        print(f"\n✓ PPT 文件已保存: {output_path}")
-        print(f"  总页数: {len(image_files)}")
-        if speaker_notes:
-            matched_notes = sum(1 for i in range(1, len(image_files) + 1) if speaker_notes.get(i))
-            print(f"  已写入备注: {matched_notes}/{len(image_files)} 页")
-
-        # 清理临时文件
-        for temp_file in temp_files_to_cleanup:
-            try:
-                if os.path.exists(temp_file):
-                    os.remove(temp_file)
-            except Exception as e:
-                print(f"警告：清理临时文件失败 {temp_file}: {e}")
-
-        return True
-
-    except Exception as e:
-        print(f"错误：创建 PPT 失败: {e}")
-        import traceback
-        traceback.print_exc()
-
-        # 即使失败也要清理临时文件
-        if 'temp_files_to_cleanup' in locals():
-            for temp_file in temp_files_to_cleanup:
-                try:
-                    if os.path.exists(temp_file):
-                        os.remove(temp_file)
-                except:
-                    pass
-
-        return False
-
-
-def set_medavis_landing_title(slide, title: str) -> None:
-    from pptx.dml.color import RGBColor
-    from pptx.util import Pt
-
-    box = slide.shapes.add_textbox(
-        MEDAVIS_TITLE_LEFT,
-        MEDAVIS_TITLE_TOP,
-        MEDAVIS_TITLE_WIDTH,
-        MEDAVIS_TITLE_HEIGHT,
-    )
-    tf = box.text_frame
-    tf.clear()
-    tf.word_wrap = True
-    p = tf.paragraphs[0]
-    p.text = title
-    p.font.size = Pt(32)
-    p.font.color.rgb = RGBColor(*MEDAVIS_TITLE_COLOR)
-
-
-def add_medavis_content_image(slide, image_path: str, prs) -> None:
-    slide.shapes.add_picture(
-        image_path,
-        left=MEDAVIS_CONTENT_LEFT,
-        top=MEDAVIS_CONTENT_TOP,
-        width=prs.slide_width,
-        height=prs.slide_height - MEDAVIS_CONTENT_TOP,
-    )
-
-
-def create_medavis_presentation(
-    image_files: List[str],
-    output_path: str,
-    landing_title: str,
-    speaker_notes: Optional[Dict[int, str]] = None,
-) -> bool:
-    """Build a medavis-templated PPTX: landing slide + N content slides."""
     temp_files_to_cleanup: List[str] = []
     try:
         try:
@@ -399,33 +343,115 @@ def create_medavis_presentation(
             print(dependency_hint())
             return False
 
-        template = medavis_template_path()
+        try:
+            _validate_images_for_ratio(image_files, aspect_ratio)
+        except ValueError as exc:
+            print(f"错误：{exc}")
+            return False
+
+        prs = Presentation()
+        slide_width, slide_height = SLIDE_EMU[aspect_ratio]
+        prs.slide_width = slide_width
+        prs.slide_height = slide_height
+
+        speaker_notes = speaker_notes or {}
+        blank_slide_layout = prs.slide_layouts[6]
+
+        for i, image_path in enumerate(image_files, 1):
+            compressed_path = compress_image_if_needed(image_path, max_size_mb=2.0)
+            image_to_use = compressed_path if compressed_path else image_path
+            if compressed_path:
+                temp_files_to_cleanup.append(compressed_path)
+
+            slide = prs.slides.add_slide(blank_slide_layout)
+            add_content_picture(slide, image_to_use, prs, aspect_ratio)
+
+            note_text = speaker_notes.get(i)
+            if note_text:
+                notes_frame = slide.notes_slide.notes_text_frame
+                notes_frame.clear()
+                notes_frame.text = note_text
+
+            print(f"✓ 已添加第 {i} 页: {os.path.basename(image_path)}")
+
+        output_dir = os.path.dirname(output_path)
+        if output_dir and not os.path.exists(output_dir):
+            os.makedirs(output_dir)
+
+        prs.save(output_path)
+        print(f"\n✓ PPT 文件已保存: {output_path}")
+        print(f"  总页数: {len(image_files)}")
+        if speaker_notes:
+            matched_notes = sum(1 for i in range(1, len(image_files) + 1) if speaker_notes.get(i))
+            print(f"  已写入备注: {matched_notes}/{len(image_files)} 页")
+
+        _cleanup_temp_files(temp_files_to_cleanup)
+        return True
+
+    except ValueError as exc:
+        print(f"错误：{exc}")
+        _cleanup_temp_files(temp_files_to_cleanup)
+        return False
+    except Exception as e:
+        print(f"错误：创建 PPT 失败: {e}")
+        import traceback
+        traceback.print_exc()
+        _cleanup_temp_files(temp_files_to_cleanup)
+        return False
+
+
+def create_medavis_presentation(
+    image_files: List[str],
+    output_path: str,
+    landing_title: str,
+    speaker_notes: Optional[Dict[int, str]] = None,
+    aspect_ratio: str = "16:9",
+) -> bool:
+    """Build a medavis-templated PPTX: landing + N content + ending."""
+    temp_files_to_cleanup: List[str] = []
+    try:
+        try:
+            from pptx import Presentation
+        except ImportError:
+            print("错误：未安装 python-pptx 库")
+            print(dependency_hint())
+            return False
+
+        try:
+            _validate_images_for_ratio(image_files, aspect_ratio)
+        except ValueError as exc:
+            print(f"错误：{exc}")
+            return False
+
+        template = medavis_template_path(aspect_ratio)
         if not os.path.exists(template):
             print(f"错误：未找到 medavis 模板: {template}")
             return False
 
         # Open for reading only; never save back to the bundled asset.
         prs = Presentation(template)
-        if len(prs.slides) < 2:
-            print("错误：medavis 模板至少需要 2 页（落地页 + 内容母版）")
+        if len(prs.slides) != 3:
+            print(f"错误：medavis 模板必须恰好 3 页（落地页 + 空白内容 + 结束页），实际 {len(prs.slides)}")
             return False
 
         set_medavis_landing_title(prs.slides[0], landing_title)
-        content_layout = prs.slides[1].slide_layout
+        blank_layout = prs.slides[1].slide_layout
         speaker_notes = speaker_notes or {}
 
         for i, image_path in enumerate(image_files):
-            if not os.path.exists(image_path):
-                print(f"警告：图片文件不存在: {image_path}")
-                continue
-
-            slide = prs.slides[1] if i == 0 else prs.slides.add_slide(content_layout)
             compressed_path = compress_image_if_needed(image_path, max_size_mb=2.0)
             image_to_use = compressed_path if compressed_path else image_path
             if compressed_path:
                 temp_files_to_cleanup.append(compressed_path)
 
-            add_medavis_content_image(slide, image_to_use, prs)
+            if i == 0:
+                slide = prs.slides[1]
+            else:
+                slide = prs.slides.add_slide(blank_layout)
+                move_slide(prs, len(prs.slides) - 1, 1 + i)
+
+            add_content_picture(slide, image_to_use, prs, aspect_ratio)
+            add_medavis_logo(slide, prs)
 
             note_text = speaker_notes.get(i + 1)
             if note_text:
@@ -445,30 +471,23 @@ def create_medavis_presentation(
 
         prs.save(output_path)
         print(f"\n✓ medavis PPT 已保存: {output_path}")
-        print(f"  总页数: {1 + len(image_files)} (1 落地页 + {len(image_files)} 内容页)")
+        print(f"  总页数: {2 + len(image_files)} (1 落地页 + {len(image_files)} 内容页 + 1 结束页)")
         if speaker_notes:
             matched_notes = sum(1 for i in range(1, len(image_files) + 1) if speaker_notes.get(i))
             print(f"  已写入备注: {matched_notes}/{len(image_files)} 内容页")
 
-        for temp_file in temp_files_to_cleanup:
-            try:
-                if os.path.exists(temp_file):
-                    os.remove(temp_file)
-            except Exception as e:
-                print(f"警告：清理临时文件失败 {temp_file}: {e}")
-
+        _cleanup_temp_files(temp_files_to_cleanup)
         return True
 
+    except ValueError as exc:
+        print(f"错误：{exc}")
+        _cleanup_temp_files(temp_files_to_cleanup)
+        return False
     except Exception as e:
         print(f"错误：创建 medavis PPT 失败: {e}")
         import traceback
         traceback.print_exc()
-        for temp_file in temp_files_to_cleanup:
-            try:
-                if os.path.exists(temp_file):
-                    os.remove(temp_file)
-            except Exception:
-                pass
+        _cleanup_temp_files(temp_files_to_cleanup)
         return False
 
 
@@ -496,7 +515,7 @@ def main():
   python assemble_ppt.py /path/to/base/ MyPresentation.pptx \\
     --template both --landing-title "Deck Title"
 
-  # 指定 4:3 宽高比（仅对 none 模板生效）
+  # 指定 4:3 / 3:2 宽高比（none 与 medavis 均生效）
   python assemble_ppt.py /path/to/base/ MyPresentation.pptx --aspect-ratio 4:3
 
   # 只初始化目录，不生成 PPT
@@ -516,18 +535,18 @@ def main():
   - 图片文件必须放在 origin_image 子目录中
   - 只会读取 slide_01.png、slide_02.png 这类正式图片，其他图片会被忽略
   - 图片文件按页码排序
-  - none 模式：每张图片充满整个幻灯片页面
-  - medavis 模式：落地页 + 内容页白区贴图（保留页眉 logo）；假定图片为 16:9
-  - 如果项目目录下存在 speech.md，会按 Slide N 标题写入备注
+  - none 模式：按锁定比例均匀 contain，不拉伸
+  - medavis 模式：匹配比例的 3 页模板（落地页 + 内容 + 结束页）；内容页整页贴图并叠加小 logo
+  - 如果项目目录下存在 speech.md，会按 Slide N 标题写入内容页备注（结束页不写）
         '''
     )
 
     parser.add_argument('base_dir', help='基础目录（PPT 项目文件夹的父目录）')
     parser.add_argument('output', help='输出 PPT 文件名 (.pptx)')
     parser.add_argument('--aspect-ratio', '--ar',
-                        choices=['16:9', '4:3'],
+                        choices=['16:9', '4:3', '3:2'],
                         default='16:9',
-                        help='幻灯片宽高比 (默认: 16:9；仅 none 模式使用)')
+                        help='幻灯片宽高比 (默认: 16:9；none 与 medavis 均使用)')
     parser.add_argument('--template',
                         choices=['none', 'medavis', 'both'],
                         default='none',
@@ -601,13 +620,14 @@ def main():
         ) and success
 
     if args.template in ('medavis', 'both'):
-        print(f"正在创建 PPT (模板: medavis, 落地标题: {args.landing_title})...")
+        print(f"正在创建 PPT (模板: medavis, 宽高比: {args.aspect_ratio}, 落地标题: {args.landing_title})...")
         print("-" * 50)
         success = create_medavis_presentation(
             image_files,
             medavis_output_path,
             args.landing_title.strip(),
             speaker_notes,
+            args.aspect_ratio,
         ) and success
 
     sys.exit(0 if success else 1)

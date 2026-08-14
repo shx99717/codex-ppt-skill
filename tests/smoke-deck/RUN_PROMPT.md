@@ -15,7 +15,8 @@ keeps fork and installed skill in sync; no commits without your OK):
 |------|-------------|
 | Cursor (`GenerateImage` hard-pin) | [`RUN_PROMPT_cursor.md`](RUN_PROMPT_cursor.md) |
 | Cursor + `codex-gpt-image` hard-pin | [`RUN_PROMPT_cursor_codex-gpt-image.md`](RUN_PROMPT_cursor_codex-gpt-image.md) |
-| Claude Code (`codex-gpt-image` hard-pin) | [`RUN_PROMPT_claude.md`](RUN_PROMPT_claude.md) |
+| Claude Code (`codex-gpt-image` FAST) | [`RUN_PROMPT_claude.md`](RUN_PROMPT_claude.md) |
+| Claude Code (`codex-gpt-image` GATED / interactive) | [`RUN_PROMPT_claude_interactive.md`](RUN_PROMPT_claude_interactive.md) |
 | Codex (`image_gen`) | [`RUN_PROMPT_codex.md`](RUN_PROMPT_codex.md) |
 
 See also [`../../docs/fork/DESIGN_PROMPT.md`](../../docs/fork/DESIGN_PROMPT.md) for resuming the *design* work on
@@ -60,7 +61,7 @@ Fixed contract for this deck -- do not deviate:
 - Slide 2 must be written in English
 - Slide 3 must mix Chinese and Latin script on the same slide
 - Visual style: use the built-in style 清爽专业风
-- Aspect ratio: 16:9
+- Aspect ratio: 16:9 is the default locked ratio unless the run recorded another in `deck_spec.json` / `slide_jobs.json`. Old 3:2 image folders fail the 16:9 baseline.
 
 Titles, key points, layout roles, and composition are yours to decide from the source content.
 
