@@ -8,6 +8,9 @@ Canonical skill source: `d:/git/codex-ppt-skill/skills/codex-ppt`
 Installed skill this host must run: `~/.claude/skills/codex-ppt`
 Bridge skill required: `~/.claude/skills/codex-gpt-image` (Codex OAuth image path)
 
+Interactive (GATED) sibling — stop at every gate and wait:
+[`RUN_PROMPT_claude_interactive.md`](RUN_PROMPT_claude_interactive.md).
+
 See also the Cursor variants:
 [`RUN_PROMPT_cursor.md`](RUN_PROMPT_cursor.md) (`GenerateImage`),
 [`RUN_PROMPT_cursor_codex-gpt-image.md`](RUN_PROMPT_cursor_codex-gpt-image.md).

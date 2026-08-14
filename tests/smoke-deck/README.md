@@ -38,7 +38,8 @@ without permission), use the host-pinned prompts instead:
 [`RUN_PROMPT_cursor.md`](RUN_PROMPT_cursor.md) (Cursor / `GenerateImage` hard-pin),
 [`RUN_PROMPT_cursor_codex-gpt-image.md`](RUN_PROMPT_cursor_codex-gpt-image.md)
 (Cursor + `codex-gpt-image` hard-pin),
-[`RUN_PROMPT_claude.md`](RUN_PROMPT_claude.md) (Claude / `codex-gpt-image` hard-pin),
+[`RUN_PROMPT_claude.md`](RUN_PROMPT_claude.md) (Claude / `codex-gpt-image` FAST),
+[`RUN_PROMPT_claude_interactive.md`](RUN_PROMPT_claude_interactive.md) (Claude / `codex-gpt-image` GATED),
 [`RUN_PROMPT_codex.md`](RUN_PROMPT_codex.md) (Codex / `image_gen`).
 
 The manual steps below are for when you need more control (e.g. walking the gates by hand in GATED mode).

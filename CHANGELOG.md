@@ -25,6 +25,7 @@ Release notes are generated from this file. Keep changelog entries in English.
 
 ### Documentation
 
+- Add Claude Code interactive (GATED) smoke prompt `tests/smoke-deck/RUN_PROMPT_claude_interactive.md` as the wait-at-every-gate sibling of the FAST `RUN_PROMPT_claude.md`.
 - Document GenerateImage schema-vs-pixels (enum may lack `3:2`; 4:3/16:9 arguments are not pixel proof) in skill docs, worker prompt, Cursor smoke prompt, and zh/en/ko README plus usage workflow pages.
 - Document user-chosen 16:9 / 4:3 / 3:2 canvases, backend filtering, gpt-image-2 `--size` table, and matching Medavis `N+2` wrap across zh/en/ko README and usage docs.
 - Ask ratio before backend in root README workflow lists and feature bullets; report medavis slide count as `N+2`; align FAQ with Codex `image_gen` schema honor/hide.

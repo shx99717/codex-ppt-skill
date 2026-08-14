@@ -15,7 +15,8 @@ keeps fork and installed skill in sync; no commits without your OK):
 |------|-------------|
 | Cursor (`GenerateImage` hard-pin) | [`RUN_PROMPT_cursor.md`](RUN_PROMPT_cursor.md) |
 | Cursor + `codex-gpt-image` hard-pin | [`RUN_PROMPT_cursor_codex-gpt-image.md`](RUN_PROMPT_cursor_codex-gpt-image.md) |
-| Claude Code (`codex-gpt-image` hard-pin) | [`RUN_PROMPT_claude.md`](RUN_PROMPT_claude.md) |
+| Claude Code (`codex-gpt-image` FAST) | [`RUN_PROMPT_claude.md`](RUN_PROMPT_claude.md) |
+| Claude Code (`codex-gpt-image` GATED / interactive) | [`RUN_PROMPT_claude_interactive.md`](RUN_PROMPT_claude_interactive.md) |
 | Codex (`image_gen`) | [`RUN_PROMPT_codex.md`](RUN_PROMPT_codex.md) |
 
 See also [`../../docs/fork/DESIGN_PROMPT.md`](../../docs/fork/DESIGN_PROMPT.md) for resuming the *design* work on
