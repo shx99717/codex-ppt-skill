@@ -1,7 +1,7 @@
 # Memory: Predictable PPT Generation
 
 **Generated**: 2026-10-14 11:23 Asia/Shanghai
-**Last updated**: 2026-10-14 12:43 Asia/Shanghai
+**Last updated**: 2026-10-14 14:14 Asia/Shanghai
 **Project**: D:/git/codex-ppt-skill
 **Focus**: Confirmed requirements, selected approach, and approved design sections for making image-based presentation generation predictable.
 
@@ -9,7 +9,7 @@
 
 Improve the existing Codex PPT skill so users can agree on slide content and intended visuals before full image generation, reducing expensive surprises without tedious page-by-page interviews. The workflow must adapt to input readiness and use the agent's judgment to recommend useful content, structure, and visuals.
 
-Requirements are confirmed. Brainstorming is in progress: the user selected adaptive planning inside the PPT skill and approved input assessment and content development. Visual planning, approval/production details, and review behavior still need design discussion and approval. Implementation has not been authorized through a completed design or execution handoff. The existing detailed proposal remains provisional except for the explicitly approved decisions listed here.
+Requirements are confirmed. Brainstorming is in progress: the user selected adaptive planning inside the PPT skill and approved input assessment, content development, visual planning, and deck-wide coherence. Sample calibration, approval/production details, and review behavior still need design discussion and approval. Implementation has not been authorized through a completed design or execution handoff. The existing detailed proposal remains provisional except for the explicitly approved decisions listed here.
 
 ## Key Decisions
 
@@ -19,7 +19,7 @@ Requirements are confirmed. Brainstorming is in progress: the user selected adap
 4. **Input readiness is variable**: Prepared slide-by-slide Markdown should reuse the supplied structure and wording and require less preparation. Partial inputs need focused completion. Topic-only or idea-only inputs need a fuller guided process to agree on the story, slide content, and visuals.
 5. **Separate content and visual readiness**: Complete content may lack design decisions; a visual reference may lack content. Do not treat every input as the same shape or automatically run the same preparation steps.
 6. **Requirements before design**: The first proposal was drafted before the user had confirmed requirements. The user asked to restart with clarify-requirements and then brainstorming. The confirmed requirements above take precedence over defaults in that provisional proposal.
-7. **Feature branch**: At the user's request, created feature/SQ5GEN-predictable-deck-generation from main and moved the proposal into the repository's plans folder. The requested feature/SQ5GEN prefix overrides the default codex/ prefix. No new JIRA task number was supplied; do not invent one.
+7. **Feature branch**: At the user's request, created feature/SQ5GEN-predictable-deck-generation from main and moved the proposal into the repository's plans folder. The requested feature/SQ5GEN prefix overrides the default codex/ prefix. At branch creation no new JIRA task number had been supplied; the later checkpoint task-ID confirmation is recorded below.
 8. **Memory authorization and location**: The user confirmed the revised requirements, explicitly requested saving memory, and selected the PPT repository's memory folder from the two workspace roots. This session's memory location is D:/git/codex-ppt-skill.
 9. **Selected approach**: The user chose adaptive planning inside the PPT skill over mandatory chaining of installed clarification/brainstorming skills or a separate presentation-planning skill. The workflow assesses gaps and handles them internally; other skills are not mandatory installation dependencies.
 10. **Approved input assessment**: Assess content readiness separately from visual readiness, potentially per slide within a mixed-readiness deck. Briefly report what can be reused, what is missing, and recommended next steps. Reuse provided decisions and ready slide structure/wording; show suggested changes separately.
@@ -27,6 +27,10 @@ Requirements are confirmed. Brainstorming is in progress: the user selected adap
 12. **Approved content development**: Preserve prepared content unless revisions are requested. Propose concrete structure/wording for genuine gaps, clearly flag additions, and identify missing facts or evidence without inventing numerical values. Develop the whole deck's content and intended visible wording together, allow review by exception, and feed it into a combined content-and-visual plan without imposing a separate content approval round on every input.
 13. **Documentation checkpoint authorized**: The user explicitly asked to continue, update memory, and commit and push on 2026-10-14. This supersedes the earlier no-commit/no-push restriction for the current planning-document checkpoint. There is no executable code change to publish and no completed implementation design; do not mistake this request for permission to implement unapproved design sections. At that point the task ID had not yet been supplied, so the agent asked rather than inferring it from older history.
 14. **Commit task ID confirmed**: The user selected SQ5GEN-195 for the documentation checkpoint. Use the Conventional Commit message: [SQ5GEN-195] docs: record predictable deck planning decisions.
+15. **Approved visual planning**: Combine intended exact visible copy with visual type, important objects and relationships, critical labels/data, and approximate layout in a whole-deck plan. Reuse supplied designs and confirmed style decisions; otherwise recommend a cohesive style with layouts suited to slide roles. Allow review by exception and simple structural previews for complex visuals when text alone is ambiguous.
+16. **Approved deck-wide coherence**: Each slide is an interconnected part of the deck. Plan narrative progression, audience knowledge, and transitions; preserve recurring visual identities, terminology, symbols, colors, and diagram meanings. Numbering and cross-references follow the agreed scheme, including consecutive sequences spanning slides. The user's examples are not an exhaustive checklist or a blanket requirement for visible page numbers. Workers receive shared references and relevant story context; QA checks the complete sequence as well as individual slides. The user approved the expanded visual-planning section by selecting option one.
+17. **Design-document update authorized**: The user explicitly requested updating the associated documents and memory, then returning to the discussion so they can choose the next step. Update the existing proposal with approved sections and clearly marked candidates. A separate implementation plan remains a later handoff after full design approval; do not implement pending design or infer sample approval from this document-update request.
+18. **Follow-up publication authorized; review waived**: After the two-document update, the user explicitly requested committing and pushing and stated that no code review was needed. This authorizes publishing the updated proposal and memory on the existing feature branch and overrides the routine review gate for this checkpoint. It does not authorize implementation of pending design sections.
 
 ## Confirmed Assumptions
 
@@ -36,9 +40,10 @@ Requirements are confirmed. Brainstorming is in progress: the user selected adap
 - Asking about real missing facts or important decisions is appropriate; repeated minor decisions are not.
 - Requirements were explicitly confirmed after the user added the variable-input constraint.
 - The original branch/proposal request alone did not authorize publication. The user's later explicit instruction now authorizes committing and pushing the planning-document checkpoint.
-- Only the selected approach and the input-assessment/content-development sections are approved. The rest of the original proposal is a candidate, not permission to implement.
+- The selected approach and input-assessment, content-development, visual-planning, and deck-coherence principles are approved. Sample strategy, exact approval/version mechanisms, production/review policy, and implementation details remain candidates, not permission to implement.
 - General clarification questions are adaptive and may extend beyond the example fields discussed.
 - Brainstorming is active and must continue with the remaining design sections.
+- Treat the deck as the unit of design; consistency within an individual slide is insufficient to establish coherence across the presentation.
 
 ## Constraints & Non-Goals
 
@@ -79,16 +84,17 @@ Requirements are confirmed. Brainstorming is in progress: the user selected adap
 - Exact visible copy, critical labels, numerical values, and source-figure fidelity require appropriate visual QA and repair.
 - Do not confuse separate agent QA with a real user image approval.
 - The current native image tool schema lacks an explicit size parameter while repository rules require checking ratio capability. Recheck live schemas before a future image-generation pilot.
-- The overall approach is approved: adaptive planning inside the PPT skill. Visual-plan details, approval/version validation, review policy, and implementation scope still need design approval.
+- The overall approach and visual/deck-coherence principles are approved. Sample calibration, approval/version validation, review policy, and implementation scope still need design approval.
 
 ## Current State
 
-- **Working**: Existing skill and scripts; source analysis; confirmed requirements; selected approach; approved input-assessment and content-development sections.
+- **Working**: Existing skill and scripts; source analysis; confirmed requirements; selected approach; approved input-assessment, content-development, visual-planning, and deck-coherence principles.
 - **Branch**: feature/SQ5GEN-predictable-deck-generation, created from main.
-- **Planning artifacts**: Provisional proposal in docs/plans/ and this session memory file, reviewed for the user-authorized documentation checkpoint. Consult Git history/upstream for publication status.
-- **Documentation review**: Independent review found zero Critical, Important, or Minor issues. Focused checks validated all eleven local Markdown links, the approval/draft distinction, and staged diff whitespace. No new implementation behavior was tested.
+- **Planning artifacts**: Existing proposal in docs/plans/ and this session memory file, updated with the later approved visual planning and deck-wide coherence. The user authorized this follow-up publication checkpoint; consult Git history/upstream for its publication status rather than repeating it. The earlier reviewed checkpoint was committed and pushed as ae15e634d6a9630422082de2904364be979faca5.
+- **Documentation review**: The earlier checkpoint's independent review found zero Critical, Important, or Minor issues. Fresh focused checks for this document update validated all eleven local Markdown links, the approved/pending distinction, mobile session state, two-file scope, and diff whitespace. HEAD/upstream still point to the earlier checkpoint and main is unchanged. These are documentation checks, not verification of new implementation behavior.
 - **Commit task ID**: SQ5GEN-195, explicitly confirmed by the user.
-- **Pending design**: Continue brainstorming visual planning and approval/production/review behavior, then choose an execution handoff after full design approval.
+- **Follow-up review**: Code review was explicitly waived by the user for this documentation checkpoint. Focused documentation and Git verification still apply.
+- **Pending design**: The representative-sample strategy was presented but has not been approved. Continue sample calibration, approval/production/review and repair behavior, then let the user choose an execution handoff after full design approval.
 - **Blocked**: None. No implementation is running while waiting for remaining design decisions.
 
 ## Brainstorming Checklist
@@ -98,13 +104,17 @@ Requirements are confirmed. Brainstorming is in progress: the user selected adap
 - [x] Compare three approaches with trade-offs; user selected adaptive planning inside the PPT skill.
 - [x] Approve input assessment, including separate content/visual readiness.
 - [x] Approve adaptive intention clarification and content development.
+- [x] Approve visual planning and whole-deck review by exception.
+- [x] Approve expanded deck-wide coherence, shared references, and sequence QA.
+- [ ] Agree on sample calibration; the last presented sample strategy remains pending.
+- [ ] Agree on approval/version validation, production/review policy, and repair behavior.
 - [ ] Present the design in manageable sections and obtain approval.
 
 ## Next Steps
 
-1. Check Git history/upstream for the reviewed documentation checkpoint before resuming. If publication is pending, finish the explicitly authorized commit/push using SQ5GEN-195; do not repeat an already published checkpoint.
-2. Continue the next design section: how intended visuals and layouts join the exact visible content in one reviewable plan, adapted to input readiness.
-3. Agree on sample calibration, production validation, and generated-image review behavior; remaining parts of the earlier proposal are candidates.
+1. Verify the user-authorized follow-up documentation publication via Git history/upstream if resuming later; do not repeat an already published checkpoint. Then let the user choose the next discussion step: continue sample calibration, review the recorded design, or another direction. Do not implement pending design.
+2. Resume from sample calibration if the user chooses to continue design confirmation. Approval of the document update does not answer the pending sample-strategy question.
+3. Agree on approval/version validation, production policy, generated-image review, and repair behavior; remaining parts of the earlier proposal are candidates.
 4. After the full design is approved, offer the appropriate execution/implementation-plan handoff. Do not merge or modify main without an explicit instruction.
 
 ## Device mode
@@ -141,4 +151,4 @@ Requirements are confirmed. Brainstorming is in progress: the user selected adap
 - C:/Users/raymond.shen/.codex/skills/managing-session-memory/SKILL.md -- memory lifecycle and session selections.
 
 **Requirements confirmed at**: 2026-10-14 11:23 Asia/Shanghai
-**Latest design approvals recorded at**: 2026-10-14 11:43 Asia/Shanghai
+**Latest design approvals recorded at**: 2026-10-14 14:08 Asia/Shanghai
