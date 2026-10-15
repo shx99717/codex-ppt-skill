@@ -57,6 +57,7 @@ def _record(deck: Path, source: Path) -> subprocess.CompletedProcess[str]:
             sys.executable,
             str(SCRIPTS / "record_slide_result.py"),
             str(deck),
+            "--legacy-unmanaged",
             "--slide",
             "slide_01",
             "--agent-id",

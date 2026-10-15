@@ -53,7 +53,7 @@ def _make_deck(tmp: Path, status: str = "recorded") -> Path:
 
 def _run_review(deck: Path, *extra: str) -> subprocess.CompletedProcess[str]:
     return subprocess.run(
-        [sys.executable, str(SCRIPTS / "record_user_review.py"), str(deck), *extra],
+        [sys.executable, str(SCRIPTS / "record_user_review.py"), str(deck), "--legacy-unmanaged", *extra],
         capture_output=True,
         text=True,
     )
@@ -136,6 +136,7 @@ class RecordUserReviewTests(unittest.TestCase):
                     sys.executable,
                     str(SCRIPTS / "record_slide_dispatch.py"),
                     str(deck),
+                    "--legacy-unmanaged",
                     "--slide",
                     "slide_02",
                     "--agent-id",

@@ -1,209 +1,87 @@
 # Project Assembly And Reporting
 
-Read this before initializing the project directory, writing speaker notes, assembling the PPT, or sending the final report.
+Read before initialization, final checks, assembly, or delivery. Plan content and notes earlier using [content planning](content-planning-and-approval.md) and [presenter voice](speaker-notes-style.md).
 
-## Project Directory
-
-Use this output structure:
+## Project directory
 
 ```text
 {base_dir}/{deck_name}/
-├── origin_image/
-│   ├── slide_01.png
-│   ├── slide_02.png
-│   └── ...
-├── prompts/
-│   ├── slide_01.json
-│   └── ...
+├── assets/                       supplied originals, if project-local
+├── references/sources/           approved byte-identical source snapshots
+├── references/approved_samples/  immutable accepted style references
+├── candidates/                   generated attempts awaiting parent validation
+├── origin_image/slide_XX.png     current final content images only
+├── prompts/slide_XX.json         compiler-owned approved inputs
+├── deck_spec.json                canonical planning candidate
+├── plan_approvals.json           actual scoped decisions
 ├── slide_jobs.json
 ├── slide_run_state.json
-├── deck_spec.json
-├── outline.md
-├── speech.md
-└── {deck_name}.pptx
+├── outline.md                    approved readable plan
+├── speech.md                     approved talk, mapped by Slide N headings
+└── {deck_name}.pptx              plain and/or -medavis output
 ```
 
-If the user did not specify a destination, use the current working directory or the directory that contains the source file.
-
-Let `{runtime_python}` mean the shared venv interpreter under `~/.codex-ppt-skill/.venv` (Windows: `Scripts/python.exe`; Unix/macOS: `bin/python`). You may initialize the directory structure with:
+Without a supplied destination, use the working directory or source directory. `{runtime_python}` is the shared `~/.codex-ppt-skill/.venv` interpreter (`Scripts/python.exe` on Windows; `bin/python` elsewhere); `{skill_root}` contains `SKILL.md`.
 
 ```bash
 {runtime_python} {skill_root}/scripts/assemble_ppt.py {base_dir} {deck_name}.pptx --init
 ```
 
-## Quality Check And Repair
+If the shared runtime or dependencies are missing, run `python3 {skill_root}/scripts/codex_ppt_runtime.py bootstrap`. Ask for help only if setup cannot proceed. Initialization creates directories without asserting approval.
 
-Before assembling the PPT, inspect every slide image. Check:
+## Final checks
 
-- Text is readable and not garbled.
-- Slide content matches the outline.
-- Title and key points are not truncated.
-- Visual style is consistent across slides.
-- No page number appears unless the user requested one.
-- Important elements do not overlap.
+Inspect every current image against exact approved wording, values, labels, assets and relationships. Check readability, fitting, spacing, requested numbering and shared visual identity. Review the complete ordered deck for story continuity, sensible composition variety, consistent terminology, consecutive numbering and purposeful spoken transitions.
 
-If a slide has severe text or layout issues, regenerate it with a more constrained prompt. If a slide is mostly correct but has a localized issue, use the selected backend's edit capability when available. In CLI/API fallback mode, use `scripts/image_gen.py edit --image {slide_path} --prompt ... --out {new_slide_path}` and replace the final slide only after validating the edited output.
+Record current per-slide and complete-sequence agent QA. Follow [workflow gates](workflow-gates-and-progress.md) for first-batch inspection, one automatic targeted repair, additional actual authorization and consolidated/strict user review. A repair of an accepted sample's final page does not alter its immutable shared style reference. A calibration repair does not require approving the defective sample first. Never rewrite copy or facts to disguise a rendering defect.
 
-## Speaker Notes
+`outline.md` and `speech.md` derive from the approved canonical plan. Do not redraft notes at assembly. Preserve supplied approved talk and blank-line breathing beats. If pixels reveal a substantive change needed in copy, visuals or notes, propose the affected scope, obtain the real decision, and refresh its bindings before proceeding.
 
-Make sure `outline.md` reflects the final confirmed deck outline. Do not recreate it from scratch here.
-
-Create `speech.md` as presenter notes that a speaker can use directly. Do not write a brief summary of visible slide text. Write in the presentation language; for Chinese decks, speaker notes should be in Chinese.
-
-For each slide, write only the spoken talk track directly under the slide heading, without an extra label. It is the script the presenter can read or closely follow. It should connect the slide to the deck's main story, explain the point the audience should take away, and include a natural transition at the end when useful.
-
-Before writing the slide notes, choose a delivery style based on the deck content, audience, and purpose. The delivery style is not a label added after writing; it should shape the actual talk track, including how direct the claim is, how much background is explained, which examples are used, how quickly the speaker moves, and how transitions are phrased.
-
-Common delivery styles:
-
-- Technical explainer: patient, definition-first, example-driven, with careful visual walkthroughs.
-- Research or paper reading: evidence-led, method/result/limitation oriented, with clear claims about what the audience should learn from each figure.
-- Product or pitch deck: outcome-first, persuasive, focused on user pain, value, proof, and the next action.
-- Training or workshop: step-by-step, checkpoint-driven, with small prompts for audience reflection or practice.
-- Executive report: conclusion-first, concise, focused on decisions, risks, tradeoffs, and recommended actions.
-
-Keep one deck-level delivery style consistent, but adapt the tone by slide role. For example, an opening slide can be more framing-oriented, a dense diagram slide can slow down for explanation, and a closing slide can become more action-oriented.
-
-Length guidance:
-
-- Title, agenda, and section-divider slides can be 1-2 short paragraphs.
-- Normal content slides should usually be 2-5 short paragraphs, or roughly 150-400 Chinese characters for Chinese decks.
-- Dense concept, architecture, data, or paper-explanation slides may need more, but split long material if the audience would lose the thread.
-
-Use basic presentation craft in the talk track:
-
-- Lead with the claim before the details.
-- Explain visuals in the order the audience should look at them.
-- Add examples, contrast, caveats, and "so what" implications instead of rereading the slide.
-- Close with a natural bridge to the next slide when useful.
-
-Write the talk track from the presenter's point of view, facing the audience. Avoid generic AI-style phrasing, canned summaries, and phrases that sound detached from the actual talk. The script should sound like a person explaining this specific deck in the room:
-
-- Use natural first-person or speaker-facing phrasing when appropriate, such as "这里我想强调的是..." or "我们先看左边这个结构...".
-- Ground each paragraph in the current slide's content and the surrounding deck narrative.
-- Prefer concrete explanations, examples, and audience-oriented transitions over broad filler like "本页主要介绍了..." or "综上所述...".
-- Do not mention that the notes were generated, inferred, or prepared by an AI.
-
-Use headings that the assembly script can map back to slide numbers:
+Speaker headings map internal content order:
 
 ```markdown
-## Slide 1: {Title}
+## Slide 1: Title
 
-{Presenter talk track for slide 1. For Chinese decks, write this in Chinese. Include an optional transition sentence at the end when useful.}
+Hi everyone.
 
-## Slide 2: {Title}
+Let me show you why this matters.
 
-{Presenter talk track for slide 2}
+## Slide 2: Next title
+
+Now, here is the next part.
 ```
+
+These are mapping examples, not a sentence or paragraph quota. Follow the complete [voice reference](speaker-notes-style.md); length follows intended speaking time and complexity.
 
 ## Assembly
 
-Before running `scripts/assemble_ppt.py` or the CLI/API fallback scripts, make sure the shared runtime exists. If `{runtime_python}` is missing, or if importing script dependencies fails, create or refresh the environment:
+Use the output profile, landing title and ratio already chosen in plan approval. Reuse explicit decisions; do not add a redundant last-minute template question. A changed output setting requires current policy approval even if slide pixels are unchanged.
 
 ```bash
-python3 {skill_root}/scripts/codex_ppt_runtime.py bootstrap
-```
-
-This is an internal setup step for the skill. Do not ask the user to run these commands unless dependency installation fails and user approval or troubleshooting is required.
-
-Run:
-
-```bash
-{runtime_python} {skill_root}/scripts/assemble_ppt.py {base_dir} {deck_name}.pptx --aspect-ratio {locked_ratio}
-```
-
-### Template mode (required user choice)
-
-Ask template mode and landing title **immediately before** `assemble_ppt.py`. PPTX of this run must not exist yet. Pass the **same** `--aspect-ratio` as `deck_spec.json` / `slide_jobs.json`.
-
-Before running `assemble_ppt.py`, ask the user which PPT output to build:
-
-- **No template** — full-slide contain (no stretch) (`{deck_name}.pptx`)
-- **Medavis template** — matching 3-page bundled file for the locked ratio (`{deck_name}-medavis.pptx`)
-- **Both** — generate both files
-
-If the user chooses medavis or both:
-
-1. Suggest a landing-page title from `outline.md` / the deck topic.
-2. Ask the user to confirm or edit that title.
-3. Pass `--template medavis|both`, `--landing-title "..."`, and `--aspect-ratio {locked_ratio}` to `assemble_ppt.py`.
-
-Medavis files:
-
-- `16:9` → `medavis_ppt_template_2026_en_16-9.pptx`
-- `4:3` → `medavis_ppt_template_2026_en_4-3.pptx`
-- `3:2` → `medavis_ppt_template_2026_en_3-2.pptx`
-
-Medavis output structure (`N+2` slides):
-
-- Slide 1 = landing page; replace `<PPT-Title>` **run text** (do not add a second title box)
-- Slides 2..N+1 = content pages cloned from the blank page-2 layout; each generated image is placed with **one uniform scale** (contain, usually full-page when the ratio matches); overlay `medavis-logo-small.png` top-right (10px equal margin) on content pages only
-- Last slide = ending page, unmodified (no content image, no small-logo overlay, no `speech.md` notes)
-
-`assemble_ppt.py` and `record_slide_result.py` refuse images whose pixel ratio is outside 2% relative of the locked ratio. Do not stretch, letterbox, or crop as a success path — regenerate.
-
-Do not skip the template-mode question by assuming “no template”. Do not invent a custom template path — use the matching bundled medavis file only.
-
-Do not:
-
-- Write the medavis deck over `{deck_name}.pptx` (always use `{deck_name}-medavis.pptx`)
-- Stretch pictures by setting width and height independently to the slide box
-- Restore header-band placement or cover the ending page with content
-- Treat “both” as a single file — always produce both `{deck_name}.pptx` and `{deck_name}-medavis.pptx`
-
-Example commands:
-
-```bash
-# none (default)
+# Approved plain profile
 {runtime_python} {skill_root}/scripts/assemble_ppt.py {base_dir} {deck_name}.pptx --aspect-ratio {locked_ratio}
 
-# medavis only
+# Approved Medavis or both profile
 {runtime_python} {skill_root}/scripts/assemble_ppt.py {base_dir} {deck_name}.pptx \
-  --template medavis --landing-title "Confirmed Title Here" --aspect-ratio {locked_ratio}
-
-# both
-{runtime_python} {skill_root}/scripts/assemble_ppt.py {base_dir} {deck_name}.pptx \
-  --template both --landing-title "Confirmed Title Here" --aspect-ratio {locked_ratio}
+  --template both --landing-title "Approved title" --aspect-ratio {locked_ratio}
 ```
 
-Important:
+Use `--template medavis` for branded-only output. `{base_dir}` is the parent of `{deck_name}`. File and project names must match. The managed gate enforces current plan, talk, policy, sources, sample configuration, compiled job SHAs, finished results, per-slide/sequence QA and actual current-image user decisions. Missing, extra, duplicate, stale, blocked or unapproved content refuses output. Images assemble in canonical plan order, regardless of job-state array order. Outputs are built from verified snapshots and installed only after revalidation.
 
-- `{base_dir}` is the parent directory of `{deck_name}/`.
-- `{deck_name}.pptx` must match the project folder name.
-- The script reads images from `{base_dir}/{deck_name}/origin_image/`.
-- The script only reads final images named like `slide_01.png`, `slide_02.png`, etc.; drafts and sample files are ignored.
-- Before running assembly, `slide_jobs.json` should show every generated slide as `recorded` with a valid `user_review` (status `user_reviewed` and `image_sha256` matching the current `origin_image/slide_XX.png`), and every approved sample slide as `accepted`. If any slide is `pending`, `dispatched`, or `blocked`, or any non-sample recorded slide lacks valid user review, stop and report that state. `assemble_ppt.py` does not enforce the user-review marker — the agent must.
-- Do not regenerate only a named slide without impact analysis (other slides / planned narrative / visuals) and user confirmation when scope expands.
-- If `{base_dir}/{deck_name}/speech.md` exists and uses `Slide N` headings, the script writes those notes into the corresponding PPT speaker notes.
-- For `--template none` (default), the script writes `{base_dir}/{deck_name}/{deck_name}.pptx`.
-- For `--template medavis`, the script writes `{base_dir}/{deck_name}/{deck_name}-medavis.pptx`.
-- For `--template both`, the script writes both files.
+Plain output has N content slides. Medavis has N+2:
 
-`assemble_ppt.py` supports `16:9`, `4:3`, and `3:2` for none **and** medavis. Pass the locked `--aspect-ratio`. Medavis loads the matching bundled 3-page template. `image_gen.py` loads `~/.codex-ppt-skill/.env` automatically for `OPENAI_API_KEY`, `OPENAI_BASE_URL`, and `CODEX_PPT_IMAGE_MODEL`. Run `python3 {skill_root}/scripts/codex_ppt_runtime.py doctor --check-api` when troubleshooting API access.
+- Landing page replaces the existing `<PPT-Title>` run; no second title box.
+- Content pages use the bundled blank layout and one uniform image scale, with `medavis-logo-small.png` top right at equal 10px margins. Content notes map with an offset of one.
+- Original ending page is unchanged, without a generated image, extra logo, or content notes.
 
-## Final Report
+The bundled three-page templates are `medavis_ppt_template_2026_en_16-9.pptx`, `_4-3.pptx` and `_3-2.pptx`. `none`, `medavis` and `both` all support 16:9, 4:3 and 3:2. The locked pixel ratio is checked within 2% relative tolerance. Wrong-ratio images need regeneration; stretching, cropping or letterboxing cannot count as success. Branded files always use `{deck_name}-medavis.pptx`; `both` delivers both separate files.
 
-Report:
+## Compatibility
 
-- Project directory
-- PPT file path(s) — include `{deck_name}.pptx` and/or `{deck_name}-medavis.pptx` for every file actually generated
-- For a medavis deck, also note slide count as landing + content + ending (`N+2`)
-- Slide image directory
-- `outline.md` path
-- `speech.md` path
-- `slide_jobs.json` path
-- Number of slides (for none: N content slides; for medavis: `N+2`)
-- Confirm which image backend was used and that every non-sample slide result was recorded with `record_slide_result.py`.
-- Confirm that speaker notes from `speech.md` were written into the PPT, if applicable
-- Any slides that were regenerated, blocked, or still have known limitations
-- If the deck's style is custom or noticeably adapted (extracted from user references, tuned during sampling, or otherwise not an unmodified built-in style), end with a one-sentence tip that the style can be saved to the personal style library for future reuse, for example: "如果你喜欢这套风格，可以说「保存这个风格」，我会把它存入个人风格库（`~/.codex-ppt-skill/references/`），以后可以直接复用，更新 skill 也不会丢失。" If the user agrees, read `docs/style-library.md`. Skip this tip when the deck used an unmodified built-in style.
+Historical image folders and pre-v2 jobs use `--legacy-unmanaged` explicitly on supported CLIs. That flag cannot bypass an existing managed spec/ledger/jobs. Legacy assembly does not enforce the v2 approval contract; inspect and honestly describe its limitations. New decks use managed mode. Use [CLI fallback](cli-api-fallback.md) for executable managed generation; do not replay nested managed jobs through the old text-only batch CLI.
 
-## Prompting Principles
+## Delivery
 
-- Keep one global visual style fixed across the deck.
-- Vary slide composition by page role; style consistency does not mean repeating the same layout.
-- Use `layout_blueprints` as candidate patterns, not mandatory templates.
-- Generate one slide per image request.
-- Prefer concrete visual direction over generic words like "beautiful" or "professional".
-- For dense content, split across more slides instead of crowding one slide.
-- Prioritize clarity over decoration.
+Report actual project/output/image/outline/speech/job paths and counts; backend and result provenance; note embedding; relevant repairs or remaining limitations; and the approved profile. Do not infer successful rendering or human approval from state labels alone. Slides are full raster images: wording, charts and diagrams are not separately editable PowerPoint objects.
+
+For a custom or adapted style, offer once to save it in the personal style library. If accepted, read [style library](style-library.md). Skip this offer for an unchanged built-in style. Do not let style reuse replace current content, talk or image approval.

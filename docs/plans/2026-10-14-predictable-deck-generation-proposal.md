@@ -1,12 +1,12 @@
-# Proposal: Make Codex PPT Results Predictable
+# Approved Design: Predictable Codex PPT Generation
 
 Date: 2026-10-14, Asia/Shanghai
 
-Last updated: 2026-10-14 14:08, Asia/Shanghai
+Last updated: 2026-10-14 20:18, Asia/Shanghai
 
-Scope: analysis and proposed design for the repository at `D:/git/codex-ppt-skill`, on `feature/SQ5GEN-predictable-deck-generation`, created from `main` at the user's request. The user authorized a planning-document commit/push checkpoint on 2026-10-14. No skill implementation or installation changes have been made.
+Scope: repository analysis, approved workflow design, and candidate implementation details for `D:/git/codex-ppt-skill`, on `feature/SQ5GEN-predictable-deck-generation`, created from `main` at the user's request. Two earlier documentation checkpoints were committed and pushed; this update records the completed design discussion. No skill implementation or installation changes have been made.
 
-## Confirmed decisions and draft status
+## Confirmed decisions and implementation status
 
 The user restarted requirements clarification after the original proposal and confirmed the following:
 
@@ -20,11 +20,22 @@ The user restarted requirements clarification after the original proposal and co
 - Visual planning is approved: combine exact visible content with the proposed visual type, important objects and relationships, critical labels/data, and approximate layout. Reuse supplied designs and confirmed style decisions; recommend a cohesive style when needed. Review the whole plan by exception, with simple structural previews for complex visuals when a written description is insufficient.
 - Deck-wide coherence is approved: treat each slide as an interconnected part of the deck. Plan narrative progression and transitions, preserve the identity and meaning of recurring visual elements and terminology, and keep numbering and cross-references consistent with the agreed scheme. These examples are not an exhaustive checklist or a requirement to display page numbers on every deck. Workers need shared references and relevant story context; QA must inspect the complete sequence as well as individual slides.
 
-The visual-planning and deck-coherence principles above are approved. Exact approval format, sample strategy, production validators, and generated-image review policy remain candidates for subsequent design discussion. The proposed checkpoint counts, schemas, and implementation changes below are not yet approved and must not become a fixed workflow for every input.
+- Sample calibration is approved: after whole-deck plan approval, choose a representative content slide, reuse a suitable existing approved sample when available, and justify additional samples for substantially different visual approaches. Accepted samples establish shared visual references; feedback that changes approved decisions must update the affected plan before full generation.
+- Production locking is approved: the approved plan is the source of truth. Scripts must check that full generation uses the current approved plan, assets, and accepted samples; missing or outdated approval stops production. Workers may repair rendering within the plan and must raise substantive changes. Revisions identify affected slides and shared dependencies and revisit affected decisions.
+- Speaker-note boundaries are approved: notes may explain approved material and connect the story; new substantive claims require approval.
+- Speaker-note voice and preparation are approved: use the presenter's natural voice, thought-sized beats with breathing space, everyday vocabulary, concrete explanations, and spoken transitions. Match the presentation language and intended speaking time. Draft notes alongside the slide plan, calibrate voice with a representative note, and review the whole talk by exception before expensive image generation. Reuse supplied notes and clearly flag proposed changes.
+- Consolidated image review is approved as the revised skill's recommended default. State the chosen process in each deck's plan. Agent QA checks every slide and the complete sequence; the user reviews the deck together, approves it or names exceptions, and reviews corrections and affected connections. Final assembly requires real user approval of the current images, recorded separately from agent QA.
+- Repair and final verification are approved: check the first production batch before the rest, pause repeated problems to address their shared cause, and allow one targeted automatic repair per isolated slide problem. Escalate failures with a recommendation and group independent unresolved issues where practical. Further attempts need user authorization; changes to approved content/design need confirmation. Before delivery, check slides, the complete sequence, counts, output format, note consistency, and current-image approval.
+
+All presented workflow design sections are approved. The user selected self-contained handoff planning; concrete implementation choices are now documented in the separate plan below. This design record's technical sketches remain supporting context, and implementation has not started. No fixed count of questions or planning approval rounds is required for every input.
 
 At the user's request, update this existing proposal as the design develops and keep the session memory aligned. A separate implementation plan can translate the fully approved design into file changes and verification tasks after the user chooses that handoff; this document is not an executable implementation plan.
 
+Selected handoff: [the self-contained implementation plan](2026-10-14-predictable-deck-generation-handoff.md) and [its companion execute prompt](2026-10-14-predictable-deck-generation-handoff-PROMPT-execute.md). The plan embeds approved decisions, project rules, the complete speaker-note input, concrete tasks, and verification for another agent/session; no prior chat or memory is required. Execution/publication still requires the corresponding user instruction.
+
 The authoritative record of approvals is [the session memory](../memory/memory-20261014-predictable-ppt-generation.md).
+
+The user's complete speaker-note guidance is preserved in [the verbatim speaker-notes reference](../memory/memory-20261014-predictable-ppt-generation/speaker-notes-style-reference.md). Read that full source when resuming note planning, authoring, QA, or implementation of this addition, including after compaction; condensed descriptions in this design are navigation aids and must not replace the original wording and examples.
 
 ## Goal
 
@@ -34,9 +45,9 @@ Predictability here means conformance to an approved content and visual plan. It
 
 ## Recommendation
 
-The approved direction is to extend Codex PPT with self-contained adaptive planning that borrows the questioning and design principles of clarify-requirements and brainstorming. The combined content-and-visual plan, including deck-wide continuity, is approved as a design principle. Its exact representation and production enforcement remain to be agreed.
+The approved direction is to extend Codex PPT with self-contained adaptive planning that borrows the questioning and design principles of clarify-requirements and brainstorming. Combined planning, deck-wide continuity, sample calibration, production enforcement, consolidated review, and repair/delivery behavior are approved. Concrete file and schema changes belong in the subsequent implementation handoff.
 
-Candidate checkpoints are a brief, a complete slide plan, and a representative sample; their application must adapt to existing input and confirmed decisions. No fixed count of questions or approval rounds is approved. A balanced review policy with one consolidated review of generated slides, alongside the existing strict review policy, remains a proposal. If adopted, the user must explicitly choose that production/review authorization; it must not be inferred from approving the sample.
+Clarification, whole-deck planning, and samples adapt to existing input and confirmed decisions. Consolidated review is the approved recommended default for the revised skill, with strict batch review available as an alternative. State the chosen process in each deck's plan and record actual user decisions. Approval of this skill design does not approve a future deck's plan, samples, or images, and does not waive the unmodified skill's gates for an existing live run.
 
 ## 1. What the current skill already controls
 
@@ -64,7 +75,7 @@ Evidence: [skill contract](D:/git/codex-ppt-skill/skills/codex-ppt/SKILL.md:72),
 | Shared style and deck context alone do not specify every cross-slide relationship. | Individually reasonable slides may repeat, contradict, renumber, or redraw shared concepts inconsistently. | Plan the narrative and recurring-element relationships for the deck, pass relevant context to workers, and check the complete sequence. |
 | One sample validates one page type. | A simple sample can hide difficulties on dense diagrams or evidence slides. | Choose the most representative/risky page; add a second sample only when justified. |
 | Planning approval is not bound to the actual production inputs. | Changes to the specification, prompt, or source assets can escape reapproval. | Record approval against normalized plan and asset hashes. |
-| Every generated page requires review before the next wave by default. | Interaction count grows with deck size and runtime capacity. | Add an explicitly selected balanced policy and bulk approval, preserving strict review. |
+| Every generated page requires review before the next wave by default. | Interaction count grows with deck size and runtime capacity. | State consolidated review in the approved deck plan and support bulk approval, preserving strict review as an alternative. |
 | Assembly relies on agent discipline for review readiness. | Direct assembly can bypass the intended managed workflow. | Validate production and review state for skill-managed assembly. |
 | Template selection occurs immediately before assembly. | The final count and branded opening/ending can surprise the user late. | Agree on output profile and total slide count in the brief; ask later only if unresolved. |
 | Speaker notes are elaborated after planning. | Notes can introduce explanations or claims the user never reviewed. | Approve the speaking purpose per slide; restrict final notes to approved facts and narrative. |
@@ -91,7 +102,7 @@ Evidence: [prompt preparation](D:/git/codex-ppt-skill/skills/codex-ppt/scripts/p
 
 Clarify-requirements and brainstorming are already available in this session. Installation is not required to use them here. A distributed Codex PPT skill should not assume every host has this personal skill collection.
 
-## 4. Design journey: approved principles and remaining proposals
+## 4. Approved workflow design
 
 ### A. Assess the input and clarify intention (approved principles)
 
@@ -101,13 +112,13 @@ Potential brief questions cover audience, desired outcome, scope, language, pres
 
 For topic-only input, clarify whether the user wants a general explanation, externally researched material, or a presentation about their own organization. Company facts and missing measurements remain unresolved until supplied. Proposed arguments and illustrative examples may be drafted, but must be identifiable as proposals. Ordinary layout and wording choices can be recommended by the agent.
 
-Ask about the highest-impact missing decision first. Avoid questions whose answers are already in the source. The user selected quality first and flexible review time; unresolved factual blockers must not be suppressed to meet an interaction budget. Specific output-profile and production-review policies in this proposal remain candidates until agreed.
+Ask about the highest-impact missing decision first. Avoid questions whose answers are already in the source. The user selected quality first and flexible review time; unresolved factual blockers must not be suppressed to meet an interaction budget. Extract or confirm each deck's output profile and review process rather than guessing them during final assembly.
 
 ### B. Propose the story and combined content-and-visual plan (approved principles)
 
 The agent recommends a narrative and provides alternatives only when they offer a meaningful trade-off. Develop the deck's content and visual intent together, preserving prepared wording unless revisions are requested and clearly flagging additions or missing evidence. Reuse supplied designs and confirmed style choices; otherwise recommend a cohesive style, with layouts suited to each slide's role. Review the complete plan by exception without imposing an extra content approval round on every input.
 
-The core visible-copy and visual-intent information is approved. The following slide-card format is a candidate representation; the exact schema and speaker-note approval boundary remain to be agreed:
+Visible-copy and visual-intent requirements and the speaker-note factual boundary are approved. The following slide-card format is a candidate representation; exact schema and presentation details belong in implementation planning:
 
 - Its purpose and one main takeaway.
 - The intended visible title, short body copy, and exact critical labels/values.
@@ -129,48 +140,62 @@ The deck is the unit of design. Every slide has a role in the overall argument o
 
 Recurring objects, terms, symbols, colors, and diagrams must retain their identity and meaning wherever reused. Related visuals should build on the same agreed representation when appropriate, so audiences can recognize a concept as the story develops. Keep numbering and cross-references coherent across slide boundaries according to the intended scheme, including consecutive numbering for sequences that continue on another slide. The user's examples do not prescribe an exhaustive checklist or mandatory visible page numbers; identify other deck relationships that matter for the specific presentation.
 
-Give each slide worker shared references and the relevant narrative and cross-slide context. QA must examine the complete deck sequence as well as individual slides. These approved principles do not yet select a technical representation for shared elements or a generated-image review policy.
+Give each slide worker shared references and relevant narrative and cross-slide context. QA examines the complete sequence as well as individual slides. The technical representation of shared elements belongs in implementation planning; the approved review process is described below.
 
-### C. Record the approved plan and calibrate samples (pending)
+### C. Lock the approved plan and calibrate samples (approved)
 
-The sample strategy was presented but has not been approved. It proposes representative samples after approval of the combined plan, reuse of a suitable existing approved sample, shared visual references after acceptance, and visible plan updates when sample feedback changes approved decisions. The approval-record format below is also a candidate.
+The sample strategy and production-locking principles are approved. The approved plan is the source of truth for wording, facts, visuals, shared elements, and slide connections. Scripts check that full generation uses the current approved plan, assets, and accepted samples; missing or outdated approval stops production. Exact approval encoding and hashing remain technical planning choices.
 
-Before approval, use an explicitly draft specification. After approval, make the structured specification the source of truth and generate the readable outline from it. Do not maintain independently editable versions of the same slide content.
+A candidate implementation uses a draft specification before approval, then generates the readable outline from the approved structured specification. Avoid independently editable records that can diverge from the same approved plan.
 
 Normally generate one representative content slide, preferably the page that tests the hardest important visual requirement. Reuse the accepted sample as its final page, or reuse a suitable existing approved sample when it fits the current deck. If the deck contains substantially different visual approaches, explain why an additional sample would help; sample count should depend on design risk rather than a fixed quota.
 
 Sample feedback may calibrate typography, spacing, palette, or illustration treatment. Accepted typography, colors, visual language, and recurring elements become shared references for production while layouts vary by slide purpose. Changes to approved meaning, visible claims, or diagram relationships must be shown as storyboard changes. Update affected decisions before producing the remaining deck. Samples test rendering; complete-deck continuity still needs the sequence checks approved above.
 
-### D. Produce within the approved contract (pending)
+### D. Produce within the approved contract and review the deck (approved)
 
-Compile jobs from the approved specification. Include the locked content, visual brief, relevant background, assets, sample, and supported generation settings. Workers may execute the design and repair rendering problems; they must request a plan change when the approved content cannot fit or needs substantive revision.
+Compile jobs from the approved specification, including locked content, visual brief, background, assets, sample, shared references, and cross-slide context. Workers may repair rendering while preserving the plan. If content cannot fit or a relationship needs changing, raise that decision before changing it. Revisions identify affected slides and shared dependencies and revisit affected decisions; a deck-wide change can affect every slide.
 
-Agree on the production/review policy at the brief stage:
+State the chosen production/review process in each deck's plan:
 
-- Strict: retain per-wave user inspection of full-resolution images. Support one bulk decision, such as approve the wave except two named slides.
-- Balanced: after storyboard and sample approval, authorize production within that plan. The agent checks every output, stops on material deviations, and presents one consolidated gallery for user review before final assembly. Routine successful waves do not each require a user turn.
+- Consolidated (recommended default): after plan and sample approval, the agent checks every generated slide against the plan and checks the complete story, recurring elements, terminology, numbering, and cross-slide consistency. Present the deck together for approval or named exceptions. After corrections, review changed slides and affected connections. Routine successful batches do not each require a user turn.
+- Strict batch review (alternative): retain per-wave user inspection of full-resolution images before the next batch. Support one bulk decision, such as approve the batch except two named slides.
 
-Balanced mode changes the current mandatory wave gate and therefore needs an explicit new policy in both instructions and state. Agent QA must be recorded separately from user approval. It must never fabricate per-slide user-review markers.
+Consolidated review changes the current mandatory wave gate and needs an explicit policy in instructions and state. Final assembly requires real user approval of the current images. Record agent QA separately from user approval; a bulk decision identifies its current image set rather than fabricating individual review conversations. Material deviations or repeated generation problems trigger an early stop of affected work.
 
-### E. Check conformance and stop early on systematic problems (mechanisms pending)
+### E. Repair and verify final delivery (approved)
 
-Individual-slide and complete-sequence QA are approved design requirements. The specific checks, repair budget, escalation rules, and user-review policy below remain proposals.
+Check the first production batch before the remaining slides. A repeated problem triggers a pause to address its shared cause before spending the remaining generation budget.
 
-Check the first production wave before continuing. A repeated text, style, or diagram problem should trigger a pause and calibration instead of consuming the remaining image budget.
+For an isolated rendering problem, attempt one targeted automatic repair per affected slide while preserving approved wording, facts, and relationships. If it fails, explain the problem and recommend the next action. Group independent unresolved issues into one exception report where practical. Further attempts remain available with user authorization when quality warrants them. Content/design changes require confirmation of affected decisions; the retry limit is not permission to deliver unresolved errors.
 
 Use structural checks for ratios, expected files/counts, backend labels, plan versions, and review status. Use visual inspection, optionally assisted by OCR, for visible text, critical numbers, relationships, asset fidelity, and style. Low-confidence readings become exceptions; OCR is not proof that a chart or image preserved its meaning.
 
-Set an agreed repair budget, for example one automatic repair per slide before escalation. Missing capabilities or a systematic mismatch should stop the run early. Report actual generation progress and repair count; do not promise an exact runtime without evidence.
+Before delivery, check slides, the complete sequence, final counts, output format/profile, speaker-note consistency, and approval of the current images. Missing capabilities or a systematic mismatch stop affected work early. Report actual progress and repair count; do not promise an exact runtime without evidence. Specific QA tooling and state fields remain implementation-planning choices.
 
 Finalize speaker notes using the approved factual content and speaking purpose. Notes may elaborate explanation and transitions, but may not silently introduce new substantive claims.
+
+### F. Plan and author the spoken presentation (approved)
+
+Natural spoken delivery is a core quality requirement across presentation types, including technical, research, training, product, and executive decks. The user's verbatim reference above defines the desired voice and rhythm. Its topics and names illustrate the style; each deck's factual content and speaker names come from its own approved material.
+
+- Use the presenter's own voice, speaking directly to the audience with appropriate first-person phrasing, warmth, and small natural asides.
+- Write thought-sized beats with blank lines where the speaker breathes. A beat can contain one or several sentences; it follows one thought rather than a fixed paragraph quota.
+- Use everyday workplace vocabulary. Introduce an exact technical term in the same breath when the audience needs it. Ground explanations in concrete situations before abstract concepts and explain the slide's meaning.
+- Use spoken connectors and a natural speech rhythm in the presentation language. Retain conversational phrasing rather than smoothing it into formal written prose.
+- Connect the whole talk: openings, progression between slides, questions answered by the next slide, supplied-name speaker handovers, and a close with an invitation for questions. Fit note length to intended speaking time and review pacing and continuity across the deck.
+
+Draft notes alongside the slide plan rather than treating them only as a final assembly task. Show a representative note to calibrate the voice, and review the complete talk by exception before expensive image generation, without a mandatory per-slide interview. Reuse supplied notes and clearly flag proposed revisions. Finalization checks consistency with the accepted slides and approved narrative; new substantive claims need approval. Preserve the existing slide-to-note mapping in PowerPoint assembly.
+
+The current notes guide already requires presenter language, deck context, transitions, and presentation-language matching. Implementation should strengthen those rules with the source's beats, concrete-first explanations, everyday vocabulary, speech rhythm, timing, and earlier review. Natural delivery is the common baseline; presentation purpose determines emphasis and detail. Specific timing data, note-state fields, QA tooling, and packaged reference layout remain implementation-planning choices.
 
 ## 5. Candidate implementation changes (not yet authorized)
 
 ### Instructions and schema
 
-Extend the main skill contract and add a focused supporting guide for content planning and storyboard approval. Update the outline, generation, asset, progress, assembly, and worker instructions to reference the same production contract.
+Extend the main skill contract and add focused supporting guidance for content planning/storyboard approval and natural speaker-note authoring. Update the outline, generation, asset, progress, assembly, and worker instructions to reference the same production contract. The implementation plan must read the full verbatim speaker-note source and preserve it separately from derived portable skill guidance.
 
-Extend the deck specification with brief, review policy, claim/source status, slide visible copy, visual brief, speaking intent, unresolved blockers, and approval evidence. Keep detailed technical state out of the user-facing approval cards.
+Extend the deck specification with brief, review policy, claim/source status, slide visible copy, visual brief, deck narrative, shared references, cross-slide dependencies, speaking intent, unresolved blockers, repair-attempt state, and approval evidence. Keep detailed technical state out of the user-facing approval cards.
 
 ### Approval and validation
 
@@ -188,7 +213,7 @@ If legacy image-only assembly must remain supported, make it a clearly explicit 
 |---|---|
 | Main skill and content-planning docs | Input readiness, compact brief, storyboard, and user decision boundaries. |
 | `prepare_slide_prompts.py` | Compile approved copy and visuals; validate approval and blockers before jobs. |
-| `slide_run_state.py` | Plan version, selected review policy, separate agent QA and human approval. |
+| `slide_run_state.py` | Plan version, selected review policy, repair attempts, separate agent QA and human approval. |
 | `record_slide_dispatch.py` | Validate plan/job version and record exact dispatch inputs. |
 | `record_slide_result.py` | Check prompt-version consistency and retain generation evidence. |
 | `record_user_review.py` | Bulk approval/clear operations following a real user decision. |
@@ -214,16 +239,21 @@ Add behavior scenarios that check the agent's actual decisions:
 8. A poor first wave: stop before generating the rest; use the agreed repair budget.
 9. An OCR result with low confidence or a possibly altered chart: flag an exception rather than claiming certainty.
 10. Speaker notes introducing a new claim: require content approval or remove the unsupported addition.
-11. Balanced mode without an explicit user selection: retain the existing strict review behavior.
+11. Consolidated review: state the process in the deck plan, keep agent QA separate, and require actual user approval of the current final image set. Existing live runs retain their established policy unless explicitly changed.
 12. Planning wireframes: never use them as final generated slide images.
 13. A concept reused across several slides: preserve its name, visual identity, and meaning while the explanation develops.
 14. A numbered sequence spanning slides: preserve the agreed numbering and cross-references without accidental resets or duplicates.
 15. Individually plausible slides with a contradictory or incomplete story: identify the deck-level problem before treating the sequence as ready.
+16. A suitable previously approved sample: reuse it when it fits the current deck and its approval is valid; justify additional samples by the visual requirements.
+17. An isolated rendering failure: allow one targeted automatic repair, then escalate unresolved issues; further attempts need authorization and preserve approved decisions.
+18. A recurring first-batch problem: pause and correct its shared cause before producing the remaining deck.
+19. Speaker notes across presentation types and languages: preserve presenter voice, breathing beats, concrete explanation, natural connectors, transitions, and intended pacing without inventing facts or personal experiences.
+20. Prepared notes: reuse their content and voice, flag proposed revisions, and review the talk by exception rather than rebuilding it or requiring an interview for every slide.
 
 Pilot the revised workflow on a topic-only deck, a prepared slide-by-slide deck, partial/mixed-readiness material, and a deck with supplied figures. Measure substantive corrections after generation, clarification/review turns, repairs, image calls, and time to the first useful preview. Quality is the priority; review effort and checkpoints must adapt to the source and topic rather than meet a fixed time or interaction count.
 
 ## 7. Practical next step
 
-Continue the design discussion from sample calibration, which is still pending. Then agree on plan locking, production validation, generated-image review, and repair behavior. After the full design is approved, let the user choose the next handoff; a separate formal implementation plan is recommended for the multi-file changes. The original suggested implementation order and balanced/bulk policy are candidates, not authorization. Preserve the current strict review path unless an approved design explicitly changes it.
+The workflow design and speaker-note addition are approved. The user selected a self-contained handoff plan for another agent/session; that plan and its companion prompt are saved and linked above. The next route is critical plan review, requested execution, user review/use elsewhere, or deferral. Do not repeat the handoff-mode question or begin implementation merely because the planning files exist.
 
-The work delivered here is the analysis, confirmed requirements, and partially approved design. At the user's request, the proposal was moved into `docs/plans/` on `feature/SQ5GEN-predictable-deck-generation`. The earlier planning checkpoint was committed and pushed as `ae15e634d6a9630422082de2904364be979faca5`. This document update records the subsequently approved visual planning and deck-wide coherence while keeping pending proposals distinct. No skill implementation files have been changed, no skills installed, and no slide images generated. The `main` branch remains unchanged.
+The work delivered here is the analysis, confirmed requirements, and approved workflow design, saved by updating the existing proposal in place. Earlier checkpoints were committed and pushed as `ae15e634d6a9630422082de2904364be979faca5` and `99fba3d3ea2d8f1d285cf40dbf44d8e32f05d126`; this subsequent design/memory update is saved locally. No skill implementation files have been changed, no skills installed, and no slide images generated. The `main` branch remains unchanged.

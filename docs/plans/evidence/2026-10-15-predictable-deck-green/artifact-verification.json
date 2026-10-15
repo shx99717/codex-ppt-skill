@@ -1,0 +1,10 @@
+{
+  "original_source_chars": 3873,
+  "original_source_sha256": "9a1a64e2825cdc729fe13ccb3207f8ffbf6703ce206bec190c2077a5998a9980",
+  "appendix_exact_equal": true,
+  "portable_voice_sha256": "f50bce332df057b51ad6da7ba9251369ea0534c61c4bc64e44193465b2b04dde",
+  "baseline_original_byte_hashes_verified": 114,
+  "markdown_local_links_checked": 165,
+  "baseline_runner_and_audit_hashes_verified": 7,
+  "remote_urls_and_fragment_rendering_tested": false
+}

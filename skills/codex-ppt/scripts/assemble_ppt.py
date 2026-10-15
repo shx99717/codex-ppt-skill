@@ -12,6 +12,7 @@ import os
 import re
 import sys
 import tempfile
+from pathlib import Path
 from typing import Dict, List, Optional, Tuple
 
 from slide_image_ratio import RATIO_BY_LABEL, require_image_ratio, uniform_picture_box
@@ -491,6 +492,47 @@ def create_medavis_presentation(
         return False
 
 
+def assemble_managed(deck, ppt_name, template, aspect_ratio, landing_title):
+    """Assemble approved immutable inputs and publish outputs only after revalidation."""
+    from planning_contract import (planning_lock,require_managed_ready,read_contract_json,
+                                   inside_path,file_digest,ContractError,load_managed_spec,slide_id)
+    from record_plan_approval import snapshot_file,atomic_group
+    with planning_lock(deck):
+        require_managed_ready(deck,template,aspect_ratio,landing_title)
+        jobs=read_contract_json(deck/"slide_jobs.json","managed jobs")
+        notes=load_speaker_notes(str(deck))
+        with tempfile.TemporaryDirectory(prefix=".assembly-",dir=deck) as scratch:
+            scratch_path=Path(scratch).resolve()
+            if not scratch_path.is_relative_to(deck.resolve()):
+                raise ContractError("Assembly scratch directory escaped the deck")
+            images=[]
+            checks=[]
+            by_id={slide["slide_id"]:slide for slide in jobs["slides"]}
+            for approved_slide in load_managed_spec(deck)["slides"]:
+                slide=by_id[slide_id(approved_slide)]
+                expected=slide["qa"]["image_sha256"]
+                path=scratch_path/f"{slide['slide_id']}.png"
+                snapshot_file(inside_path(deck,slide["out"]),path,expected)
+                images.append(str(path))
+                checks.append((path,expected))
+            outputs={}
+            if template in {"none","both"}:
+                path=scratch_path/f"{ppt_name}.pptx"
+                if not create_presentation(images,str(path),aspect_ratio,notes):
+                    return False
+                outputs[path.name]=path.read_bytes()
+            if template in {"medavis","both"}:
+                path=scratch_path/f"{ppt_name}-medavis.pptx"
+                if not create_medavis_presentation(images,str(path),landing_title.strip(),notes,aspect_ratio):
+                    return False
+                outputs[path.name]=path.read_bytes()
+            for path,expected in checks:
+                if file_digest(path)!=expected:
+                    raise ContractError("Approved assembly snapshot changed")
+            require_managed_ready(deck,template,aspect_ratio,landing_title)
+            atomic_group(deck,outputs)
+        return True
+
 def main():
     # Windows consoles on a non-UTF-8 locale (e.g. GBK/cp936) can't encode the
     # Chinese status text and check-mark symbols this script prints; force UTF-8
@@ -557,6 +599,7 @@ def main():
     parser.add_argument('--init',
                         action='store_true',
                         help='只创建 PPT 项目目录和 origin_image 子目录，不生成 PPT')
+    parser.add_argument('--legacy-unmanaged', action='store_true', help='Explicit unmanaged/manual assembly; cannot bypass managed markers')
 
     args = parser.parse_args()
 
@@ -593,6 +636,17 @@ def main():
         sys.exit(1)
 
     plain_output_path = os.path.join(ppt_project_dir, f"{ppt_name}.pptx")
+    from planning_contract import require_legacy_allowed, ContractError
+    deck_path=Path(ppt_project_dir).resolve()
+    try:
+        if args.legacy_unmanaged:
+            require_legacy_allowed(deck_path)
+        else:
+            success=assemble_managed(deck_path,ppt_name,args.template,args.aspect_ratio,args.landing_title)
+            sys.exit(0 if success else 1)
+    except (ContractError,ValueError,OSError) as exc:
+        print(f"Error: {exc}",file=sys.stderr)
+        sys.exit(1)
     medavis_output_path = os.path.join(ppt_project_dir, f"{ppt_name}-medavis.pptx")
 
     # 获取幻灯片图片

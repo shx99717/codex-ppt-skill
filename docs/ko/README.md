@@ -1,6 +1,6 @@
 # Codex PPT Skill 문서
 
-Codex PPT는 Codex용 PPT 생성 skill이며, Claude Code, OpenClaw, Hermes Agent 등 `SKILL.md`를 지원하는 agent에서도 사용할 수 있습니다. 글, 보고서, 논문, 수업 노트 또는 거친 아이디어를 이미지형 프레젠테이션으로 변환합니다. 먼저 개요와 시각 스타일을 설계하고, 각 슬라이드의 완성 이미지를 차례로 생성한 뒤, 마지막으로 `.pptx` 파일로 조립합니다.
+Codex PPT는 Codex용 PPT 생성 skill이며, Claude Code, OpenClaw, Hermes Agent 등 `SKILL.md`를 지원하는 agent에서도 사용할 수 있습니다. 글, 보고서, 논문, 수업 노트 또는 거친 아이디어를 이미지형 프레젠테이션으로 변환합니다. 먼저 개요와 시각 스타일을 설계하고, 각 슬라이드의 완성 이미지를 차례로 생성한 뒤, 마지막으로 `.pptx` 파일로 조립합니다. 주제부터 완성된 페이지별 Markdown까지, 준비 상태가 다른 혼합 입력으로 시작할 수 있습니다. 완성 문구·대본을 재사용하고 중요한 빈틈만 확인하며 비용이 큰 이미지 생성 전에 정확한 내용, 시각적 의미와 자연스러운 대본을 함께 승인합니다. 기본은 현재 이미지 통합 검토이며 배치별 검토도 가능합니다. 작은 래스터 차이는 생길 수 있습니다.
 
 ## 문서 읽는 순서
 
@@ -59,3 +59,7 @@ Codex PPT는 이미지형 PPT를 생성합니다. 시각적 일관성은 높지�
 - ClawHub 페이지: https://clawhub.ai/ningzimu/codex-ppt
 - 사용 사례 전시: https://github.com/ningzimu/codex-ppt-skill/issues/34
 - 편집 가능한 PPT 변환 skill: https://github.com/shx99717/image-to-editable-ppt-skill
+
+대본은 이미지 생성 전에 발표 언어로 작성하며 발표자의 따뜻한 일상 말투를 사용합니다. 구체적인 장면, 빈 줄로 나눈 생각 단위, 자연스러운 연결과 목적 있는 전환을 담습니다. 제공한 대본은 보존하고 실질적인 추가 내용은 승인받습니다. 길이는 발표 시간과 복잡도에 맞춥니다.
+
+관리 v2 스크립트는 현재 내용·대본·정책 결정, 원본·샘플 바이트, 컴파일 입력, QA와 현재 이미지의 실제 사용자 승인을 검사합니다. 이전 수동·이미지 전용 작업은 `--legacy-unmanaged`를 명시해야 하며 관리 승인을 우회할 수 없습니다. CLI 작업은 `run_slide_job.py`로 승인한 설정과 모든 이미지를 정확히 전달합니다.

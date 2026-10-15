@@ -1,0 +1,360 @@
+{
+  "execution_provenance": "Helper authored by the isolated scenario agent; executed and evaluated by the primary agent after the helper session reached its usage limit.",
+  "scope": "Actual schema validation and draft-view seam, not an all-quality pass or production readiness verdict",
+  "original_archives": [
+    {
+      "case": "D1",
+      "archive": "D:\\git\\codex-ppt-skill\\docs\\plans\\evidence\\2026-10-15-predictable-deck-green\\input-readiness\\schema-red\\D1.json",
+      "original_sha256": "328d8c77bece810b521e4a85f525b8a06ac6e82c27e4aa4fad1483fbf2935794",
+      "archived_sha256": "328d8c77bece810b521e4a85f525b8a06ac6e82c27e4aa4fad1483fbf2935794",
+      "byte_identical_at_archive": true
+    },
+    {
+      "case": "D2",
+      "archive": "D:\\git\\codex-ppt-skill\\docs\\plans\\evidence\\2026-10-15-predictable-deck-green\\input-readiness\\schema-red\\D2.json",
+      "original_sha256": "f9bbe587f6e0d646b0f34c54daa6de5120c9920792baa8c0ec67c20cfb21deb2",
+      "archived_sha256": "f9bbe587f6e0d646b0f34c54daa6de5120c9920792baa8c0ec67c20cfb21deb2",
+      "byte_identical_at_archive": true
+    },
+    {
+      "case": "D3",
+      "archive": "D:\\git\\codex-ppt-skill\\docs\\plans\\evidence\\2026-10-15-predictable-deck-green\\input-readiness\\schema-red\\D3.json",
+      "original_sha256": "4be6f51581aa30d5f4068b6b077fcd7f287e6c1420c79935f96be6bdccfe76af",
+      "archived_sha256": "4be6f51581aa30d5f4068b6b077fcd7f287e6c1420c79935f96be6bdccfe76af",
+      "byte_identical_at_archive": true
+    },
+    {
+      "case": "mixed",
+      "archive": "D:\\git\\codex-ppt-skill\\docs\\plans\\evidence\\2026-10-15-predictable-deck-green\\input-readiness\\schema-red\\mixed.json",
+      "original_sha256": "f840f7a2ba7e983e15da25657a9cab479e875840eb56f306ba69ff4f46fb56dc",
+      "archived_sha256": "f840f7a2ba7e983e15da25657a9cab479e875840eb56f306ba69ff4f46fb56dc",
+      "byte_identical_at_archive": true
+    }
+  ],
+  "observed_red": [
+    {
+      "case": "D1",
+      "operation": "planning_contract.validate_spec(original archived JSON)",
+      "error_type": "ContractError",
+      "error": "Missing deck_name"
+    },
+    {
+      "case": "D2",
+      "operation": "planning_contract.validate_spec(original archived JSON)",
+      "error_type": "ContractError",
+      "error": "Missing deck_name"
+    },
+    {
+      "case": "D3",
+      "operation": "planning_contract.validate_spec(original archived JSON)",
+      "error_type": "ContractError",
+      "error": "Missing deck_name"
+    },
+    {
+      "case": "mixed",
+      "operation": "planning_contract.validate_spec(original archived JSON)",
+      "error_type": "ContractError",
+      "error": "Missing deck_name"
+    }
+  ],
+  "observed_compatible_candidates": [
+    {
+      "case": "D1",
+      "candidate_path": "D:\\git\\codex-ppt-skill\\docs\\plans\\evidence\\2026-10-15-predictable-deck-green\\input-readiness\\D1\\deck_spec.draft.json",
+      "sha256": "1bc0974971e34876d8a3c78584d1f50ab635f01f619feb528da3edff2861d073",
+      "validate_spec": {
+        "operation": "planning_contract.validate_spec(serialized compatible candidate)",
+        "result": "returned without exception"
+      },
+      "draft_cli_returncode": 0,
+      "draft_cli_result": {
+        "plan_hash": "a044f842087ebb46b7f85f7e372c28842613e858428725fe514debeb93a813ec",
+        "asset_provenance": [],
+        "draft": true
+      },
+      "derived_outline": "D:\\git\\codex-ppt-skill\\docs\\plans\\evidence\\2026-10-15-predictable-deck-green\\input-readiness\\D1\\runtime-draft-views\\outline.draft.md",
+      "derived_speech": "D:\\git\\codex-ppt-skill\\docs\\plans\\evidence\\2026-10-15-predictable-deck-green\\input-readiness\\D1\\runtime-draft-views\\speech.draft.md",
+      "content_pages": 6
+    },
+    {
+      "case": "D2",
+      "candidate_path": "D:\\git\\codex-ppt-skill\\docs\\plans\\evidence\\2026-10-15-predictable-deck-green\\input-readiness\\D2\\deck_spec.draft.json",
+      "sha256": "8d204e2067cb2ba9e87f7faf3b8fcea86df8fa749feb48de400af55572af8fb2",
+      "validate_spec": {
+        "operation": "planning_contract.validate_spec(serialized compatible candidate)",
+        "result": "returned without exception"
+      },
+      "draft_cli_returncode": 0,
+      "draft_cli_result": {
+        "plan_hash": "d92ea2151e58d715d08e9c3911e9b17e4aef73c703d3b5e7f8bf36d287bf4193",
+        "asset_provenance": [],
+        "draft": true
+      },
+      "derived_outline": "D:\\git\\codex-ppt-skill\\docs\\plans\\evidence\\2026-10-15-predictable-deck-green\\input-readiness\\D2\\runtime-draft-views\\outline.draft.md",
+      "derived_speech": "D:\\git\\codex-ppt-skill\\docs\\plans\\evidence\\2026-10-15-predictable-deck-green\\input-readiness\\D2\\runtime-draft-views\\speech.draft.md",
+      "content_pages": 3
+    },
+    {
+      "case": "D3",
+      "candidate_path": "D:\\git\\codex-ppt-skill\\docs\\plans\\evidence\\2026-10-15-predictable-deck-green\\input-readiness\\D3\\deck_spec.draft.json",
+      "sha256": "bb5613ac123ae3d6ad8d5edfc6c87f8c03760f5a05b3fb27def43257ba7cf334",
+      "validate_spec": {
+        "operation": "planning_contract.validate_spec(serialized compatible candidate)",
+        "result": "returned without exception"
+      },
+      "draft_cli_returncode": 0,
+      "draft_cli_result": {
+        "plan_hash": "42a2d535749b340368d1a694661f8d083b9278430d5546a9261e9f1441c10ecd",
+        "asset_provenance": [],
+        "draft": true
+      },
+      "derived_outline": "D:\\git\\codex-ppt-skill\\docs\\plans\\evidence\\2026-10-15-predictable-deck-green\\input-readiness\\D3\\runtime-draft-views\\outline.draft.md",
+      "derived_speech": "D:\\git\\codex-ppt-skill\\docs\\plans\\evidence\\2026-10-15-predictable-deck-green\\input-readiness\\D3\\runtime-draft-views\\speech.draft.md",
+      "content_pages": 5
+    },
+    {
+      "case": "mixed",
+      "candidate_path": "D:\\git\\codex-ppt-skill\\docs\\plans\\evidence\\2026-10-15-predictable-deck-green\\input-readiness\\mixed\\deck_spec.draft.json",
+      "sha256": "141b839628c0280040c25113250cd196ca5d16f17c956c4ce6734d396f459139",
+      "validate_spec": {
+        "operation": "planning_contract.validate_spec(serialized compatible candidate)",
+        "result": "returned without exception"
+      },
+      "draft_cli_returncode": 0,
+      "draft_cli_result": {
+        "plan_hash": "977a65561364586a606408d1f72cb4f57917918fecd816a77dae919dcde16e3c",
+        "asset_provenance": [],
+        "draft": true
+      },
+      "derived_outline": "D:\\git\\codex-ppt-skill\\docs\\plans\\evidence\\2026-10-15-predictable-deck-green\\input-readiness\\mixed\\runtime-draft-views\\outline.draft.md",
+      "derived_speech": "D:\\git\\codex-ppt-skill\\docs\\plans\\evidence\\2026-10-15-predictable-deck-green\\input-readiness\\mixed\\runtime-draft-views\\speech.draft.md",
+      "content_pages": 3
+    }
+  ],
+  "preservation": [
+    {
+      "case": "D1",
+      "existing_cards_and_interactions_byte_unchanged": true,
+      "existing_file_sha256": {
+        "interaction.md": "593c4cdb8866dcfba9078b630556f4cf3099178d629d9169b5ddedbf31d33f18",
+        "outline.draft.md": "906ece299f57fd35c0bfdf14f913b1de475187ad75f752fea26207cf930c5548",
+        "speech.draft.md": "8fc080361466336fb7d28e0d7f45c2d79e731d889fd7ed5f7fd190f719cd1842"
+      },
+      "all_visible_titles_body_labels_notes_visual_objects_relationship_descriptions_equal": true,
+      "cli_derived_speech_matches_every_original_note_with_internal_blank_lines": true,
+      "preserved_fixed_pages": 0
+    },
+    {
+      "case": "D2",
+      "existing_cards_and_interactions_byte_unchanged": true,
+      "existing_file_sha256": {
+        "interaction.md": "c5548d02c97829aea2824f6e1ae240f087d7f8275ff841bfaa45cb8609cfebb2",
+        "outline.draft.md": "1d0548bf3bb24fa93adabdfb4f2a9033bfb092a09f21dd8d9589df78030ee842",
+        "speech.draft.md": "2efbf7407b9cdaf2dd707c816d3a5610c4c40b963ab55c5777ac09af0d23cb65"
+      },
+      "all_visible_titles_body_labels_notes_visual_objects_relationship_descriptions_equal": true,
+      "cli_derived_speech_matches_every_original_note_with_internal_blank_lines": true,
+      "preserved_fixed_pages": 3
+    },
+    {
+      "case": "D3",
+      "existing_cards_and_interactions_byte_unchanged": true,
+      "existing_file_sha256": {
+        "interaction.md": "4ec8b8f553d7c54fa1b0e7830b1693272487a0a2a0dd54d839e99385550ecfad",
+        "outline.draft.md": "3d2adb42899d60689ebcd6b658bf1660cd655bbdab12f43754faa28eea61d4dd",
+        "speech.draft.md": "4646ee768492a4ce6c76c1d280a89e6c51c27fe930fc27260291672cfd2ed143"
+      },
+      "all_visible_titles_body_labels_notes_visual_objects_relationship_descriptions_equal": true,
+      "cli_derived_speech_matches_every_original_note_with_internal_blank_lines": true,
+      "preserved_fixed_pages": 0
+    },
+    {
+      "case": "mixed",
+      "existing_cards_and_interactions_byte_unchanged": true,
+      "existing_file_sha256": {
+        "interaction.md": "25001bf438a3bca754b56f4a1f6632947ce0d28244ad0513629c1b5e63cf2b6c",
+        "outline.draft.md": "ba2a2758659aabc0efca94270b7c14ee7800e8b155e53c8febb344c9e98244c1",
+        "speech.draft.md": "e6c105f537ca403f70b69c317691c301fab22044374d082c7241155c9d686ce1"
+      },
+      "all_visible_titles_body_labels_notes_visual_objects_relationship_descriptions_equal": true,
+      "cli_derived_speech_matches_every_original_note_with_internal_blank_lines": true,
+      "preserved_fixed_pages": 2
+    }
+  ],
+  "actual_commands": [
+    {
+      "label": "D1 archived red draft CLI",
+      "argv": [
+        "C:\\Users\\raymond.shen\\.codex-ppt-skill\\.venv\\Scripts\\python.exe",
+        "-B",
+        "D:\\git\\codex-ppt-skill\\skills\\codex-ppt\\scripts\\planning_views.py",
+        "--spec",
+        "D:\\git\\codex-ppt-skill\\docs\\plans\\evidence\\2026-10-15-predictable-deck-green\\input-readiness\\schema-red\\D1.json",
+        "--deck",
+        "D:\\git\\codex-ppt-skill\\docs\\plans\\evidence\\2026-10-15-predictable-deck-green\\input-readiness\\D1\\schema-red-draft-attempt",
+        "--draft"
+      ],
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "Error: Missing deck_name\n"
+    },
+    {
+      "label": "D2 archived red draft CLI",
+      "argv": [
+        "C:\\Users\\raymond.shen\\.codex-ppt-skill\\.venv\\Scripts\\python.exe",
+        "-B",
+        "D:\\git\\codex-ppt-skill\\skills\\codex-ppt\\scripts\\planning_views.py",
+        "--spec",
+        "D:\\git\\codex-ppt-skill\\docs\\plans\\evidence\\2026-10-15-predictable-deck-green\\input-readiness\\schema-red\\D2.json",
+        "--deck",
+        "D:\\git\\codex-ppt-skill\\docs\\plans\\evidence\\2026-10-15-predictable-deck-green\\input-readiness\\D2\\schema-red-draft-attempt",
+        "--draft"
+      ],
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "Error: Missing deck_name\n"
+    },
+    {
+      "label": "D3 archived red draft CLI",
+      "argv": [
+        "C:\\Users\\raymond.shen\\.codex-ppt-skill\\.venv\\Scripts\\python.exe",
+        "-B",
+        "D:\\git\\codex-ppt-skill\\skills\\codex-ppt\\scripts\\planning_views.py",
+        "--spec",
+        "D:\\git\\codex-ppt-skill\\docs\\plans\\evidence\\2026-10-15-predictable-deck-green\\input-readiness\\schema-red\\D3.json",
+        "--deck",
+        "D:\\git\\codex-ppt-skill\\docs\\plans\\evidence\\2026-10-15-predictable-deck-green\\input-readiness\\D3\\schema-red-draft-attempt",
+        "--draft"
+      ],
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "Error: Missing deck_name\n"
+    },
+    {
+      "label": "mixed archived red draft CLI",
+      "argv": [
+        "C:\\Users\\raymond.shen\\.codex-ppt-skill\\.venv\\Scripts\\python.exe",
+        "-B",
+        "D:\\git\\codex-ppt-skill\\skills\\codex-ppt\\scripts\\planning_views.py",
+        "--spec",
+        "D:\\git\\codex-ppt-skill\\docs\\plans\\evidence\\2026-10-15-predictable-deck-green\\input-readiness\\schema-red\\mixed.json",
+        "--deck",
+        "D:\\git\\codex-ppt-skill\\docs\\plans\\evidence\\2026-10-15-predictable-deck-green\\input-readiness\\mixed\\schema-red-draft-attempt",
+        "--draft"
+      ],
+      "returncode": 1,
+      "stdout": "",
+      "stderr": "Error: Missing deck_name\n"
+    },
+    {
+      "label": "prepare_slide_prompts.py help",
+      "argv": [
+        "C:\\Users\\raymond.shen\\.codex-ppt-skill\\.venv\\Scripts\\python.exe",
+        "-B",
+        "D:\\git\\codex-ppt-skill\\skills\\codex-ppt\\scripts\\prepare_slide_prompts.py",
+        "--help"
+      ],
+      "returncode": 0,
+      "stdout": "usage: prepare_slide_prompts.py [-h] [--spec SPEC] [--out-dir OUT_DIR]\n                                [--write-template WRITE_TEMPLATE]\n                                [--selected-backend SELECTED_BACKEND]\n                                [--max-concurrent-slides MAX_CONCURRENT_SLIDES]\n                                [--force] [--phase {sample,production,repair}]\n                                [--slides SLIDES] [--legacy-unmanaged]\n\nPrepare per-slide image generation jobs for codex-ppt. This script is\ndeterministic. It does not call an image model. It turns a structured deck\nspec into one self-contained JSON job file per slide.\n\noptions:\n  -h, --help            show this help message and exit\n  --spec SPEC           Deck spec JSON file.\n  --out-dir OUT_DIR     Deck project directory.\n  --write-template WRITE_TEMPLATE\n                        Write an example deck spec JSON and exit.\n  --selected-backend SELECTED_BACKEND\n                        Confirmed image backend label, such as\n                        `GenerateImage`, `codex-gpt-image`, or\n                        `scripts/image_gen.py`.\n  --max-concurrent-slides MAX_CONCURRENT_SLIDES\n                        Maximum slide subagents to dispatch at once. Defaults\n                        to 6.\n  --force               Overwrite existing prompt files.\n  --phase {sample,production,repair}\n  --slides SLIDES       Explicit comma-separated managed slide IDs\n  --legacy-unmanaged\n",
+      "stderr": ""
+    },
+    {
+      "label": "planning_views.py help",
+      "argv": [
+        "C:\\Users\\raymond.shen\\.codex-ppt-skill\\.venv\\Scripts\\python.exe",
+        "-B",
+        "D:\\git\\codex-ppt-skill\\skills\\codex-ppt\\scripts\\planning_views.py",
+        "--help"
+      ],
+      "returncode": 0,
+      "stdout": "usage: planning_views.py [-h] [--spec SPEC] --deck DECK [--draft]\n\nProduce readable draft or approved views of the canonical deck plan.\n\noptions:\n  -h, --help   show this help message and exit\n  --spec SPEC\n  --deck DECK\n  --draft\n",
+      "stderr": ""
+    },
+    {
+      "label": "bundled schema template",
+      "argv": [
+        "C:\\Users\\raymond.shen\\.codex-ppt-skill\\.venv\\Scripts\\python.exe",
+        "-B",
+        "D:\\git\\codex-ppt-skill\\skills\\codex-ppt\\scripts\\prepare_slide_prompts.py",
+        "--write-template",
+        "D:\\git\\codex-ppt-skill\\docs\\plans\\evidence\\2026-10-15-predictable-deck-green\\input-readiness\\bundled-template.json"
+      ],
+      "returncode": 0,
+      "stdout": "",
+      "stderr": ""
+    },
+    {
+      "label": "D1 compatible draft CLI",
+      "argv": [
+        "C:\\Users\\raymond.shen\\.codex-ppt-skill\\.venv\\Scripts\\python.exe",
+        "-B",
+        "D:\\git\\codex-ppt-skill\\skills\\codex-ppt\\scripts\\planning_views.py",
+        "--spec",
+        "D:\\git\\codex-ppt-skill\\docs\\plans\\evidence\\2026-10-15-predictable-deck-green\\input-readiness\\D1\\deck_spec.draft.json",
+        "--deck",
+        "D:\\git\\codex-ppt-skill\\docs\\plans\\evidence\\2026-10-15-predictable-deck-green\\input-readiness\\D1\\runtime-draft-views",
+        "--draft"
+      ],
+      "returncode": 0,
+      "stdout": "{\"plan_hash\": \"a044f842087ebb46b7f85f7e372c28842613e858428725fe514debeb93a813ec\", \"asset_provenance\": [], \"draft\": true}\n",
+      "stderr": ""
+    },
+    {
+      "label": "D2 compatible draft CLI",
+      "argv": [
+        "C:\\Users\\raymond.shen\\.codex-ppt-skill\\.venv\\Scripts\\python.exe",
+        "-B",
+        "D:\\git\\codex-ppt-skill\\skills\\codex-ppt\\scripts\\planning_views.py",
+        "--spec",
+        "D:\\git\\codex-ppt-skill\\docs\\plans\\evidence\\2026-10-15-predictable-deck-green\\input-readiness\\D2\\deck_spec.draft.json",
+        "--deck",
+        "D:\\git\\codex-ppt-skill\\docs\\plans\\evidence\\2026-10-15-predictable-deck-green\\input-readiness\\D2\\runtime-draft-views",
+        "--draft"
+      ],
+      "returncode": 0,
+      "stdout": "{\"plan_hash\": \"d92ea2151e58d715d08e9c3911e9b17e4aef73c703d3b5e7f8bf36d287bf4193\", \"asset_provenance\": [], \"draft\": true}\n",
+      "stderr": ""
+    },
+    {
+      "label": "D3 compatible draft CLI",
+      "argv": [
+        "C:\\Users\\raymond.shen\\.codex-ppt-skill\\.venv\\Scripts\\python.exe",
+        "-B",
+        "D:\\git\\codex-ppt-skill\\skills\\codex-ppt\\scripts\\planning_views.py",
+        "--spec",
+        "D:\\git\\codex-ppt-skill\\docs\\plans\\evidence\\2026-10-15-predictable-deck-green\\input-readiness\\D3\\deck_spec.draft.json",
+        "--deck",
+        "D:\\git\\codex-ppt-skill\\docs\\plans\\evidence\\2026-10-15-predictable-deck-green\\input-readiness\\D3\\runtime-draft-views",
+        "--draft"
+      ],
+      "returncode": 0,
+      "stdout": "{\"plan_hash\": \"42a2d535749b340368d1a694661f8d083b9278430d5546a9261e9f1441c10ecd\", \"asset_provenance\": [], \"draft\": true}\n",
+      "stderr": ""
+    },
+    {
+      "label": "mixed compatible draft CLI",
+      "argv": [
+        "C:\\Users\\raymond.shen\\.codex-ppt-skill\\.venv\\Scripts\\python.exe",
+        "-B",
+        "D:\\git\\codex-ppt-skill\\skills\\codex-ppt\\scripts\\planning_views.py",
+        "--spec",
+        "D:\\git\\codex-ppt-skill\\docs\\plans\\evidence\\2026-10-15-predictable-deck-green\\input-readiness\\mixed\\deck_spec.draft.json",
+        "--deck",
+        "D:\\git\\codex-ppt-skill\\docs\\plans\\evidence\\2026-10-15-predictable-deck-green\\input-readiness\\mixed\\runtime-draft-views",
+        "--draft"
+      ],
+      "returncode": 0,
+      "stdout": "{\"plan_hash\": \"977a65561364586a606408d1f72cb4f57917918fecd816a77dae919dcde16e3c\", \"asset_provenance\": [], \"draft\": true}\n",
+      "stderr": ""
+    }
+  ],
+  "live_backend_consumed": false,
+  "actual_approval_or_sample_events_written": false,
+  "limits": [
+    "Backend/reference compatibility remains the exact MOCK/TEST fixture, not a live probe result",
+    "validate_spec accepts plan shape and declared semantics; it does not validate factual truth or image pixels",
+    "Draft CLI success writes readable draft views and a lock file only, not canonical approved plans or approval ledgers",
+    "No image attachment, sample generation, image inspection, worker dispatch, final image acceptance or PPTX assembly",
+    "D3 style-only reuse is expressed against a current representative slide scope; real sample identity/bytes/evidence remain absent"
+  ]
+}

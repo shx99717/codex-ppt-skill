@@ -32,7 +32,7 @@ def _run_main_with_gbk_stdout(argv: list[str]) -> tuple[int, str]:
     gbk_stdout = io.TextIOWrapper(buffer, encoding="gbk", errors="strict")
     old_argv, old_stdout = sys.argv, sys.stdout
     try:
-        sys.argv = argv
+        sys.argv = argv + ["--legacy-unmanaged"]
         sys.stdout = gbk_stdout
         with unittest.TestCase().assertRaises(SystemExit) as cm:
             assemble_ppt.main()
@@ -49,7 +49,7 @@ def _run_main(argv: list[str]) -> tuple[int, str]:
     buffer = io.StringIO()
     old_argv, old_stdout = sys.argv, sys.stdout
     try:
-        sys.argv = argv
+        sys.argv = argv + ["--legacy-unmanaged"]
         sys.stdout = buffer
         with unittest.TestCase().assertRaises(SystemExit) as cm:
             assemble_ppt.main()

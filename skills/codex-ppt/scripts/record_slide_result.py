@@ -7,13 +7,17 @@ import argparse
 import json
 import re
 import shutil
+import tempfile
 from pathlib import Path
+from filelock import FileLock
+from planning_contract import consumer_lock, require_job_current, ContractError
 
 from slide_run_state import (
     deck_dir_from_target,
     ensure_file,
     find_slide,
-    locked_jobs,
+    load_jobs,
+    write_json,
     now_iso,
     rel_to_deck,
     resolve_deck_path,
@@ -168,10 +172,12 @@ def main() -> int:
     parser.add_argument("--backend-used", required=True)
     parser.add_argument("--selected-source", required=True, help="Generated image selected by the worker.")
     parser.add_argument("--qa-note", required=True)
+    parser.add_argument("--legacy-unmanaged", action="store_true")
     args = parser.parse_args()
 
     deck_dir = deck_dir_from_target(args.deck)
-    with locked_jobs(deck_dir) as jobs:
+    with consumer_lock(deck_dir, args.legacy_unmanaged) as managed, FileLock(str(deck_dir/".slide_jobs.json.lock")):
+        jobs=load_jobs(deck_dir)
         slide = find_slide(jobs, args.slide)
         if slide.get("status") != "dispatched":
             raise SystemExit(f"{slide['slide_id']} must be dispatched before result recording; got {slide.get('status')}")
@@ -181,6 +187,11 @@ def main() -> int:
                 f"Agent id mismatch for {slide['slide_id']}: dispatch={dispatch.get('agent_id')} result={args.agent_id}"
             )
 
+        if managed:
+            prompt_path = resolve_deck_path(deck_dir, dispatch["prompt"])
+            if sha256_file(prompt_path) != dispatch.get("prompt_sha256"):
+                raise ContractError("Prompt changed after dispatch; recompile and redispatch")
+            require_job_current(deck_dir, jobs, slide)
         backend_used = _validate_backend(args.backend_used)
         prompt_job = _load_prompt_job(deck_dir, slide)
         expected_backend_labels = _expected_backend_labels(jobs, slide, prompt_job)
@@ -202,26 +213,47 @@ def main() -> int:
         except ValueError as exc:
             raise SystemExit(f"Final slide image must live inside deck dir: {target}") from exc
         target.parent.mkdir(parents=True, exist_ok=True)
-        if source != target:
-            shutil.copy2(source, target)
+        source_sha=sha256_file(source)
+        # Copy and validate away from the owned final image. Ordinary copy/write
+        # failures must preserve the previous image and its job state together.
+        with tempfile.TemporaryDirectory(prefix=".result-",dir=deck_dir) as scratch:
+            candidate=Path(scratch)/target.name
+            shutil.copy2(source,candidate)
+            if sha256_file(candidate)!=source_sha or sha256_file(source)!=source_sha:
+                raise ContractError("Selected source changed during result copy")
+            try:
+                require_image_ratio(str(candidate),RATIO_BY_LABEL[label],label)
+            except ValueError as exc:
+                raise ContractError(str(exc)) from exc
+            final_bytes=candidate.read_bytes()
 
+        slide.pop("qa", None)
+        slide.pop("user_review", None)
+        jobs.pop("deck_qa", None)
         slide["result"] = {
             "agent_id": args.agent_id,
             "backend_used": backend_used,
             "selected_source": str(source),
-            "selected_source_sha256": sha256_file(source),
+            "selected_source_sha256": source_sha,
             "final_image": rel_to_deck(deck_dir, target),
-            "final_image_sha256": sha256_file(target),
+            "final_image_sha256": source_sha,
             "expected_backend": matched_expected_backend,
             "expected_backend_labels": expected_backend_labels,
             "sample_generation_method_matched": bool(matched_expected_backend),
             "qa_note": args.qa_note,
             "recorded_at": now_iso(),
         }
+        if managed:
+            slide["result"]["visual_hash"] = slide["visual_hash"]
         slide["status"] = "recorded"
         update_jobs_run_status(jobs)
         run_status = jobs.get("run_status")
         slide_id = slide["slide_id"]
+        from record_plan_approval import atomic_group
+        atomic_group(deck_dir,{
+            rel_to_deck(deck_dir,target):final_bytes,
+            "slide_jobs.json":(json.dumps(jobs,ensure_ascii=False,indent=2)+"\n").encode("utf-8"),
+        })
     if run_status == "slides_recorded":
         set_run_status(deck_dir, "slides_recorded", "all slide images recorded")
 

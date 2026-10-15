@@ -1,0 +1,12 @@
+{
+  "case": "D4",
+  "mode": "MOCK/TEST text-only",
+  "artifact": "d4-coherence.md",
+  "runtime_mutations": "none",
+  "steps": ["instantiate four approved fixture cards and notes", "show affected scope and exact revised cards", "scripted human accepts recommendation", "author four revised render briefs", "withhold image/QA/assembly claims"],
+  "scripted_decisions": [{"id": "D4-U2", "actor": "MOCK HUMAN", "scope": "slide_01..04 visual and talk; canonical name; boundary role; dependencies", "evidence": "Yes. Use the recommended scope: update all four cards and notes, keep the teal key as the identity, and make card 2 show the workspace boundary. Keep the step numbers."}],
+  "approval_state": {"plan_and_talk": "scripted affected acceptance only", "current_final_images": "absent", "actual_runtime_approval": "absent"},
+  "scope": {"visual": ["slide_01", "slide_02", "slide_03", "slide_04"], "talk": ["slide_01", "slide_02", "slide_03", "slide_04"], "key_meaning": "account identity retained", "new_boundary_meaning": "workspace grouping, not permissions", "visible_steps": {"slide_02": [1, 2], "slide_03": [3, 4]}, "internal_order": [1, 2, 3, 4]},
+  "results": {"cards_before": 4, "cards_after": 4, "talk_sequences": 2, "revised_briefs": 4, "images_generated": 0, "assembly": "withheld"},
+  "concerns": ["requested role interpreted as boundary-led card composition with stable key identity; interpretation explicitly scripted-accepted", "pixel readability and runtime invalidation behavior untested"]
+}

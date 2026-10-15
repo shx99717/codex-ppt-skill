@@ -1,6 +1,6 @@
 # Codex PPT Skill 说明文档
 
-Codex PPT 是一个面向 Codex 的 PPT 生成 skill，也可在 Claude Code、OpenClaw、Hermes Agent 等支持 `SKILL.md` 的 agent 中使用。它把文章、报告、论文、课程笔记或粗略想法转换成图片式演示文稿：先规划大纲和视觉风格，再逐页生成完整幻灯片图片，最后组装成 `.pptx` 文件。
+Codex PPT 是一个面向 Codex 的 PPT 生成 skill，也可在 Claude Code、OpenClaw、Hermes Agent 等支持 `SKILL.md` 的 agent 中使用。它把文章、报告、论文、课程笔记或粗略想法转换成图片式演示文稿：先规划大纲和视觉风格，再逐页生成完整幻灯片图片，最后组装成 `.pptx` 文件。 输入可以是一个主题、完整逐页 Markdown，或准备程度不同的组合。skill 复用已完成的文案和讲稿，只澄清实质缺口，在昂贵生图前一起确认准确内容、视觉含义与自然讲稿。默认集中审核当前图片，也可严格逐批审核。图片渲染仍允许轻微差异。
 
 ## 这套文档怎么读
 
@@ -59,3 +59,7 @@ Codex PPT 生成的是图片式 PPT：视觉一致性强，但页面里的文字
 - ClawHub 页面：https://clawhub.ai/ningzimu/codex-ppt
 - 使用案例展示区：https://github.com/ningzimu/codex-ppt-skill/issues/34
 - 可编辑 PPT 转换 skill：https://github.com/shx99717/image-to-editable-ppt-skill
+
+讲稿在生图前用演示语言起草，像演讲者亲切地用日常语言解释：具体场景、以空行分隔的思考节拍、自然连接词与有目的的过渡。已有讲稿应保留，实质新增内容需确认。长度取决于讲话时间和复杂度。
+
+受管理的 v2 脚本检查当前内容/讲稿/策略决策、素材与样张字节、编译输入、QA 和用户对当前图片的接受。历史手动或纯图片任务须显式使用 `--legacy-unmanaged`，不能绕过受管理审批。CLI 任务用 `run_slide_job.py` 准确传入已批准参数与全部图片。

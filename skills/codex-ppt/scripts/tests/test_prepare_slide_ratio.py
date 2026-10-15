@@ -100,7 +100,7 @@ class PrepareSlideRatioTests(unittest.TestCase):
             with patch.object(
                 sys,
                 "argv",
-                ["prepare_slide_prompts.py", "--spec", str(spec_path), "--out-dir", str(out_dir)],
+                ["prepare_slide_prompts.py", "--spec", str(spec_path), "--out-dir", str(out_dir), "--legacy-unmanaged"],
             ):
                 self.assertEqual(main(), 0)
             jobs = json.loads((out_dir / "slide_jobs.json").read_text(encoding="utf-8"))
@@ -147,7 +147,9 @@ class PrepareSlideRatioTests(unittest.TestCase):
             data = json.loads(path.read_text(encoding="utf-8"))
             self.assertEqual(data.get("aspect_ratio"), "3:2")
             self.assertEqual(data.get("selected_image_backend"), "GenerateImage")
-            method = data["sample_generation_method"]
+            self.assertEqual(data["workflow_version"], 2)
+            self.assertTrue(data["planning"]["unresolved"])
+            method = data["planning"]["generation"]
             self.assertEqual(method.get("backend_used"), "GenerateImage")
             self.assertEqual(method.get("aspect_ratio"), "3:2")
             self.assertNotIn("size", method)

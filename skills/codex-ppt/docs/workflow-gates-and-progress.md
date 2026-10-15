@@ -1,59 +1,51 @@
 # Workflow Gates And Progress
 
-Read this before creating downstream artifacts, advancing between phases, or reporting progress.
+Read before advancing phases or reporting completion. [Content planning](content-planning-and-approval.md) defines adaptive preparation; these are dependencies, not a fixed number of interviews.
 
-## Mandatory Phase Gates
+## Managed gates
 
-This workflow has explicit approval gates. Do not advance to a later phase until the previous phase has been approved by the user, unless the user explicitly asks to skip that confirmation.
+1. Assess content/visual readiness and clarify genuine consequential gaps.
+2. Review the complete content/visual plan and drafted talk by exception. Resolve factual blockers, source mappings, style/backend/ratio, sample strategy, output profile/title and review policy.
+3. Record actual user approval against the reviewed draft hash. Draft views are allowed earlier; approved canonical content and final views need current scope evidence.
+4. Compile explicit sample-phase jobs, generate/reuse compatible representative samples, and record actual sample acceptance.
+5. Compile production jobs from current approved contexts and immutable image inputs. Dispatch/result helpers reject stale plans/assets/samples or changed prompt files.
+6. Inspect the first production batch before later dispatch; samples alone are not that batch. Pause common failures and correct their shared cause.
+7. Apply the chosen human image-review policy and recorded repair limits.
+8. Validate complete-sequence/talk QA and current actual image acceptance, then assemble the already approved output profile.
 
-Phase order:
+Do not invent approvals, relabel agent QA as a user decision, hand-edit prompts/state, or bypass metadata with a legacy flag. Changes have affected-scope analysis and reapproval; note-only edits retain unchanged images but stale talk/sequence QA.
 
-1. Source reading and asset extraction
-2. Outline confirmation
-3. Visual style confirmation
-4. Image backend confirmation
-5. One sample slide approval
-6. Full slide generation (dispatch waves)
-7. Per-wave user review of generated full-res slide images
-8. QA, speaker notes finalization, and PPT assembly
+## Consolidated or strict image review
 
-Hard rules:
+Recommend consolidated for each new deck and record that actual choice. Agent QA checks every current image and the story/shared-visual/talk sequence. Continue routine subsequent batches after the first-batch check; show the full deck in order, provide full-resolution views for inspection, and let the user approve it or name exceptions. Record one real bulk decision, then review corrections and affected connections. Do not fabricate individual conversations.
 
-- Before outline approval, do not create final `deck_spec.json`, `speech.md`, prompt job files, slide images, or `.pptx` files.
-- If you need an internal planning artifact before approval, name it with `.draft.` such as `deck_spec.draft.json` or `speech.draft.md`, and clearly report that it is not final.
-- Downstream artifacts (`deck_spec.json`, `prompts/`, `slide_jobs.json`, `speech.md`, final slide images, and `.pptx`) should be created only after the relevant gates have been approved.
-- If the deck uses required source images, stop at outline confirmation and ask the user to verify the slide-to-image mapping before style selection or image generation.
-- Do not treat sample approval as full-deck image approval.
-- Do not dispatch the next generation wave until every slide in the current wave is user-reviewed via `record_user_review.py`.
-- Do not assemble when any non-sample `recorded` slide lacks a valid `user_review` (matching image sha). `assemble_ppt.py` does not enforce this — the agent must.
-- Skipping the per-slide user-review gate requires an **explicit** user waiver for this deck. If waived, record it in run state (do not invent a silent skip). Let `{runtime_python}` mean the shared venv interpreter under `~/.codex-ppt-skill/.venv` (Windows: `Scripts/python.exe`; Unix/macOS: `bin/python`). Example:
+Strict policy requires current-wave human image review before later production dispatch. The chosen policy is in the plan; it is not an implicit waiver for an existing run. Both policies still require current actual final-image approval before assembly.
 
-```bash
-{runtime_python} -c "from slide_run_state import deck_dir_from_target, set_run_status; set_run_status(deck_dir_from_target('{base_dir}/{deck_name}'), 'user_review_waived', 'user explicitly waived per-slide review for this deck')"
+```text
+record_slide_qa.py DECK --slide slide_01 --pass --evidence "Actual agent inspection of text/assets/relationships"
+record_slide_qa.py DECK --deck-pass --evidence "Actual full story, shared-visual and talk assessment"
+record_user_review.py DECK --all --except slide_03 --approve --evidence "Actual whole-deck decision with this exception"
+record_user_review.py DECK --slides slide_03 --approve --evidence "Actual correction acceptance"
 ```
 
-  Prefer running that from `{skill_root}/scripts` (or with that directory on `PYTHONPATH`) so `slide_run_state` imports resolve. Also state the waiver in the chat report.
+An accepted current sample carries its actual sample evidence; do not invent a second human decision. A named exception clears any previous current-image approval. Bulk selections validate before mutation. New or changed image bytes invalidate QA/review.
 
-## Visible Progress Plan
+## Repair and escalation
 
-For non-trivial decks, keep a user-visible checklist with one active step:
+A rendering-only issue preserves approved copy, values, objects and relationships. Record needs-repair QA, compile --phase repair, then dispatch. One automatic attempt per affected visual contract is allowed; counters increment at dispatch. More attempts require an actual scoped user authorization with a count. A production/sample phase or raw prompt edit cannot bypass that limit.
 
-1. Prepare source, outline, style, and backend decisions.
-2. Generate and approve one sample slide.
-3. Prepare slide jobs and slide state.
-4. Dispatch slide subagents (one wave at a time).
-5. Record generated slide results for the wave.
-6. User-review each newly recorded full-res slide in the wave.
-7. QA, repair, notes, and PPT assembly.
+```text
+record_slide_qa.py DECK --slide slide_03 --needs-repair --evidence "Actual missing required label; preserve its exact wording"
+prepare_slide_prompts.py --spec DECK/deck_spec.json --out-dir DECK --phase repair --slides slide_03 --force
+record_plan_approval.py DECK --authorize-repair slide_03 --additional-attempts 1 --evidence "Actual extra-attempt authorization"
+```
 
-Completion evidence:
+Repeated first-batch failures pause later production. Present the shared cause and recommendation; recalibrate or revise the plan if needed. Group independent unresolved issues where useful. Impatience is not unlimited retry authorization, and a retry limit does not permit delivering unresolved errors.
 
-- `Prepare source, outline, style, and backend decisions`: `outline.md` is approved and image backend is confirmed.
-- `Generate and approve one sample slide`: one final `origin_image/slide_XX.png` is approved as the style reference.
-- `Prepare slide jobs and slide state`: `prompts/slide_XX.json`, `slide_jobs.json`, and `slide_run_state.json` exist.
-- `Dispatch slide subagents (one wave at a time)`: `slide_job_status.py` shows dispatchable slides and each spawned worker is recorded by `record_slide_dispatch.py`.
-- `Record generated slide results for the wave`: each worker output is recorded by `record_slide_result.py`, which copies the selected image into `origin_image/slide_XX.png` and records backend provenance.
-- `User-review each newly recorded full-res slide in the wave`: every slide in the wave has a valid `user_review` recorded by `record_user_review.py --approve` before the next wave starts. Track the current wave's slide ids in prose (do not rely on `slide_job_status.py` for review state).
-- `QA, repair, notes, and PPT assembly`: every expected final image exists, every non-sample slide has valid `user_review`, QA is complete, `speech.md` is final, and `{deck_name}.pptx` exists.
+## Visible progress and evidence
 
-Do not mark a step complete just because the chat says it is complete; use real files or script-recorded state.
+Keep a concise checklist with one active phase: assess/plan/talk; approve plan; calibrate samples; compile/produce; inspect/repair; chosen image review; final sequence/assembly. Avoid displaying technical hashes in human approval cards.
+
+Use actual files and script evidence. slide_job_status reports capacity, dispatch state, stale scopes, QA/review exceptions, actual first-batch IDs and repair counts. It never advances an approval by being queried. Complete delivery needs exact expected images, current plan/talk/sample/policy, SHA-bound agent QA/user evidence, final speech matching the canonical talk, and a verified PPTX. Missing metadata fails closed rather than silently becoming legacy.
+
+Legacy manual/image-only commands require explicit --legacy-unmanaged and refuse managed markers; this is a compatibility route, not a production gate waiver.

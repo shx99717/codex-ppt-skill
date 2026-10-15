@@ -50,14 +50,15 @@ When presenting options, annotate each available choice with resolution/capabili
 
 - Lock a **specific** `selected_backend` label such as `GenerateImage`, `image_gen`, `codex-gpt-image`, or `scripts/image_gen.py`.
 - **Forbidden locks:** generic `"built-in image tool"`; OpenClaw / `image_generate`; invented Claude Code native names.
-- After the user locks a label, write it into `deck_spec.json` *before* `prepare_slide_prompts.py` via `sample_generation_method` (`backend_used` / `tool_name`) and/or `selected_image_backend`, and persist `aspect_ratio`. Prefer also passing `--selected-backend <exact label>` to prepare. That copies into `slide_jobs.json` → `selected_backend` / `aspect_ratio` / per-job `expected_backend`.
+- Record the exact `selected_image_backend`, `aspect_ratio` and complete `planning.generation` method before combined plan approval. Runtime sample decisions belong to `plan_approvals.json`, not authored `sample_generation_method` or approval booleans in the spec. The compiler binds the approved method into jobs; a conflicting `--selected-backend` override is rejected.
+- For the bundled CLI, explicitly approve model, size, quality and the operation policy. A text-only calibration may use `mode: generate`; image-conditioned production/source calibration uses `reference_mode: edit`. This keeps one approved backend with an explicit input-dependent endpoint policy. Replaying generate without references or silently changing to edit is forbidden. The managed adapter validates supported fields and forwards every verified input.
 - Keep the lock for the whole deck. Subagents must not switch backends.
 
 ## GenerateImage call recipe
 
 Cursor `GenerateImage` is 3:2-only in pixels. Offer it only when the locked ratio is 3:2. It has no gpt-image-2 `--size` API. Prose-check the live `GenerateImage` schema enum. If `3:2` is in the enum, pass `aspect_ratio="3:2"`. If not, pass a schema-legal landscape value (prefer `16:9`) and measure pixels. Do not pass `3:2` when the schema rejects it. A successful `4:3` or `16:9` argument is not proof of that ratio (2026-08-13: both returned 1536×1024). Gate `|(w/h)/1.5 - 1| <= 0.02`. If pixels are wrong: blocker. Do not assemble, stretch, letterbox, crop, or switch backends unless the user says so.
 
-Keep `sample_generation_method.aspect_ratio` as the locked deck ratio (`3:2`). Store the GenerateImage tool argument in `tool_aspect_ratio_argument` and pixels in `measured_size`.
+Keep `planning.generation.aspect_ratio` as the locked deck ratio (`3:2`). Store the approved tool argument in that configuration as `tool_aspect_ratio_argument`; record observed pixels as result/sample inspection evidence. Never add invented parameters to a live native tool schema.
 
 Red flags:
 

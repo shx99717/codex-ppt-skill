@@ -1,0 +1,5 @@
+# Behavioral draft/schema integration RED
+
+During parent evaluation, all four fresh input-readiness applications produced useful readable cards/talk but named incompatible nested JSON as `deck_spec.draft.json`. Actual `planning_contract.validate_spec` rejected D1, D2, D3 and mixed with `Missing deck_name`. They used top-level `deck` plus slide `internal_order`/`purpose` instead of the managed schema's top-level fields and `number`/`intent`. Their own report correctly disclosed that schema compatibility was untested; this is an additional integration failure, not a rendered-quality failure.
+
+Smallest guidance correction: explicitly start executable drafts from the bundled `prepare_slide_prompts.py --write-template` schema, preserve supplied copy/talk while mapping exact fields, and distinguish readable planning cards from a valid managed JSON candidate. No user design decision or content rewrite is needed. Preserve original failed JSON under the agent's `schema-red/` evidence, then reapply the same cases with this corrected guide and actual validator. No real approval, installation or model call is authorized.

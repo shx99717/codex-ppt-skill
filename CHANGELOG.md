@@ -6,10 +6,19 @@ Release notes are generated from this file. Keep changelog entries in English.
 
 ### Features
 
+- Add adaptive whole-deck content, visual, and talk planning with approval-bound production inputs.
+- Add consolidated generated-slide review with separate agent QA and current-image user approval.
+- Add an executable managed CLI adapter that preserves approved settings and verified image inputs.
+
 - Let the user pick the final PPT ratio (`16:9` / `4:3` / `3:2`) before backend lock, persist `aspect_ratio`, and assemble none-mode plus matching 3-page Medavis templates (landing + content + ending, overlay logo). (#2)
 - Filter image backends by locked ratio (Cursor `GenerateImage` is 3:2-only) and require gpt-image-2 `--size` `2560x1440` / `2560x1920` / `2400x1600`. (#2)
 
 ### Improvements
+
+- Preserve recurring visuals, story transitions, terminology, and cross-slide dependencies during generation and revisions.
+- Draft natural presenter notes before image production, with breathing beats, purposeful transitions, and speaking-time-aware length.
+- Check the first production batch and allow one targeted automatic repair before escalation.
+- Protect compiled prompts, recorded images, and assembly output with grouped state transitions and canonical slide ordering.
 
 - Hard-gate saved images and PPT assembly on 2% relative ratio; refuse stretch, letterbox, and crop as success paths. (#2)
 - Smoke-deck GATED/interactive prompts prefer template mode **both**; `verify_deck.py` validates `coffee-extraction-medavis.pptx` when present (landing + content placement/notes). FAST stays on no-template. (#2)
@@ -24,6 +33,9 @@ Release notes are generated from this file. Keep changelog entries in English.
 - Do not copy a gpt-image-2 `--size` string onto Cursor `GenerateImage` sample methods; record `aspect_ratio=3:2` instead. (#2)
 
 ### Documentation
+
+- Synchronize adaptive planning, early talk review, explicit legacy compatibility, and consolidated/strict approval guidance across Chinese, English, and Korean documentation.
+- Preserve the complete speaker-note voice guidance and examples in a distributable reference.
 
 - Add Claude Code interactive (GATED) smoke prompt `tests/smoke-deck/RUN_PROMPT_claude_interactive.md` as the wait-at-every-gate sibling of the FAST `RUN_PROMPT_claude.md`. (#2)
 - Document GenerateImage schema-vs-pixels (enum may lack `3:2`; 4:3/16:9 arguments are not pixel proof) in skill docs, worker prompt, Cursor smoke prompt, and zh/en/ko README plus usage workflow pages. (#2)

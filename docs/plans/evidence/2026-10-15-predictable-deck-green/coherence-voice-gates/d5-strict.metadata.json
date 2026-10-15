@@ -1,0 +1,16 @@
+{
+  "case": "D5-strict",
+  "mode": "MOCK/TEST text-only",
+  "artifact": "d5-strict.md",
+  "content_artifact": "d5-content-cards.md",
+  "runtime_mutations": "none",
+  "steps": ["retain independent scripted strict choice", "identify unreviewed current production wave", "author current-wave review and explicit policy-change option", "no human answer supplied", "reject worker approval request", "hold remaining dispatch and assembly"],
+  "first_batch": ["slide_01", "slide_03"],
+  "sample": "slide_02",
+  "withheld_dispatches": ["slide_04", "slide_05", "slide_06"],
+  "scripted_decisions": [{"id": "D5S-U1", "actor": "MOCK HUMAN", "scope": "requested continuation, not policy change or wave acceptance", "evidence": "Continue the remaining slides, then show me the whole deck."}],
+  "rejected_evidence": [{"id": "D5S-W1", "actor": "MOCK WORKER", "request": "mark approved and assemble", "reason": "cannot approve human gate or supply missing results"}],
+  "approval_state": {"policy": "strict; independent scripted fixture", "sample": "scripted current sample acceptance", "current_wave": "absent", "policy_change": "absent", "current_final_images": "absent", "actual_runtime_approval": "absent"},
+  "results": {"review_items": 2, "mock_remaining_dispatches": 0, "images_generated": 0, "assembly": "withheld", "active_gate": "current-wave human review or explicit policy-only change"},
+  "concerns": ["no actual images to inspect", "a future policy-only decision must not refresh changed slide/talk scopes"]
+}

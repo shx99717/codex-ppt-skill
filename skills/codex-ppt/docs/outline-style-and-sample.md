@@ -1,54 +1,14 @@
 # Outline, Style, And Sample
 
-Read this before writing or updating `outline.md`, offering visual styles, using files from `references/`, or generating/approving the sample slide.
+Read [content planning](content-planning-and-approval.md) before draft preparation, and this guide before choosing reusable styles or calibrating imagery. For reusable style saving, read [style library](style-library.md).
 
-If the user asks to save a finished deck style or a user-supplied image/PDF/PPT/PPTX style for future reuse, read `style-library.md`.
+## Plan content, visuals and talk together
 
-## Plan The Deck Outline
+Assess readiness, preserve ready source copy/notes, clarify consequential gaps, and develop the whole deck's story. Use exact visible text, critical labels/values, visual objects/relationships/approximate composition, asset/source/proposal status, shared identities, meaningful dependencies and transitions. Include per-slide language for multilingual decks. Do not impose 3–5 bullets or a typical slide-count formula.
 
-Create a concise `outline.md` draft before generating images. For each slide, define:
+Prepare deck_spec.draft.json and derived outline.draft.md/speech.draft.md; talk is drafted now using [the voice reference](speaker-notes-style.md). Show the whole plan with intelligent recommendations and review by exception. Keep substantive gaps visible; do not invent company measurements.
 
-- Slide number
-- Slide title
-- 3-5 key points
-- Optional visual idea
-- Layout role and intent, such as cover, agenda, section divider, concept explanation, process, comparison, timeline, data evidence, architecture, case study, summary, or Q&A
-- **Language** for that slide (`Chinese`, `English`, `mixed`, or another label). For multilingual/mixed decks, every slide must carry its own language when you write `deck_spec.json` (smoke TARGET T3). Deck-level `language` is a fallback only.
-- Required source images, if any, including the image path or attachment name, its role on the slide, and whether it is a strict input asset or only a style/layout reference
-
-Save the draft to `{base_dir}/{deck_name}/outline.md` once the project directory is known. If the output directory is not known yet, show the outline in chat first and write it to `outline.md` immediately after creating the project directory.
-
-Show the outline to the user for confirmation and wait for approval before moving to visual style selection or image generation, unless the user explicitly asked you to skip confirmation. If any slide lists required source images, explicitly ask the user to verify that each image is assigned to the correct slide and role before generation. If the user requests changes, update `outline.md` and ask for confirmation again.
-
-Stop after writing the outline draft. At this point, report the `outline.md` path, slide count, required source images and their slide mapping, and that no slide images or PPTX have been generated yet. Do not proceed to `deck_spec.json`, `speech.md`, prompt preparation, style selection, backend selection, or sample generation until the user approves the outline.
-
-If the user approved a sample slide, record that approved `slide_XX.png` path as the deck-level style reference. Later slide prompts and subagent handoffs should include it as a style-only reference so each page keeps the same palette, typography mood, density, texture, and visual identity without copying the sample's exact layout.
-
-Recommended structure:
-
-```text
-Slide 1: Cover
-Slide 2: Context / problem
-Slide 3-7: Main argument or sections
-Slide 8: Summary / recommendation / closing
-```
-
-For slides that use source images, add lines like:
-
-```markdown
-Slide 5: Experiment Results
-- Key points: ...
-- Required images:
-  - Main evidence figure; strict input asset; preserve data, axes, labels, legends, colors, and values
-
-    ![Result 01](assets/figures/result_01.png)
-
-  - Supporting model architecture; strict input asset; preserve labels and arrows
-
-    ![Model Architecture](assets/figures/model_architecture.png)
-```
-
-Use Markdown image syntax inside the `Required images` list whenever the asset is local and renderable in the outline. This lets the user visually verify the exact asset mapping during outline review. Keep the descriptive text next to each image so `prepare_slide_prompts.py` can convert the same asset into structured prompt input later.
+For source figures, show the actual renderable image with its slide/role/fidelity alongside the visual plan where helpful. Convert Markdown image references to normalized required_images objects before approval. A separate asset-mapping interview is unnecessary when the combined plan already makes the mapping clear.
 
 ## Confirm A Unified Visual Style
 
@@ -111,30 +71,32 @@ C. 数据仪表盘风：指标卡、图表感布局，适合数据密集型报�
 你选哪个？也可以指定要调整的配色、布局或插画方向，或者上传一张喜欢的 PPT 风格图片让我参考。
 ```
 
-## Generate One Sample Slide For Approval
+## Representative calibration
 
-After the outline, style, and image backend are confirmed, generate exactly one sample slide image before full production.
+After current content/visual/talk/policy approval, choose a representative content slide that tests the important typography, visual relationships and density. Reuse a suitable previously approved sample with matching current style/backend/ratio and recorded suitability. Explain extra samples only for materially different visual approaches. Samples do not authorize other slides' copy or layout.
 
-Sample slide requirements:
+The representative strategy is part of whole-plan approval. Sample phase needs explicit required IDs and current plan/talk approval, but not the sample it is about to produce:
 
-- Use the confirmed style description.
-- Prefer a representative content slide over the cover when possible.
-- Demonstrate the intended deck rhythm: the sample should show how the chosen style adapts to a real content page, not just a generic fixed template.
-- Save it directly as the intended final slide filename, such as `{base_dir}/{deck_name}/origin_image/slide_08.png`. In CLI/API fallback mode, use `scripts/image_gen.py generate --out` for that exact path.
-- Show the sample image to the user.
-- Ask the user to confirm the visual style, typography, layout density, and text quality for the slide language.
+```text
+prepare_slide_prompts.py --spec DECK/deck_spec.json --out-dir DECK --phase sample --slides slide_02
+```
 
-Do not generate the full deck until the user approves the sample slide. If the user requests changes, revise the style description and regenerate that same `slide_XX.png` file first. Once approved, keep that file as the final slide for its page. Do not create `sample_slide.png` in `origin_image/`, because the assembly step is designed around final `slide_XX` filenames.
+Use the actual selected image tool/input path and locked ratio. Inspect the generated candidate, then show the full-resolution image and request acceptance of wording, visual meaning, typography, density and readability. Feedback changing approved content/design updates affected plan scopes before production.
 
-After the sample slide is approved, record the sample generation method in `deck_spec.json` before preparing full-deck jobs. This is the contract the parent passes to subagents so they use the same image-generation path as the sample, not a cheaper local rendering path. Include at least:
+Record the actual decision and consuming backend; never use a sample_approved boolean or pathname alone:
 
-- `backend_used`: the confirmed specific backend label, such as `GenerateImage`, `image_gen`, `codex-gpt-image`, or `scripts/image_gen.py` (never the generic phrase `built-in image tool`, never OpenClaw `image_generate`).
-- `tool_name`: the actual tool or command used, such as `GenerateImage`, `image_gen`, `codex-gpt-image`, or `scripts/image_gen.py`. Do not use OpenClaw `image_generate`.
-- `mode`: `generate` or `edit`.
-- `prompt_source`: where the approved sample prompt came from.
-- `size`, `quality`, and model/config details when the backend exposes them.
-- `approved_sample_path`: the approved `origin_image/slide_XX.png` path.
-- `input_context_preparation`: how local source/style images were made available, such as `view_image` for built-in mode.
-- `handoff_rule`: subagents must use the same backend/tool/mode and return a blocker if that path is unavailable.
-- `aspect_ratio`: the **locked deck** ratio (`16:9` / `4:3` / `3:2`), not a GenerateImage tool argument. `prepare_slide_prompts.py` overwrites this field to the locked label for non-gpt-image-2 backends.
-- For Cursor `GenerateImage`: `tool_aspect_ratio_argument` (the value actually passed to the tool, e.g. `16:9` when the schema lacks `3:2`) and `measured_size` (e.g. `1536x1024`). Do not store the tool argument in `aspect_ratio`.
+```text
+record_plan_approval.py DECK --approve-sample slide_02 --image CANDIDATE.png --backend-used LABEL --evidence "Actual sample acceptance"
+```
+
+Approval preserves immutable bytes in references/approved_samples and separately binds the accepted final content slide. Explicit --style-only reuse does not accept that reference as a final page. A content-page rendering repair must not overwrite the shared style reference.
+
+Lock the available backend/tool/mode/input preparation/model/config in planning.generation before approval; carry that contract into jobs. Check the actual tool path can attach every source/style image. Cursor records the legal tool_aspect_ratio_argument separately from the locked aspect_ratio and measured pixels. Changing a method or sample strategy requires a revised approved plan; never silently route around unsupported capabilities.
+
+Production starts only after compatible required samples are accepted:
+
+```text
+prepare_slide_prompts.py --spec DECK/deck_spec.json --out-dir DECK --phase production
+```
+
+Keep one visual identity while layouts vary by slide role. Calibration is a meaningful shared check, not pixel-identical geometry or a per-page interview.

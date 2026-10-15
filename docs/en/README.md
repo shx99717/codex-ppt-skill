@@ -1,6 +1,6 @@
 # Codex PPT Skill Documentation
 
-Codex PPT is a presentation-generation skill built for Codex. It also works with agents that support `SKILL.md`, including Claude Code, OpenClaw, and Hermes Agent. It turns articles, reports, papers, course notes, or rough ideas into image-based presentations: first planning the outline and visual style, then generating each complete slide as an image, and finally assembling the images into a `.pptx` file.
+Codex PPT is a presentation-generation skill built for Codex. It also works with agents that support `SKILL.md`, including Claude Code, OpenClaw, and Hermes Agent. It turns articles, reports, papers, course notes, or rough ideas into image-based presentations: first planning the outline and visual style, then generating each complete slide as an image, and finally assembling the images into a `.pptx` file. Inputs can range from a topic to complete slide Markdown, including mixed readiness. The skill reuses ready copy and notes, clarifies consequential gaps, and approves exact content, visual meaning and natural presenter talk before expensive images. Consolidated current-image review is the default; strict batch review is available. Minor raster differences remain possible.
 
 ## How to Read This Documentation
 
@@ -59,3 +59,7 @@ You cannot use this skill without access to the `gpt-image-2` image-generation m
 - ClawHub page: https://clawhub.ai/ningzimu/codex-ppt
 - Use case showcase: https://github.com/ningzimu/codex-ppt-skill/issues/34
 - Editable presentation conversion skill: https://github.com/shx99717/image-to-editable-ppt-skill
+
+Speaker notes are drafted early in the presentation language, as the presenter's own warm, everyday speech: concrete scenes, thought-sized beats with blank-line pauses, natural connectors and purposeful transitions. Supplied notes are preserved; substantial additions need approval. Length follows speaking time and complexity.
+
+Managed v2 scripts enforce current plan/talk/policy decisions, source/sample bytes, compiled inputs, QA and actual current-image acceptance. Historical manual/image-only runs require explicit `--legacy-unmanaged`, which cannot bypass managed approval. CLI jobs use `run_slide_job.py` to forward every approved setting and image input.

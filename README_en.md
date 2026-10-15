@@ -39,7 +39,7 @@ For a basic introduction to skill design and usage, see [good-skill-design.pptx]
 
 - Works across multiple agents: supports Codex, Claude Code, OpenClaw, Hermes Agent, and other `SKILL.md`-based environments; Codex is the recommended environment because it can use the built-in image generation and image editing tools first.
 - Supports third-party image providers: works with OpenAI-compatible endpoints, AtlasCloud, `base URL`, and custom model names, so API/CLI fallback can use `gpt-image-2` or compatible image models.
-- Stable staged workflow: confirms the outline, slide count, visual style, PPT ratio, image backend, and sample slide before full-deck generation, reducing drift and rework when generating a complete PPT.
+- Inputs can range from a topic to complete slide Markdown, including mixed readiness. The skill reuses ready copy and notes, clarifies consequential gaps, and approves exact content, visual meaning and natural presenter talk before expensive images. Consolidated current-image review is the default; strict batch review is available. Minor raster differences remain possible.
 - Guided instead of one-shot: the skill asks you to confirm `outline.md`, per-slide key points, style direction, and sample-slide quality before continuing.
 - Low setup effort: articles, reports, papers, course notes, Markdown files, outlines, PDFs, and Word documents can all be used as starting material.
 - 12 built-in PPT style references: includes clean professional, scientific defense, Party-and-Government Red, Teaching Courseware, e-ink magazine, hand-drawn technical explainer, dashboard, McKinsey style, and more. The hand-drawn technical explainer style is a strong starting point if you do not want to write prompts.
@@ -202,18 +202,17 @@ Use the codex-ppt skill to turn /path/to/article.md into a roughly 10-slide PPT.
 
 The skill follows this workflow:
 
-1. Read the source content and plan the deck outline.
-2. Generate `outline.md` and ask you to confirm slide count, slide titles, and key points.
-3. Offer 2-3 visual style options and recommend one for user confirmation.
-4. Ask you to lock the final PPT ratio (`16:9` / `4:3` / `3:2`; recommend 3:2 on Cursor, 16:9 on Codex / Claude Code). Cursor `GenerateImage` is offered only for 3:2.
-5. State the image generation backend (only tools that can produce the locked ratio; each option names the model) and ask you to confirm it.
-6. Generate one sample slide with the confirmed image backend for approval of style, layout rhythm, and text quality.
-7. Create the PPT project directory.
-8. Generate all slide images one by one with the same image backend.
-9. Check text readability, style consistency, and content completeness.
-10. Generate `speech.md`.
-11. Assemble the `.pptx` with `assemble_ppt.py` (pass the already-locked `--aspect-ratio`; then ask: no template / medavis / both; confirm landing title for medavis before the PPTX exists; medavis is N+2 slides).
-12. Optional: if you really like the generated PPT style, save it to the style library; if it already uses a built-in style, you do not need to save it again.
+Inputs can range from a topic to complete slide Markdown, including mixed readiness. The skill reuses ready copy and notes, clarifies consequential gaps, and approves exact content, visual meaning and natural presenter talk before expensive images. Consolidated current-image review is the default; strict batch review is available. Minor raster differences remain possible.
+
+Speaker notes are drafted early in the presentation language, as the presenter's own warm, everyday speech: concrete scenes, thought-sized beats with blank-line pauses, natural connectors and purposeful transitions. Supplied notes are preserved; substantial additions need approval. Length follows speaking time and complexity.
+
+Managed v2 scripts enforce current plan/talk/policy decisions, source/sample bytes, compiled inputs, QA and actual current-image acceptance. Historical manual/image-only runs require explicit `--legacy-unmanaged`, which cannot bypass managed approval. CLI jobs use `run_slide_job.py` to forward every approved setting and image input.
+
+1. Assess reusable content and visual readiness; reuse known decisions and clarify only consequential intent.
+2. Draft exact copy, visuals, sources, shared identities, story/dependencies and natural presenter notes together. Label proposals and missing evidence. Select or reuse style, lock ratio and a capable backend with explicit settings/image-input operations, and define representative samples, output profile/title and review policy.
+3. Approve the complete content/visual/talk/method/output plan by exception, then generate or reuse and accept the representative samples.
+4. Compile approved jobs, generate the deck, inspect the first batch and the complete sequence. Allow one targeted automatic rendering repair; further attempts need authorization. Default to consolidated current-image user review; strict batch review is available.
+5. Revalidate current inputs, images, talk and approvals, then assemble the already-approved plain/Medavis/both output. Plain has N content slides; Medavis has N+2 with content-note offsets. Optionally save a custom/adapted style.
 
 ## Usage Tips
 

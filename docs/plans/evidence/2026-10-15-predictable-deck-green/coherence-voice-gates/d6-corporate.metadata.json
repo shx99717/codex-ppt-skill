@@ -1,0 +1,12 @@
+{
+  "case": "D6-corporate",
+  "mode": "MOCK/TEST text-only",
+  "artifact": "d6-maya-corporate.md",
+  "language": "en",
+  "steps": ["respect direct request for polished corporate register", "produce complete formal card and notes", "retain fiction and qualitative scope", "scripted acceptance", "hold production"],
+  "scripted_decisions": [{"id": "D6P-U2", "actor": "MOCK HUMAN", "scope": "formal wording and transition", "evidence": "Use the formal version and its transition."}],
+  "approval_state": {"local_plan_and_talk": "scripted acceptance", "production_settings": "unbound", "current_final_images": "absent", "actual_runtime_approval": "absent"},
+  "results": {"cards": 1, "notes": "actual five-beat formal text", "note_word_count": 130, "target_seconds": 60, "estimated_seconds_at_120_to_150_wpm": [52, 65], "timed_rehearsal": "not performed", "images_generated": 0},
+  "claims": {"persona": "explicitly fictional Maya", "measured_results": "none", "real_customer_story": "none", "personal_experience": "none"},
+  "concerns": ["formal variant deliberately follows explicit user style instead of silently applying default warmth", "timing is estimated"]
+}

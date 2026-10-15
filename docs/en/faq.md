@@ -65,3 +65,19 @@ Revise only that slide first. Tell the agent the specific issue—for example, t
 ## Q: Can I Save My Own Styles?
 
 Yes. Give the agent presentation screenshots, a PDF, or a complete presentation that you like and ask it to analyze the style. Once you are satisfied with the generated result, ask the agent to save the style to your personal style library at `~/.codex-ppt-skill/references/`. The library is stored outside the skill installation directory, so it is preserved when the skill is updated or reinstalled. If a personal style shares a name with a built-in style, the personal style takes precedence. See [Styles and Personal Style Library](/en/styles.md).
+
+## Q: How much content must I provide?
+
+A topic, rough paragraph, prepared slide content or a mixture is enough to start. The agent assesses gaps and asks only consequential questions; ready text and notes are reused. Missing company facts are requested or omitted with your agreement, never invented. Review time depends on complexity; there is no fixed question, bullet or per-page interview quota.
+
+## Q: When are notes, visuals and output choices approved?
+
+Before bulk images, review exact visible copy, visual objects/relationships, sources, recurring identities, story, notes, output profile/title and review policy together. A representative note helps calibrate natural voice. Notes explain meaning in the presentation language and remain available in PowerPoint's notes area.
+
+## Q: Can agent QA approve my images or keep retrying indefinitely?
+
+No. Agent inspection and your current-image acceptance are separate. Consolidated review lets routine batches continue before whole-deck review; strict review pauses per batch. One isolated rendering defect gets one automatic targeted repair; additional attempts need actual authorization. Repeated first-batch failures pause for a common-cause correction.
+
+## Q: How are revisions and old image folders handled?
+
+Changes to shared facts/visual meanings include dependent pages and talk. Note-only revisions keep current images; source or prompt drift rejects stale jobs. Historical manual folders use explicit `--legacy-unmanaged`; managed decks cannot use it to bypass approvals.
