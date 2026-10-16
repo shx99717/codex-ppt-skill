@@ -31,10 +31,16 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("deck", help="Deck directory or slide_jobs.json")
     parser.add_argument("--json", action="store_true")
+    parser.add_argument("--legacy-unmanaged", action="store_true")
     args = parser.parse_args()
 
     deck_dir = deck_dir_from_target(args.deck)
     jobs = load_jobs(deck_dir)
+    from planning_contract import require_legacy_allowed, load_managed_spec
+    if args.legacy_unmanaged:
+        require_legacy_allowed(deck_dir)
+    elif jobs.get("workflow_version") != 2:
+        load_managed_spec(deck_dir)
     state = load_run_state(deck_dir)
     by_status = defaultdict(list)
     for slide in jobs.get("slides", []):
@@ -51,6 +57,33 @@ def main() -> int:
         "counts": dict(Counter(slide.get("status", "unknown") for slide in jobs.get("slides", []))),
         "slides": dict(sorted(by_status.items())),
     }
+
+    if jobs.get("workflow_version")==2:
+        from planning_contract import (build_manifest,load_managed_spec,qa_is_current,
+                                       require_job_current,ContractError)
+        from slide_run_state import review_is_valid
+        stale=[]
+        pending_qa=[]
+        pending_review=[]
+        try:
+            manifest=build_manifest(load_managed_spec(deck_dir),deck_dir)
+            for slide in jobs["slides"]:
+                sid=slide["slide_id"]
+                try:
+                    require_job_current(deck_dir,jobs,slide)
+                except (ContractError,OSError):
+                    stale.append(sid)
+                if slide.get("status") in {"recorded","accepted"} and not qa_is_current(deck_dir,slide,manifest):
+                    pending_qa.append(sid)
+                if slide.get("status")=="recorded" and not review_is_valid(deck_dir,slide):
+                    pending_review.append(sid)
+        except ContractError as exc:
+            summary["managed_error"]=str(exc)
+            stale=[s["slide_id"] for s in jobs["slides"]]
+        summary.update(stale_scope_ids=stale,pending_qa=pending_qa,pending_review=pending_review,
+            pending_exceptions=[s["slide_id"] for s in jobs["slides"] if s.get("status") in {"pending_repair","blocked"}],
+            first_batch=jobs.get("first_batch"),systemic_pause=jobs.get("systemic_pause",False),
+            repair_counts={s["slide_id"]:s.get("repair_counts",{}) for s in jobs["slides"]})
     if args.json:
         print(json.dumps(summary, ensure_ascii=False, indent=2))
         return 0

@@ -55,6 +55,7 @@ class GenerateStdoutEncodingTests(unittest.TestCase):
                 sys.argv = [
                     "image_gen.py",
                     "generate",
+                    "--model", "synthetic/image-model",
                     "--prompt",
                     "test prompt",
                     "--out",

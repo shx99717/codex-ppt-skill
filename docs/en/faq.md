@@ -16,7 +16,7 @@ Yes. Codex PPT is a `SKILL.md`-based skill. In addition to Codex, it works with 
 
 This skill is developed and tested primarily with Codex, so Codex offers the best compatibility and is recommended.
 
-Different agents have different image-generation capabilities and tool interfaces. Outside Codex, you will usually need to configure `gpt-image-2` or a third-party OpenAI-compatible image-generation API. See [Installation and Configuration](/en/installation.md), and let the AI guide you through setup based on your current environment.
+Different agents have different image-generation capabilities and tool interfaces. Outside Codex, you will usually need to configure the configured image model or a third-party OpenAI-compatible image-generation API. See [Installation and Configuration](/en/installation.md), and let the AI guide you through setup based on your current environment.
 
 ## Q: How Do I Update the Skill to the Latest Version?
 
@@ -32,15 +32,15 @@ Do not regenerate the entire deck. First select one or two slides with obvious d
 
 ## Q: What Should I Do If the Generated Presentation Looks Bad?
 
-First confirm that your `gpt-image-2` model can generate images correctly. If the model is unavailable, returns abnormal quality, or a third-party API or relay service does not correctly support `gpt-image-2`, the output quality will be significantly worse.
+First confirm that your configured image model can generate images correctly. If the model is unavailable, returns abnormal quality, or a third-party API or relay service does not correctly support the configured image model, the output quality will be significantly worse.
 
 After confirming that the model works, ask the AI to address specific issues such as inconsistent styling, text that is too small, overcrowded layouts, unattractive colors, or illustrations that do not match the topic. It is best to regenerate one sample slide first and continue with the full deck only after you are satisfied.
 
 ## Q: What Should I Do If the Generated Slide Images Are Blurry?
 
-Codex subscribers use the built-in `image_gen` tool by default. If the tool schema accepts `WIDTHxHEIGHT`, pass `--size` for the locked ratio: `2560x1440` (16:9), `2560x1920` (4:3), or `2400x1600` (3:2). If the schema cannot express the locked ratio, omit `image_gen` and ask the user. Returned pixels may be smaller than the requested box; gate on 2% relative ratio, not exact pixels.
+Prefer callable Codex `image_gen` or Cursor `GenerateImage` using the live tool schema. Native model identity is host-managed. Codex can request 16:9 or 4:3 in the prompt without a size parameter; Cursor should pass the supported `aspect_ratio` value. Measure actual saved width/height (2% ratio tolerance); requested resolution is not proof of native 4K. API fallback reuses an explicitly configured provider model; if absent, select one using current documentation. There is no fixed model default. Attach every required source/style image through the actual input mechanism and record attempt-bound submission evidence. Native/bridge evidence is agent-reported; CLI adapter verification requires registered successful execution. Old project files remain readable, but new managed execution/assembly requires recompilation and fresh evidence. Only 16:9 and 4:3 decks are supported; no automatic conversion of old ratios.
 
-The API/CLI fallback (`codex-gpt-image` / `image_gen.py`) must pass the same `--size` table. For a 16:9 deck that is still blurry on text-heavy slides, ask the AI to generate at 4K. See [Installation and Configuration](/en/installation.md) for API key setup.
+For API fallback, use the selected model’s documented settings; a mandatory output resolution must be verified on actual files.
 
 ## Q: Why Confirm the Outline First?
 
@@ -65,3 +65,19 @@ Revise only that slide first. Tell the agent the specific issue—for example, t
 ## Q: Can I Save My Own Styles?
 
 Yes. Give the agent presentation screenshots, a PDF, or a complete presentation that you like and ask it to analyze the style. Once you are satisfied with the generated result, ask the agent to save the style to your personal style library at `~/.codex-ppt-skill/references/`. The library is stored outside the skill installation directory, so it is preserved when the skill is updated or reinstalled. If a personal style shares a name with a built-in style, the personal style takes precedence. See [Styles and Personal Style Library](/en/styles.md).
+
+## Q: How much content must I provide?
+
+A topic, rough paragraph, prepared slide content or a mixture is enough to start. The agent assesses gaps and asks only consequential questions; ready text and notes are reused. Missing company facts are requested or omitted with your agreement, never invented. Review time depends on complexity; there is no fixed question, bullet or per-page interview quota.
+
+## Q: When are notes, visuals and output choices approved?
+
+Before bulk images, review exact visible copy, visual objects/relationships, sources, recurring identities, story, notes, output profile/title and review policy together. A representative note helps calibrate natural voice. Notes explain meaning in the presentation language and remain available in PowerPoint's notes area.
+
+## Q: Can agent QA approve my images or keep retrying indefinitely?
+
+No. Agent inspection and your current-image acceptance are separate. Consolidated review lets routine batches continue before whole-deck review; strict review pauses per batch. One isolated rendering defect gets one automatic targeted repair; additional attempts need actual authorization. Repeated first-batch failures pause for a common-cause correction.
+
+## Q: How are revisions and old image folders handled?
+
+Changes to shared facts/visual meanings include dependent pages and talk. Note-only revisions keep current images; source or prompt drift rejects stale jobs. Historical manual folders use explicit `--legacy-unmanaged`; managed decks cannot use it to bypass approvals.

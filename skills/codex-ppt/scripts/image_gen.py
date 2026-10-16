@@ -5,7 +5,7 @@ Used when Codex's built-in image tool is unavailable, when the user explicitly
 opts into API mode, or when explicit transparent output requires the
 `gpt-image-1.5` fallback path.
 
-Defaults to gpt-image-2 and a structured prompt augmentation workflow.
+Requires an explicitly configured API model. Native tools are host-managed.
 Reads OPENAI_API_KEY, and optionally OPENAI_BASE_URL for provider adapters or
 OpenAI-compatible proxy providers.
 """
@@ -28,25 +28,18 @@ from urllib.parse import urlparse
 from image_providers import create_image_provider
 from image_providers.atlascloud import atlascloud_model_for_operation
 
-DEFAULT_MODEL = "gpt-image-2"
+DEFAULT_MODEL = None
 DEFAULT_SIZE = "2560x1440"
 DEFAULT_QUALITY = "medium"
 DEFAULT_OUTPUT_FORMAT = "png"
 DEFAULT_CONCURRENCY = 5
 DEFAULT_DOWNSCALE_SUFFIX = "-web"
 DEFAULT_OUTPUT_PATH = "output/imagegen/output.png"
-GPT_IMAGE_MODEL_PREFIX = "gpt-image-"
 
 ALLOWED_LEGACY_SIZES = {"1024x1024", "1536x1024", "1024x1536", "auto"}
-ALLOWED_QUALITIES = {"low", "medium", "high", "auto"}
+ALLOWED_QUALITIES = {"low", "medium", "high", "xhigh", "max", "auto"}
 ALLOWED_BACKGROUNDS = {"transparent", "opaque", "auto", None}
 ALLOWED_INPUT_FIDELITIES = {"low", "high", None}
-
-GPT_IMAGE_2_MODEL = "gpt-image-2"
-GPT_IMAGE_2_MIN_PIXELS = 655_360
-GPT_IMAGE_2_MAX_PIXELS = 8_294_400
-GPT_IMAGE_2_MAX_EDGE = 3840
-GPT_IMAGE_2_MAX_RATIO = 3.0
 
 MAX_IMAGE_BYTES = 50 * 1024 * 1024
 MAX_BATCH_JOBS = 500
@@ -88,7 +81,7 @@ def _load_runtime_env() -> None:
 
 
 def _default_model() -> str:
-    return os.getenv("CODEX_PPT_IMAGE_MODEL", DEFAULT_MODEL)
+    return os.getenv("CODEX_PPT_IMAGE_MODEL")
 
 
 def _api_base_url() -> Optional[str]:
@@ -223,36 +216,9 @@ def _parse_size(size: str) -> Optional[Tuple[int, int]]:
     return int(match.group(1)), int(match.group(2))
 
 
-def _validate_gpt_image_2_size(size: str) -> None:
-    if size == "auto":
-        return
-
-    parsed = _parse_size(size)
-    if parsed is None:
-        _die("size must be auto or WIDTHxHEIGHT, for example 1024x1024.")
-
-    width, height = parsed
-    max_edge = max(width, height)
-    min_edge = min(width, height)
-    total_pixels = width * height
-
-    if max_edge > GPT_IMAGE_2_MAX_EDGE:
-        _die("gpt-image-2 size maximum edge length must be less than or equal to 3840px.")
-    if width % 16 != 0 or height % 16 != 0:
-        _die("gpt-image-2 size width and height must be multiples of 16px.")
-    if max_edge / min_edge > GPT_IMAGE_2_MAX_RATIO:
-        _die("gpt-image-2 size long edge to short edge ratio must not exceed 3:1.")
-    if total_pixels < GPT_IMAGE_2_MIN_PIXELS or total_pixels > GPT_IMAGE_2_MAX_PIXELS:
-        _die(
-            "gpt-image-2 size total pixels must be at least 655,360 and no more than 8,294,400."
-        )
-
-
 def _validate_size(size: str, model: str) -> None:
-    if _is_gpt_image_2_model(model):
-        _validate_gpt_image_2_size(size)
+    if size == "auto" or (_parse_size(size) and all(v > 0 for v in _parse_size(size))):
         return
-
     if size not in ALLOWED_LEGACY_SIZES:
         _die(
             "size must be one of 1024x1024, 1536x1024, 1024x1536, or auto for this GPT Image model."
@@ -260,8 +226,8 @@ def _validate_size(size: str, model: str) -> None:
 
 
 def _validate_quality(quality: str) -> None:
-    if quality not in ALLOWED_QUALITIES:
-        _die("quality must be one of low, medium, high, or auto.")
+    if not isinstance(quality,str) or not quality.strip():
+        _die("quality must be a nonempty documented setting; check selected model support.")
 
 
 def _validate_background(background: Optional[str]) -> None:
@@ -275,40 +241,16 @@ def _validate_input_fidelity(input_fidelity: Optional[str]) -> None:
 
 
 def _validate_model(model: str) -> None:
-    if GPT_IMAGE_MODEL_PREFIX not in model:
+    if not isinstance(model,str) or not model.strip() or model == "None":
         _die(
-            "model must be a GPT Image model name containing 'gpt-image-' "
-            "(for example gpt-image-2, openai/gpt-image-2, gpt-image-1.5, "
-            "gpt-image-1, or gpt-image-1-mini)."
+            "No API image model configured; set --model or CODEX_PPT_IMAGE_MODEL. "
+            "Use the documented model ID for your configured provider."
         )
-
-
-def _is_gpt_image_2_model(model: str) -> bool:
-    return GPT_IMAGE_2_MODEL in model
 
 
 def _validate_transparency(background: Optional[str], output_format: str) -> None:
     if background == "transparent" and output_format not in {"png", "webp"}:
         _die("transparent background requires output-format png or webp.")
-
-
-def _validate_model_specific_options(
-    *,
-    model: str,
-    background: Optional[str],
-    input_fidelity: Optional[str] = None,
-) -> None:
-    if not _is_gpt_image_2_model(model):
-        return
-    if background == "transparent":
-        _die(
-            "transparent backgrounds are not supported in gpt-image-2, the latest model. "
-            "Use --model gpt-image-1.5 --background transparent --output-format png instead."
-        )
-    if input_fidelity is not None:
-        _die(
-            "input_fidelity is not supported in gpt-image-2 because image inputs always use high fidelity for this model."
-        )
 
 
 def _validate_generate_payload(payload: Dict[str, Any]) -> None:
@@ -323,7 +265,6 @@ def _validate_generate_payload(payload: Dict[str, Any]) -> None:
     _validate_size(size, model)
     _validate_quality(quality)
     _validate_background(background)
-    _validate_model_specific_options(model=model, background=background)
     oc = payload.get("output_compression")
     if oc is not None and not (0 <= int(oc) <= 100):
         _die("output_compression must be between 0 and 100")
@@ -592,6 +533,13 @@ def _job_output_paths(
     ]
 
 
+def _validate_profile_payload(args, payload, operation):
+    if args.capabilities_file:
+        from image_capabilities import validate_capabilities
+        profile=json.loads(Path(args.capabilities_file).read_text(encoding="utf-8"))
+        validate_capabilities(profile,payload["model"],_api_base_url(),operation,payload,operation=="edit",managed=False)
+
+
 async def _run_generate_batch(args: argparse.Namespace) -> int:
     jobs = _read_jobs_jsonl(args.input)
     out_dir = Path(args.out_dir)
@@ -622,6 +570,7 @@ async def _run_generate_batch(args: argparse.Namespace) -> int:
             job_payload = {k: v for k, v in job_payload.items() if v is not None}
 
             _validate_generate_payload(job_payload)
+            _validate_profile_payload(args,job_payload,"generate")
             effective_output_format = _normalize_output_format(job_payload.get("output_format"))
             _validate_transparency(job_payload.get("background"), effective_output_format)
             job_payload["output_format"] = effective_output_format
@@ -654,6 +603,11 @@ async def _run_generate_batch(args: argparse.Namespace) -> int:
             )
         return 0
 
+    for job in jobs:
+        merged=_merge_non_null(base_payload,{key:job.get(key) for key in base_payload})
+        merged={key:value for key,value in merged.items() if value is not None}
+        _validate_generate_payload(merged)
+        _validate_profile_payload(args,merged,"generate")
     provider = create_image_provider(api_key=os.getenv("OPENAI_API_KEY"), base_url=_api_base_url())
     sem = asyncio.Semaphore(args.concurrency)
 
@@ -675,6 +629,7 @@ async def _run_generate_batch(args: argparse.Namespace) -> int:
 
         n = int(payload.get("n", 1))
         _validate_generate_payload(payload)
+        _validate_profile_payload(args,payload,"generate")
         effective_output_format = _normalize_output_format(payload.get("output_format"))
         _validate_transparency(payload.get("background"), effective_output_format)
         payload["output_format"] = effective_output_format
@@ -867,6 +822,7 @@ def _edit(args: argparse.Namespace) -> None:
 
 
 def _add_shared_args(parser: argparse.ArgumentParser) -> None:
+    parser.add_argument("--capabilities-file", help="Documented model/provider/operation capabilities JSON")
     parser.add_argument("--model", default=_default_model())
     parser.add_argument("--prompt")
     parser.add_argument("--prompt-file")
@@ -957,13 +913,14 @@ def main() -> int:
     _validate_size(args.size, args.model)
     _validate_quality(args.quality)
     _validate_background(args.background)
-    _validate_model_specific_options(
-        model=args.model,
-        background=args.background,
-        input_fidelity=getattr(args, "input_fidelity", None),
-    )
     _ensure_api_key(args.dry_run)
 
+    if args.capabilities_file and args.command != "generate-batch":
+        from image_capabilities import validate_capabilities
+        profile=json.loads(Path(args.capabilities_file).read_text(encoding="utf-8"))
+        validate_capabilities(profile,args.model,_api_base_url(),"edit" if args.command=="edit" else "generate",
+            {"quality":args.quality,"size":args.size,"background":args.background,"input_fidelity":getattr(args,"input_fidelity",None)},
+            args.command=="edit",managed=False)
     args.func(args)
     return 0
 

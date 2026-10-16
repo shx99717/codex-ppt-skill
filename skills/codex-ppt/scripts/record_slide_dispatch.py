@@ -4,7 +4,9 @@
 from __future__ import annotations
 
 import argparse
+import uuid
 from pathlib import Path
+from planning_contract import consumer_lock, require_job_current, authorize_dispatch, ContractError
 
 from slide_run_state import (
     deck_dir_from_target,
@@ -28,10 +30,11 @@ def main() -> int:
     parser.add_argument("--agent-id", required=True)
     parser.add_argument("--agent-nickname")
     parser.add_argument("--prompt-file", help="Prompt file path. Defaults to the job file in slide_jobs.json.")
+    parser.add_argument("--legacy-unmanaged", action="store_true")
     args = parser.parse_args()
 
     deck_dir = deck_dir_from_target(args.deck)
-    with locked_jobs(deck_dir) as jobs:
+    with consumer_lock(deck_dir, args.legacy_unmanaged) as managed, locked_jobs(deck_dir) as jobs:
         slide = find_slide(jobs, args.slide)
         if slide.get("status") != "pending":
             raise SystemExit(f"{slide['slide_id']} must be pending before dispatch; got {slide.get('status')}")
@@ -47,8 +50,17 @@ def main() -> int:
         if not prompt_path.exists():
             raise SystemExit(f"Prompt file does not exist: {prompt_path}")
 
+        if managed:
+            if prompt_path != resolve_deck_path(deck_dir, slide["job"]):
+                raise ContractError("Managed dispatch cannot override the compiled prompt path")
+            job = require_job_current(deck_dir, jobs, slide)
+            authorize_dispatch(deck_dir, jobs, slide, job)
+
         slide.pop("user_review", None)
+        slide.pop("qa", None)
+        slide.pop("execution_completion", None)
         slide["dispatch"] = {
+            "attempt_id": str(uuid.uuid4()),
             "agent_id": args.agent_id,
             "agent_nickname": args.agent_nickname,
             "prompt": rel_to_deck(deck_dir, prompt_path),

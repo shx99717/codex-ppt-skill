@@ -1,60 +1,52 @@
 # Slide Worker Prompt
 
-Use this template when dispatching a slide subagent after the sample slide is approved and full-deck generation is authorized.
+Use this packet for one managed sample/production/repair job. The parent owns final state/files and actual user decisions.
 
 ```text
-Generate slide <N> for this codex-ppt deck.
+Generate the single local output slide from <DECK>/prompts/slide_<NN>.json.
 
-Deck dir: <absolute deck dir>
-Slide job file: <absolute deck dir>/prompts/slide_<NN>.json
-Output target owned by parent: <absolute deck dir>/origin_image/slide_<NN>.png
-Selected image backend: <exact locked label from parent>
-Sample generation method copied from the approved sample:
-- backend_used: <exact backend label recorded by parent>
-- tool_name: <GenerateImage OR image_gen OR codex-gpt-image OR scripts/image_gen.py>
-- mode: <generate OR edit>
-- model/config: <model, size, quality, or "built-in default" if not exposed>
-- prompt_source: <approved sample prompt source>
-- input_context_preparation: <how local images were made visible or attached>
-- approved_sample_path: <absolute path to approved origin_image/slide_XX.png>
-- handoff_rule: use this same backend/tool/mode; return a blocker if unavailable
-- aspect_ratio: <locked deck ratio 16:9 OR 4:3 OR 3:2, not the GenerateImage tool argument>
-- tool_aspect_ratio_argument: <GenerateImage only: value actually passed, e.g. 16:9; omit for other backends>
-- measured_size: <GenerateImage only: WxH of the approved sample, e.g. 1536x1024>
-Input images already prepared by the parent:
-- <absolute path> - approved sample slide style reference; match style only, do not copy layout
-- <absolute path> - strict input asset; preserve labels/data/arrows/content
+Read its prompt, generation_config/sample_generation_method, compiled execution,
+phase and input_images. Wait for the parent to record your matching actual dispatch
+before calling the backend; preparation alone does not authorize an attempt.
+The approved render context contains exact visible_copy, intended visual objects and
+relationships, relevant shared identities and dependency background. Dependencies
+are context only, not additional output pages. Preserve every approved word,
+critical value, symbol meaning and relationship. Metadata/source paths are not text.
+A sample reference supplies style only; do not copy its content or composition.
 
-Read the JSON job file, then follow its `prompt` field exactly. Use the selected image backend and the recorded sample generation method only.
-You must produce the final slide candidate by calling the selected image generation backend:
-- Use the exact locked tool/label from the parent (for example Cursor GenerateImage, Codex image_gen, codex-gpt-image, or scripts/image_gen.py).
-- The locked backend must emit the **locked PPT ratio** from `deck_spec.json` / `slide_jobs.json` (`aspect_ratio`). Gate 2% relative ratio, not exact pixels.
-- Cursor GenerateImage: only when locked ratio is 3:2. Prompt text is not enough. If `sample_generation_method.tool_aspect_ratio_argument` is set, pass that as `aspect_ratio` (it is the value that produced the approved sample). Otherwise inspect the live schema enum: if it includes `3:2`, pass `aspect_ratio="3:2"`; if not, pass `aspect_ratio="16:9"` (or another schema-legal landscape value) and verify the saved file is 3:2 within 2% relative (observed 1536×1024). Do not pass `3:2` when the schema rejects it. `sample_generation_method.aspect_ratio` is the locked deck ratio, not the tool argument. If the parent locked 16:9 or 4:3, return a blocker instead of calling GenerateImage. Do not switch to another backend because the enum lacks `3:2`.
-- gpt-image-2 tools (`image_gen`, `codex-gpt-image`, `scripts/image_gen.py`): pass `--size` `2560x1440` (16:9), `2560x1920` (4:3), or `2400x1600` (3:2). Do not use `auto`.
-- If a style or `references/*.md` file says 16:9 but `deck_spec.aspect_ratio` is 4:3 or 3:2, follow the spec Canvas / locked ratio.
-- CLI/API fallback mode: use `scripts/image_gen.py` with the saved job prompt, required image inputs, and the ratio `--size`.
-- If the tool cannot produce the locked ratio, stop and return `blocker=<reason>` instead of stretching, letterboxing, or cropping.
+Use the exact selected backend/tool and approved input path/configuration.
+Inspect local source/style snapshots and attach every required image through
+the actual image tool. A CLI text-only generate path cannot consume image inputs;
+return a blocker if the approved path cannot attach them. Do not silently
+change backend/model/mode, omit inputs, or use a lower-quality substitute.
 
-Forbidden for final slide image creation:
-- local drawing or rendering scripts
-- Pillow-generated slides
-- SVG, HTML/CSS, or canvas screenshots
-- python-pptx/PptxGenJS/native PPT layout screenshots
-- manually composited text, card, chart, or image overlays
-- switching to a different backend than the parent locked (including OpenClaw image_generate)
+For scripts/image_gen.py, use run_slide_job.py DECK --slide ID --agent-id YOUR_ID
+--out DECK/candidates/NEW_ATTEMPT.png. This consumes the compiled operation policy
+(generate without inputs; explicitly approved reference_mode=edit with inputs),
+exact settings and every verified image. Do not replay managed JSON with generate-batch.
 
-If you cannot use the selected image backend, stop and return `blocker=<reason>` instead of creating a lower-quality replacement.
-If you cannot follow the recorded sample generation method, stop and return `blocker=<reason>` instead of switching tools.
-Do not edit slide job files, origin_image, speech.md, or assemble the PPT.
+Ratio is the locked 16:9 or 4:3. For native Codex image_gen, use the explicit ratio in the prompt even if no size/ratio parameter exists. For Cursor pass the supported aspect_ratio value. Never invent parameters or a model ID. Measure original output pixels; reject more than 2% relative ratio error. No stretch/crop/letterbox substitute. Exact/minimum output sizes apply only if approved as requirements.
 
-Before returning, visually check:
-- text in the slide's locked language is readable and not garbled (for mixed slides: both CJK and Latin)
-- style matches the approved sample slide
-- required source images are visibly included and not replaced by a similar redraw
-- no overlapping or truncated important content
+Attach every input through the live tool mechanism. Inspect local snapshots first, then use explicit reference paths when supported; context-only inclusion needs complete mapping and adequate capacity. Return a blocker if any input cannot be attached. Return an actual submission receipt described in docs/image-submission-evidence.md, bound to dispatch.attempt_id, current job and original candidate bytes. Native/bridge evidence_origin is agent_reported. The bundled CLI emits its own registered receipt after successful execution; do not synthesize one or reuse a different attempt.
 
-Return only:
-backend_used=<exact locked label from parent>
-selected_source=/absolute/path/to/$CODEX_HOME/generated_images/.../ig_*.png
-qa_note=<one sentence>
+Generate one complete raster slide through that backend. Forbidden:
+local drawing, Pillow-generated slides, SVG/HTML/CSS/canvas screenshots,
+python-pptx/PptxGenJS layout screenshots, manual text/card/chart overlays,
+and changing to OpenClaw image_generate or another backend.
+
+Inspect exact text in the slide language, critical labels/data, source-image
+inclusion/fidelity, shared identity, relationships, overlaps and truncation.
+Repair only rendering within the assigned compiled request. Do not rewrite
+approved copy or remove a required label when it cannot fit: return a blocker.
+
+Do not edit the job, spec, approval ledger, other jobs, origin_image, speech,
+outline, or final PPTX. Parent alone records results, QA, repairs and acceptance.
+Keep your selected original backend-generated candidate outside origin_image.
+
+Return:
+backend_used=<actual locked label>
+selected_source=<absolute original generated candidate path>
+submission_receipt=<absolute actual attempt receipt path>
+qa_note=<actual inspection summary>
+or blocker=<specific unavailable input/tool/fit/quality issue and evidence>
 ```

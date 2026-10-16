@@ -1,86 +1,52 @@
-# Portable run prompt
+# Portable managed smoke prompt
 
-A single, copy-paste prompt for running the smoke-deck regression test. Paste it as-is into a
-fresh Codex, Claude Code, or Cursor session — no editing needed. It self-detects which of the
-three it's running in, asks you where to put the output, then generates and verifies the deck
-and reports BASELINE/TARGET results.
+Paste the following into the intended host. See [smoke documentation](README.md) for verification limits and [portable prompt](RUN_PROMPT.md) for sibling variants. This is a live test request only when the user invokes it; saving this prompt does not authorize a run.
 
-Use this the same way before and after any change to the skill: it always runs against whatever
-version of `codex-ppt` is currently installed for that host.
+```text
+Use codex-ppt to run the coffee smoke fixture end to end with consolidated image review.
 
-**Host-pinned smoke + strict fix loop** (recommended when chasing bugs across agents one by one;
-keeps fork and installed skill in sync; no commits without your OK):
+Locate the repository (expected D:/git/codex-ppt-skill); ask only if absent.
+Test skills/codex-ppt/SKILL.md and its guides from this repository explicitly, and report the tested root/version.
+If using an installed copy instead, verify its source hashes against the intended repository first.
+Do not install/synchronize skills, commit, push, merge or release without separate authorization.
+Preserve existing edits and historical runs.
 
-| Host | Prompt file |
-|------|-------------|
-| Cursor (`GenerateImage` hard-pin) | [`RUN_PROMPT_cursor.md`](RUN_PROMPT_cursor.md) |
-| Cursor + `codex-gpt-image` hard-pin | [`RUN_PROMPT_cursor_codex-gpt-image.md`](RUN_PROMPT_cursor_codex-gpt-image.md) |
-| Claude Code (`codex-gpt-image` FAST) | [`RUN_PROMPT_claude.md`](RUN_PROMPT_claude.md) |
-| Claude Code (`codex-gpt-image` GATED / interactive) | [`RUN_PROMPT_claude_interactive.md`](RUN_PROMPT_claude_interactive.md) |
-| Codex (`image_gen`) | [`RUN_PROMPT_codex.md`](RUN_PROMPT_codex.md) |
+Detect Codex, Cursor or Claude Code and record the actual host. Probe callable native/bridge capabilities; choose a compatible specific backend with me. Do not invent native image tools or assume an API fallback.
+Use 16:9 or 4:3 only. Prefer the callable native tool: Codex image_gen may use prompt-only ratio control; Cursor GenerateImage passes a supported aspect_ratio value. Inspect actual inputs, attach every snapshot, measure original pixels, and record the current attempt receipt. No fixed native model identity or invented size argument. API uses its explicit configured model and documented capabilities.
+Wrong-ratio images fail; never stretch, crop or letterbox as success.
+For a deliberately chosen CLI path, approve explicit model/size/quality and generate/reference-edit operations and use the managed run_slide_job.py adapter with every verified input.
 
-See also [`../../docs/fork/DESIGN_PROMPT.md`](../../docs/fork/DESIGN_PROMPT.md) for resuming the *design* work on
-the fork's improvement goals — use that one to pick up a conversation, this one to check a
-result.
+Run python tests/smoke-deck/verify_deck.py --preflight.
+Resolve a genuine runtime dependency failure before generating.
+Ask for the output base once (suggest tests/smoke-deck/runs/<YYYYMMDD-HHMM>-<host>).
 
----
+Fixed reusable requirements:
+- Source tests/smoke-deck/source.md; deck name coffee-extraction.
+- Exactly three content slides: Chinese, English, then mixed Chinese/Latin.
+- Built-in 清爽专业风; do not ask for new style options.
+- Audience: colleagues learning coffee extraction; purpose: explain the mechanism.
+- Draft natural notes in the approved presentation/slide language with breathing beats and meaningful transitions.
+- Recommend both plain and Medavis output with landing title Coffee Extraction in the combined plan; confirm or reuse my explicit choice.
+- Internal IDs consecutive; visible numbering only if agreed.
 
-```
-Use the codex-ppt skill to run its smoke-deck regression test end to end, then report the result.
+Reuse these known decisions. Propose a coherent story, exact visible wording, objects/relationships/composition, shared visual identities, source mapping and complete talk. Mark additions/missing evidence. Review the whole content/visual/talk/output plan by exception before images; do not ask a fixed questionnaire or pad bullets.
 
-## Setup
+Generate an appropriate representative content sample after current plan/talk approval; show actual sample pixels and wait for real acceptance.
+Record actual decisions with truthful evidence. Do not pre-approve unseen images or turn agent QA into my approval.
+After acceptance and production authorization, compile managed jobs and use one worker per remaining slide when available.
+Inspect the first batch, then each slide and the complete ordered deck. Preserve exact approved labels/values/relationships and source fidelity.
+Allow one targeted automatic repair for an isolated rendering defect; ask for additional attempts. Pause common first-batch failures.
 
-1. Locate the codex-ppt-skill repository (expected at d:/git/codex-ppt-skill; if not found
-   there, search for a directory containing tests/smoke-deck/source.md, or ask me for the path).
-   All paths below are relative to its root.
-2. Identify which environment you are running in, and use it to set --host and --skill-root for
-   later:
+Use consolidated review: continue routine successful batches after first-batch QA, then show the whole current deck and ask for actual approval or named exceptions.
+Substantive changes return to affected-plan approval; unchanged notes-only changes retain valid images.
+Assemble only when current managed plan/talk/policy/source/sample/job/result/QA/image-review gates pass. Reuse approved output choices.
+Plain has three content slides; Medavis has five with notes only on the corresponding content pages.
 
-   | Environment | --host        | --skill-root                  |
-   |-------------|---------------|--------------------------------|
-   | Codex CLI   | codex         | ~/.codex/skills/codex-ppt      |
-   | Claude Code | claude-code   | ~/.claude/skills/codex-ppt     |
-   | Cursor      | cursor        | ~/.cursor/skills/codex-ppt     |
+Run python tests/smoke-deck/verify_deck.py <base>/coffee-extraction --host <detected-host> --skill-root <tested-skill-root>.
+Report full BASELINE/TARGET output, current managed readiness, backend/provenance, actual deck paths, notes mapping and limitations.
+The physical verifier is supplemental and cannot establish user acceptance.
 
-3. Run: python tests/smoke-deck/verify_deck.py --preflight
-   If it reports missing dependencies, run the bootstrap command it prints, then re-check. If
-   bootstrap itself fails, stop and show me the error instead of continuing.
-4. Ask me where to put the build folder for this run (suggest a default like
-   tests/smoke-deck/runs/<today's date>-<time>, e.g. tests/smoke-deck/runs/20260809-1630, but
-   use whatever I answer). Call this <build_dir> below.
-
-## Generate the deck
-
-Use the codex-ppt skill to build a deck from tests/smoke-deck/source.md.
-
-Fixed contract for this deck -- do not deviate:
-- Output base directory: <build_dir>
-- Deck name: coffee-extraction
-- Exactly 3 slides
-- Slide 1 must be written in Chinese
-- Slide 2 must be written in English
-- Slide 3 must mix Chinese and Latin script on the same slide
-- Visual style: use the built-in style 清爽专业风
-- Aspect ratio: 16:9 is the default locked ratio unless the run recorded another in `deck_spec.json` / `slide_jobs.json`. Old 3:2 image folders fail the 16:9 baseline.
-
-Titles, key points, layout roles, and composition are yours to decide from the source content.
-
-Gate handling for this run:
-- Outline: pre-approved. Write outline.md and continue without waiting for my confirmation.
-- Style: already pinned above. Do not offer style options.
-- Sample slide: pre-approved. Accept the first sample and continue without waiting.
-- Image backend: do NOT assume. Actively check which image generation backends are callable in
-  this environment, state what you checked and what you selected, then proceed without waiting
-  for my confirmation.
-
-Generate speaker notes and assemble the .pptx.
-Template mode: pre-approved **no template** (`--template none`). Do not ask; plain `{deck}.pptx` only.
-
-## Verify and report
-
-Run:
-python tests/smoke-deck/verify_deck.py <build_dir>/coffee-extraction --host <detected host> --skill-root <detected skill root>
-
-Show me the full BASELINE and TARGET output verbatim, and tell me in one or two sentences
-whether this run passed or regressed compared to the unmodified skill.
+On a real defect, reproduce/root-cause first, add regression RED before a script change, apply the smallest fix in the repo, and verify GREEN.
+Do not silently patch installed copies or generate unlimited paid retries.
+Stop only for genuine missing input/decisions or actual required user reviews; no routine extra confirmations.
 ```

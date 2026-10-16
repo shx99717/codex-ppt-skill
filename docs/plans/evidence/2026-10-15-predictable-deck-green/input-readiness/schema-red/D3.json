@@ -1,0 +1,344 @@
+{
+  "workflow_version": 2,
+  "test_context": {
+    "case": "D3",
+    "kind": "text-only behavioral application",
+    "actual_user_approval_recorded": false,
+    "fixture_concretization": "16:9 plus codex-gpt-image/gpt-image-2 is a TEST capability fixture, not a measured live backend or an organization fact.",
+    "reused_fixture_decisions": [
+      "approved clean technical reference",
+      "compatible existing backend and ratio"
+    ]
+  },
+  "deck": {
+    "title": "Shared account proposal",
+    "language": "English",
+    "audience": "nontechnical operations colleagues",
+    "purpose": "Understand the access journey",
+    "delivery_intent": "internal live discussion with speaker notes",
+    "readiness": {
+      "content": "topic ready; audience/purpose clarified once; all copy and talk proposed",
+      "visual": "supplied approved clean technical reference; compatible backend/ratio fixture reused"
+    },
+    "story": [
+      "Understand the deck explains a proposed personal-account journey",
+      "Understand where sign-in sits in the journey",
+      "Understand that provider permission is a separate check",
+      "Understand account reuse without assuming automatic access or proven session reuse",
+      "Be able to explain the proposed journey and identify support questions without a technical decision request"
+    ],
+    "canonical_terminology": {
+      "shared account": "one individual's account used across providers; never multiple people sharing a password",
+      "provider access": "permission to use an individual provider; distinct from signing in"
+    },
+    "shared_visual_identities": {
+      "individual_account": "one personal account symbol; same meaning and appearance throughout",
+      "provider_tile": "repeated provider shape; distinct providers, no claim about real provider count"
+    },
+    "style": {
+      "name": "MOCK/TEST supplied approved clean technical visual reference",
+      "status": "reused supplied fixture decision; no new style vote",
+      "rules": [
+        "Retain the approved reference palette, typography and clean diagram language.",
+        "Use new compositions for the local content; do not copy reference text.",
+        "Exact palette/font extraction cannot be verified without the actual reference image."
+      ],
+      "reference": "MOCK/TEST clean-reference fixture; binary image not supplied in this text-only application"
+    },
+    "selected_image_backend": "codex-gpt-image",
+    "aspect_ratio": "16:9",
+    "output_profile": "plain",
+    "landing_title": null,
+    "visible_numbering": "none",
+    "review_policy": "consolidated",
+    "required_representative_samples": [
+      {
+        "id": "clean_reference_fixture",
+        "action": "reuse approved compatible sample style-only",
+        "suitability": "clean diagram style, simple account/provider symbols and short labels fit the proposed operations journey; compatible ratio/backend supplied by the mock fixture",
+        "accepts_new_content_pages": false
+      }
+    ]
+  },
+  "planning": {
+    "generation": {
+      "selected_image_backend": "codex-gpt-image",
+      "underlying_model": "gpt-image-2",
+      "aspect_ratio": "16:9",
+      "size": "2560x1440",
+      "tool": "codex-gpt-image bridge",
+      "input_method": "MOCK/TEST image-capable bridge; real schema and attached snapshots still require verification",
+      "mode": "generate",
+      "reference_mode": "image-conditioned input when a style sample is used",
+      "capability_basis": "TEST fixture only. Native image_gen schema in this context has no explicit size parameter; no native size capability is invented. No probe or API call occurred."
+    }
+  },
+  "slides": [
+    {
+      "id": "slide_01",
+      "internal_order": 1,
+      "language": "English",
+      "purpose": "Understand the deck explains a proposed personal-account journey",
+      "role": "One account across providers",
+      "audience_state": {
+        "before": "",
+        "after": "Understand the deck explains a proposed personal-account journey"
+      },
+      "visible_copy": {
+        "title": "One account across providers",
+        "body": [
+          "A proposed way to move between providers"
+        ],
+        "critical_labels": [],
+        "critical_values": []
+      },
+      "visual_plan": {
+        "type": "journey overview",
+        "subject": "one person's account across two illustrative providers",
+        "objects": [
+          "person/account symbol",
+          "two provider tiles"
+        ],
+        "relationships": [
+          "the same account links to both providers"
+        ],
+        "approximate_composition": "a short left-to-right journey in the existing clean reference style"
+      },
+      "source_mapping": {
+        "visible_copy": "proposed",
+        "visual_plan": "proposed",
+        "speaker_notes": "proposed",
+        "organization_measurements": "not supplied; none invented"
+      },
+      "required_images": [],
+      "shared_visual_ids": [
+        "individual_account",
+        "provider_tile"
+      ],
+      "depends_on": [],
+      "speaker_notes": {
+        "text": "Hi everyone.\n\nLet me show you the access journey we are proposing. Imagine a colleague who needs to open two different providers. This is a simple illustration.\n\nThe idea is that the colleague uses their own account for both. Let us follow that journey one step at a time.",
+        "speaking_time_seconds": null,
+        "transition": "Start at the personal account"
+      }
+    },
+    {
+      "id": "slide_02",
+      "internal_order": 2,
+      "language": "English",
+      "purpose": "Understand where sign-in sits in the journey",
+      "role": "Start with your account",
+      "audience_state": {
+        "before": "Know this is one person's account",
+        "after": "Understand where sign-in sits in the journey"
+      },
+      "visible_copy": {
+        "title": "Start with your account",
+        "body": [
+          "Use your own account",
+          "Sign in before opening a provider"
+        ],
+        "critical_labels": [],
+        "critical_values": []
+      },
+      "visual_plan": {
+        "type": "journey start",
+        "subject": "a person signs in using their personal account",
+        "objects": [
+          "same person/account symbol",
+          "sign-in doorway",
+          "first provider tile"
+        ],
+        "relationships": [
+          "person uses the account before entering the provider path"
+        ],
+        "approximate_composition": "large account symbol on left; sign-in doorway in middle; first provider at right"
+      },
+      "source_mapping": {
+        "visible_copy": "proposed",
+        "visual_plan": "proposed",
+        "speaker_notes": "proposed",
+        "organization_measurements": "not supplied; none invented"
+      },
+      "required_images": [],
+      "shared_visual_ids": [
+        "individual_account",
+        "provider_tile"
+      ],
+      "depends_on": [
+        "slide_01"
+      ],
+      "speaker_notes": {
+        "text": "First, our colleague starts with their own account.\n\nSigning in lets the service recognise who is arriving. In this proposed journey, that is the account the colleague will use as they move between providers.\n\nNow they can choose the first provider.",
+        "speaking_time_seconds": null,
+        "transition": "Move into the first provider"
+      }
+    },
+    {
+      "id": "slide_03",
+      "internal_order": 3,
+      "language": "English",
+      "purpose": "Understand that provider permission is a separate check",
+      "role": "Open a provider",
+      "audience_state": {
+        "before": "Know the account recognises a person",
+        "after": "Understand that provider permission is a separate check"
+      },
+      "visible_copy": {
+        "title": "Open a provider",
+        "body": [
+          "Choose the provider",
+          "Your access is checked there"
+        ],
+        "critical_labels": [],
+        "critical_values": []
+      },
+      "visual_plan": {
+        "type": "provider entry",
+        "subject": "recognised person opens a provider and access is checked",
+        "objects": [
+          "same account symbol",
+          "highlighted first provider",
+          "entry gate"
+        ],
+        "relationships": [
+          "account connects to selected provider",
+          "gate belongs to that provider"
+        ],
+        "approximate_composition": "first provider highlighted; second provider quieter in background; simple gate at entry"
+      },
+      "source_mapping": {
+        "visible_copy": "proposed",
+        "visual_plan": "proposed",
+        "speaker_notes": "proposed",
+        "organization_measurements": "not supplied; none invented"
+      },
+      "required_images": [],
+      "shared_visual_ids": [
+        "individual_account",
+        "provider_tile"
+      ],
+      "depends_on": [
+        "slide_01",
+        "slide_02"
+      ],
+      "speaker_notes": {
+        "text": "Now the colleague chooses the provider they need.\n\nThe proposal keeps a separate access check there. Having an account answers who the person is; the provider still needs to decide whether the person may use it.\n\nThat matters when the colleague moves to another provider.",
+        "speaking_time_seconds": null,
+        "transition": "Switch providers without implying automatic permission"
+      }
+    },
+    {
+      "id": "slide_04",
+      "internal_order": 4,
+      "language": "English",
+      "purpose": "Understand account reuse without assuming automatic access or proven session reuse",
+      "role": "Switch to another provider",
+      "audience_state": {
+        "before": "Know access is checked at a provider",
+        "after": "Understand account reuse without assuming automatic access or proven session reuse"
+      },
+      "visible_copy": {
+        "title": "Switch to another provider",
+        "body": [
+          "Use the same account",
+          "Access can differ by provider"
+        ],
+        "critical_labels": [],
+        "critical_values": []
+      },
+      "visual_plan": {
+        "type": "provider switch",
+        "subject": "the same account reaches a second provider with its own permission check",
+        "objects": [
+          "same account",
+          "first provider",
+          "highlighted second provider",
+          "one gate per provider"
+        ],
+        "relationships": [
+          "identity remains the same",
+          "provider permissions are distinct"
+        ],
+        "approximate_composition": "journey advances right; account appearance stays constant; second provider highlighted"
+      },
+      "source_mapping": {
+        "visible_copy": "proposed",
+        "visual_plan": "proposed",
+        "speaker_notes": "proposed",
+        "organization_measurements": "not supplied; none invented"
+      },
+      "required_images": [],
+      "shared_visual_ids": [
+        "individual_account",
+        "provider_tile"
+      ],
+      "depends_on": [
+        "slide_02",
+        "slide_03"
+      ],
+      "speaker_notes": {
+        "text": "So, the colleague moves to the second provider using the same account.\n\nThat does not mean the two providers give the colleague the same access. Each provider can have its own permissions.\n\nWe also have not settled every sign-in detail. Using the same account alone does not tell us whether another sign-in step will appear. What stays clear is the personal account and the separate provider access.",
+        "speaking_time_seconds": null,
+        "transition": "Recap what the access journey changes"
+      }
+    },
+    {
+      "id": "slide_05",
+      "internal_order": 5,
+      "language": "English",
+      "purpose": "Be able to explain the proposed journey and identify support questions without a technical decision request",
+      "role": "What this changes",
+      "audience_state": {
+        "before": "Understand the complete proposed journey",
+        "after": "Be able to explain the proposed journey and identify support questions without a technical decision request"
+      },
+      "visible_copy": {
+        "title": "What this changes",
+        "body": [
+          "One account to recognise",
+          "Provider access still matters",
+          "Support details need investigation"
+        ],
+        "critical_labels": [],
+        "critical_values": []
+      },
+      "visual_plan": {
+        "type": "journey recap",
+        "subject": "account continuity and distinct provider access",
+        "objects": [
+          "same account",
+          "both providers with entry gates",
+          "support question symbol"
+        ],
+        "relationships": [
+          "account is reused across both provider paths",
+          "each gate remains distinct",
+          "support handling remains an open question"
+        ],
+        "approximate_composition": "compact journey across top; account and access concepts beneath; open support question at right"
+      },
+      "source_mapping": {
+        "visible_copy": "proposed",
+        "visual_plan": "proposed",
+        "speaker_notes": "proposed",
+        "organization_measurements": "not supplied; none invented"
+      },
+      "required_images": [],
+      "shared_visual_ids": [
+        "individual_account",
+        "provider_tile"
+      ],
+      "depends_on": [
+        "slide_01",
+        "slide_03",
+        "slide_04"
+      ],
+      "speaker_notes": {
+        "text": "That is the access journey in the proposal: the person carries one account across providers, and provider access remains a separate question.\n\nFor operations, the support path will matter too. We still need to work out how account questions and provider access questions reach the right help.\n\nIs the journey clear, and where would someone need more guidance?",
+        "speaking_time_seconds": null,
+        "transition": "Invite understanding questions"
+      }
+    }
+  ]
+}

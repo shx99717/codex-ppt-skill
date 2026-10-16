@@ -1,0 +1,12 @@
+{
+  "case": "D7",
+  "mode": "MOCK/TEST text-only",
+  "artifact": "d7-chinese.md",
+  "language": "zh-CN",
+  "steps": ["reuse supplied colleague audience/Chinese/tone/scene/question close", "show consequential shared-account definition and conditional scope", "scripted acceptance of three-card/two-minute defaults", "produce exact cards and complete Chinese talk", "hold production"],
+  "scripted_decisions": [{"id": "D7-U2", "actor": "MOCK HUMAN", "scope": "definition, three-card story, approximate two-minute scope, qualitative principle only", "evidence": "就按这个定义和三张卡来，约两分钟。只讲原理，不写我们公司的实际效果。"}, {"id": "D7-U3", "actor": "MOCK HUMAN", "scope": "proposed white/teal visual direction", "evidence": "这个视觉方向可以。"}],
+  "approval_state": {"local_plan_and_talk": "scripted acceptance", "production_settings": "unbound", "current_final_images": "absent", "actual_runtime_approval": "absent"},
+  "results": {"cards": 3, "note_sections": 3, "target_seconds": 120, "timed_rehearsal": "not performed", "images_generated": 0},
+  "claims": {"scenario": "explicitly hypothetical", "terminology": "same person's identity across supporting sign-in entrances; not a shared password", "deployment": "none asserted", "statistics": "none"},
+  "concerns": ["shared-account meaning was consequential and received scripted acceptance", "actual product support and measured benefit remain unspecified"]
+}

@@ -1,0 +1,99 @@
+{
+  "mode": "MOCK/TEST artifact consistency only",
+  "checked_utc": "2026-10-14T17:39:03.4854833Z",
+  "scope": "D:\\git\\codex-ppt-skill\\docs\\plans\\evidence\\2026-10-15-predictable-deck-green\\coherence-voice-gates",
+  "metadata_parse_count": 7,
+  "cases": [
+    "D4",
+    "D5-consolidated",
+    "D5-strict",
+    "D6-corporate",
+    "D6-natural",
+    "D7",
+    "D8"
+  ],
+  "metadata_artifact_links_exist": [
+    {
+      "case": "D4",
+      "exists": true
+    },
+    {
+      "case": "D5-consolidated",
+      "exists": true
+    },
+    {
+      "case": "D5-strict",
+      "exists": true
+    },
+    {
+      "case": "D6-corporate",
+      "exists": true
+    },
+    {
+      "case": "D6-natural",
+      "exists": true
+    },
+    {
+      "case": "D7",
+      "exists": true
+    },
+    {
+      "case": "D8",
+      "exists": true
+    }
+  ],
+  "english_note_checks": [
+    {
+      "file": "d6-maya-natural.md",
+      "words": 140,
+      "estimated_seconds_at_150_wpm": 56.0,
+      "estimated_seconds_at_120_wpm": 70.0,
+      "timed_rehearsal": "not performed",
+      "beats": 5
+    },
+    {
+      "file": "d6-maya-corporate.md",
+      "words": 130,
+      "estimated_seconds_at_150_wpm": 52.0,
+      "estimated_seconds_at_120_wpm": 65.0,
+      "timed_rehearsal": "not performed",
+      "beats": 5
+    }
+  ],
+  "chinese_note_sections": 3,
+  "chinese_note_cjk_characters": 400,
+  "raster_artifacts": 0,
+  "verification_attempts": [
+    "Initial PowerShell expression failed parsing on a typographic apostrophe; no checks ran or files were written",
+    "Corrected regex to Unicode escape and reran"
+  ],
+  "claims_verified": "JSON parsing; artifact existence; note-block extraction and count only",
+  "exclusions": [
+    "No runtime approval or gate test",
+    "No actual image inspection",
+    "No timed rehearsal",
+    "No human final-image approval",
+    "No behavioral pass asserted"
+  ],
+  "final_artifact_count": 17,
+  "final_artifacts": [
+    "d4-coherence.md",
+    "d4.metadata.json",
+    "d5-consolidated.md",
+    "d5-consolidated.metadata.json",
+    "d5-content-cards.md",
+    "d5-strict.md",
+    "d5-strict.metadata.json",
+    "d6-corporate.metadata.json",
+    "d6-maya-corporate.md",
+    "d6-maya-natural.md",
+    "d6-natural.metadata.json",
+    "d7-chinese.md",
+    "d7.metadata.json",
+    "d8-repair.md",
+    "d8.metadata.json",
+    "README.md",
+    "verification.json"
+  ],
+  "final_metadata_approval_absence_check": "seven of seven explicitly absent"
+}

@@ -1,0 +1,217 @@
+{
+  "workflow_version": 2,
+  "test_context": {
+    "case": "D2",
+    "kind": "text-only behavioral application",
+    "actual_user_approval_recorded": false,
+    "fixture_concretization": "16:9 plus codex-gpt-image/gpt-image-2 is a TEST capability fixture, not a measured live backend or an organization fact.",
+    "reused_fixture_decisions": []
+  },
+  "deck": {
+    "title": "Shared account proposal",
+    "language": "English",
+    "audience": "internal technical audience",
+    "purpose": "Internal technical discussion; decide what to investigate next",
+    "delivery_intent": "internal live discussion with speaker notes",
+    "readiness": {
+      "content": "all three supplied titles, bodies and note paragraphs fixed",
+      "visual": "clean diagrams requested; objects, connections and layout proposed"
+    },
+    "story": [
+      "See separate account/provider paths",
+      "See the contrast: one account connects the provider set",
+      "See ownership and rollout as discussion topics"
+    ],
+    "canonical_terminology": {
+      "shared account": "one individual's account used across providers; never multiple people sharing a password",
+      "provider access": "permission to use an individual provider; distinct from signing in"
+    },
+    "shared_visual_identities": {
+      "individual_account": "one personal account symbol; same meaning and appearance throughout",
+      "provider_tile": "repeated provider shape; distinct providers, no claim about real provider count"
+    },
+    "style": {
+      "name": "proposed clean technical diagrams",
+      "palette": "white background; charcoal text; blue individual account; teal provider tiles; gray connectors",
+      "typography": "plain sans-serif; clear title and body hierarchy; no decorative lettering",
+      "visual_language": "simple outlined diagrams, consistent account/provider symbols; no logos or factual chart",
+      "composition": "layout varies with slide role; use whitespace and readable text"
+    },
+    "selected_image_backend": "codex-gpt-image",
+    "aspect_ratio": "16:9",
+    "output_profile": "plain",
+    "landing_title": null,
+    "visible_numbering": "none",
+    "review_policy": "consolidated",
+    "required_representative_samples": [
+      {
+        "id": "slide_02",
+        "reason": "tests the shared-account hub, provider identities and exact fixed copy"
+      }
+    ]
+  },
+  "planning": {
+    "generation": {
+      "selected_image_backend": "codex-gpt-image",
+      "underlying_model": "gpt-image-2",
+      "aspect_ratio": "16:9",
+      "size": "2560x1440",
+      "tool": "codex-gpt-image bridge",
+      "input_method": "MOCK/TEST image-capable bridge; real schema and attached snapshots still require verification",
+      "mode": "generate",
+      "reference_mode": "image-conditioned input when a style sample is used",
+      "capability_basis": "TEST fixture only. Native image_gen schema in this context has no explicit size parameter; no native size capability is invented. No probe or API call occurred."
+    }
+  },
+  "slides": [
+    {
+      "id": "slide_01",
+      "internal_order": 1,
+      "language": "English",
+      "purpose": "See separate account/provider paths",
+      "role": "Access today",
+      "audience_state": {
+        "before": "",
+        "after": "See separate account/provider paths"
+      },
+      "visible_copy": {
+        "title": "Access today",
+        "body": [
+          "Separate accounts"
+        ],
+        "critical_labels": [],
+        "critical_values": []
+      },
+      "visual_plan": {
+        "type": "separate access paths",
+        "subject": "separate accounts across providers",
+        "objects": [
+          "three provider tiles",
+          "one account icon for each provider"
+        ],
+        "relationships": [
+          "each account icon connects only to its own provider"
+        ],
+        "approximate_composition": "three separated parallel paths; fixed title and body above; no extra labels"
+      },
+      "source_mapping": {
+        "visible_copy": "provided fixed copy and notes",
+        "visual_plan": "proposed",
+        "speaker_notes": "provided fixed copy and notes",
+        "organization_measurements": "not supplied; none invented"
+      },
+      "required_images": [],
+      "shared_visual_ids": [
+        "individual_account",
+        "provider_tile"
+      ],
+      "depends_on": [],
+      "speaker_notes": {
+        "text": "Hi everyone.\n\nLet me start with the access problem.",
+        "speaking_time_seconds": null,
+        "transition": "The supplied next note introduces the proposal"
+      }
+    },
+    {
+      "id": "slide_02",
+      "internal_order": 2,
+      "language": "English",
+      "purpose": "See the contrast: one account connects the provider set",
+      "role": "A shared account",
+      "audience_state": {
+        "before": "See the separated paths",
+        "after": "See the contrast: one account connects the provider set"
+      },
+      "visible_copy": {
+        "title": "A shared account",
+        "body": [
+          "One account across providers"
+        ],
+        "critical_labels": [],
+        "critical_values": []
+      },
+      "visual_plan": {
+        "type": "shared hub",
+        "subject": "one account connecting multiple providers",
+        "objects": [
+          "one individual account icon",
+          "the same three provider tiles"
+        ],
+        "relationships": [
+          "one account connects to every illustrative provider"
+        ],
+        "approximate_composition": "account at left, providers at right; fixed title and body above; no extra labels"
+      },
+      "source_mapping": {
+        "visible_copy": "provided fixed copy and notes",
+        "visual_plan": "proposed",
+        "speaker_notes": "provided fixed copy and notes",
+        "organization_measurements": "not supplied; none invented"
+      },
+      "required_images": [],
+      "shared_visual_ids": [
+        "individual_account",
+        "provider_tile"
+      ],
+      "depends_on": [
+        "slide_01"
+      ],
+      "speaker_notes": {
+        "text": "Now, here is the proposal.\n\nThe same account connects these providers.",
+        "speaking_time_seconds": null,
+        "transition": "The supplied next note opens ownership and rollout discussion"
+      }
+    },
+    {
+      "id": "slide_03",
+      "internal_order": 3,
+      "language": "English",
+      "purpose": "See ownership and rollout as discussion topics",
+      "role": "What we need to decide",
+      "audience_state": {
+        "before": "Understand the shared-account proposal",
+        "after": "See ownership and rollout as discussion topics"
+      },
+      "visible_copy": {
+        "title": "What we need to decide",
+        "body": [
+          "Ownership and rollout"
+        ],
+        "critical_labels": [],
+        "critical_values": []
+      },
+      "visual_plan": {
+        "type": "two decision concepts",
+        "subject": "ownership and rollout questions",
+        "objects": [
+          "account with ownership/hand symbol",
+          "small provider set expanding to larger illustrative set"
+        ],
+        "relationships": [
+          "ownership symbol refers to the shared account",
+          "rollout symbol shows staged expansion without dates or quantities"
+        ],
+        "approximate_composition": "two balanced pictorial areas; only the supplied title/body are rendered as text; no implied implementation answer"
+      },
+      "source_mapping": {
+        "visible_copy": "provided fixed copy and notes",
+        "visual_plan": "proposed",
+        "speaker_notes": "provided fixed copy and notes",
+        "organization_measurements": "not supplied; none invented"
+      },
+      "required_images": [],
+      "shared_visual_ids": [
+        "individual_account",
+        "provider_tile"
+      ],
+      "depends_on": [
+        "slide_02"
+      ],
+      "speaker_notes": {
+        "text": "So, those are the two decisions.\n\nWhat questions do you have?",
+        "speaking_time_seconds": null,
+        "transition": "Preserve the supplied invitation for questions"
+      }
+    }
+  ]
+}

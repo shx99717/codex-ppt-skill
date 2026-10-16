@@ -1,0 +1,43 @@
+{
+  "original_archived_incompatible_json": [
+    "schema-red/D1.json",
+    "schema-red/D2.json",
+    "schema-red/D3.json",
+    "schema-red/mixed.json"
+  ],
+  "compatible_complete_candidates": [
+    "D1/deck_spec.draft.json",
+    "D2/deck_spec.draft.json",
+    "D3/deck_spec.draft.json",
+    "mixed/deck_spec.draft.json"
+  ],
+  "unchanged_original_human_cards_and_talk": [
+    "D1/interaction.md",
+    "D1/outline.draft.md",
+    "D1/speech.draft.md",
+    "D2/interaction.md",
+    "D2/outline.draft.md",
+    "D2/speech.draft.md",
+    "D3/interaction.md",
+    "D3/outline.draft.md",
+    "D3/speech.draft.md",
+    "mixed/interaction.md",
+    "mixed/outline.draft.md",
+    "mixed/speech.draft.md"
+  ],
+  "actual_cli_derived_views": [
+    "D1/runtime-draft-views/outline.draft.md",
+    "D1/runtime-draft-views/speech.draft.md",
+    "D2/runtime-draft-views/outline.draft.md",
+    "D2/runtime-draft-views/speech.draft.md",
+    "D3/runtime-draft-views/outline.draft.md",
+    "D3/runtime-draft-views/speech.draft.md",
+    "mixed/runtime-draft-views/outline.draft.md",
+    "mixed/runtime-draft-views/speech.draft.md"
+  ],
+  "verification": [
+    "verification.json",
+    "schema-verification.json"
+  ],
+  "actual_generator_template": "bundled-template.json"
+}

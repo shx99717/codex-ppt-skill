@@ -74,25 +74,25 @@ Updates are safe: runtime configuration such as API keys is stored in `~/.codex-
 
 ## Image-Generation Model Configuration
 
-You cannot use this skill without access to the `gpt-image-2` model. The skill depends heavily on the `gpt-image-2` image-generation model.
+Prefer callable Codex `image_gen` or Cursor `GenerateImage` using the live tool schema. Native model identity is host-managed. Codex can request 16:9 or 4:3 in the prompt without a size parameter; Cursor should pass the supported `aspect_ratio` value. Measure actual saved width/height (2% ratio tolerance); requested resolution is not proof of native 4K. API fallback reuses an explicitly configured provider model; if absent, select one using current documentation. There is no fixed model default. Attach every required source/style image through the actual input mechanism and record attempt-bound submission evidence. Native/bridge evidence is agent-reported; CLI adapter verification requires registered successful execution. Old project files remain readable, but new managed execution/assembly requires recompilation and fresh evidence. Only 16:9 and 4:3 decks are supported; no automatic conversion of old ratios.
 
-## How Do I Know Whether I Have Access to `gpt-image-2`?
+## How Do I Know Whether I Have Access to the configured image model?
 
-- If you subscribe to ChatGPT Plus or Pro, you have access to the `gpt-image-2` model by default. Codex includes a built-in image-generation tool.
+
 - If you access Codex through a third-party relay API, ask it to generate an image containing complex Chinese text, such as a poem written in running script. Check whether the image is generated successfully and whether the Chinese characters contain errors. If everything works, no further configuration is required.
-- If neither option works, you will need to purchase access to a relay API that provides the `gpt-image-2` model.
+- If no native or installed bridge path is available, deliberately select an API provider and configure a documented image model. Do not assume a subscription guarantees a callable tool.
 
 You usually do not need to configure the image-generation model manually. While you use Codex PPT, the AI automatically detects the image-generation backend. If none is available, it will ask you to configure an image-generation backend API and guide you through the setup.
 
 ## Notes on Third-Party APIs
 
-This skill includes a script compatible with OpenAI's official image-generation interface. If you use a third-party `gpt-image-2` relay API, try providing:
+This skill includes a script compatible with OpenAI's official image-generation interface. If you use a third-party image relay API, try providing:
 
 - The relay service's base URL
   - If the relay service gives an endpoint such as `https://xxx/v1/images/generations`, set the base URL to `https://xxx/v1`.
   - If the relay service already gives `https://xxx/v1`, do not append another layer, which would produce `.../v1/v1`.
   - For official OpenAI, `OPENAI_BASE_URL` can be omitted; the default is the official `https://api.openai.com/v1`.
 - The relay service's API key
-- The exact `gpt-image-2` model name used by the relay service
+- The exact configured image model name used by the relay service
 
 After providing this information to the AI, ask it to generate an image. If it still does not work, the relay service may use a custom image-generation scheme that is not fully compatible with the OpenAI image API. Send the relay service's official image-generation documentation to the AI so it can learn the interface and adapt the image-generation script.

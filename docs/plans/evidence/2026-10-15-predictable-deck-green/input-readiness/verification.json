@@ -1,0 +1,40 @@
+{
+  "utf8_json_reads": [
+    "D1",
+    "D2",
+    "D3",
+    "mixed"
+  ],
+  "fixed_copy_and_note_equality": [
+    {
+      "case": "D2",
+      "preserved_slides": 3,
+      "equal": true
+    },
+    {
+      "case": "mixed",
+      "preserved_slides": 2,
+      "equal": true
+    }
+  ],
+  "speech_exact_note_mapping": [
+    "D1",
+    "D2",
+    "D3",
+    "mixed"
+  ],
+  "counts": {
+    "D1": 6,
+    "D2": 3,
+    "D3": 5,
+    "mixed": 3
+  },
+  "schema_application_evidence": "schema-verification.json",
+  "compatible_candidate_and_draft_cli_cases": [
+    "D1",
+    "D2",
+    "D3",
+    "mixed"
+  ],
+  "existing_cards_and_talk_preserved": true
+}

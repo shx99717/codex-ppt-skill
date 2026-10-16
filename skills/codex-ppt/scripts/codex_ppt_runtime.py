@@ -23,7 +23,7 @@ import venv
 
 
 DEFAULT_RUNTIME_HOME = "~/.codex-ppt-skill"
-DEFAULT_MODEL = "gpt-image-2"
+DEFAULT_MODEL = ""
 ENV_FIELDS = ("OPENAI_API_KEY", "OPENAI_BASE_URL", "CODEX_PPT_IMAGE_MODEL")
 
 
@@ -233,8 +233,8 @@ def _doctor(args: argparse.Namespace) -> int:
     print(f"OPENAI_BASE_URL={base_url}")
     print(f"CODEX_PPT_IMAGE_MODEL={model}")
 
-    if "gpt-image-" not in model:
-        print("model check: warning, model name should contain 'gpt-image-'")
+    if not model.strip():
+        print("model check: warning, API model is not configured; select a documented model")
         ok = False
     else:
         print("model check: ok")

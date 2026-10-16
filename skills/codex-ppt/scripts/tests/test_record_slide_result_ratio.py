@@ -57,6 +57,7 @@ def _record(deck: Path, source: Path) -> subprocess.CompletedProcess[str]:
             sys.executable,
             str(SCRIPTS / "record_slide_result.py"),
             str(deck),
+            "--legacy-unmanaged",
             "--slide",
             "slide_01",
             "--agent-id",
@@ -96,15 +97,15 @@ class RecordSlideResultRatioTests(unittest.TestCase):
             self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
             self.assertTrue(target.exists())
 
-    def test_copies_48x32_when_jobs_locked_3_2(self) -> None:
+    def test_rejects_retired_3_2(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             root = Path(tmp)
             deck = _make_jobs_deck(root, "3:2")
             source = _png(root / "candidate.png", (48, 32))
             target = deck / "origin_image" / "slide_01.png"
             proc = _record(deck, source)
-            self.assertEqual(proc.returncode, 0, proc.stdout + proc.stderr)
-            self.assertTrue(target.exists())
+            self.assertNotEqual(proc.returncode, 0, proc.stdout + proc.stderr)
+            self.assertFalse(target.exists())
 
     def test_refuses_32x18_when_jobs_locked_3_2(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:

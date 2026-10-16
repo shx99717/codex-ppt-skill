@@ -1,0 +1,572 @@
+{
+  "workflow_version": 2,
+  "deck_name": "input-readiness-d3",
+  "language": "English",
+  "aspect_ratio": "16:9",
+  "selected_image_backend": "codex-gpt-image",
+  "goal": "Understand the access journey",
+  "deck_context": {
+    "source_summary": "Same supplied and proposed material recorded in interaction.md and original human cards; no new organization facts.",
+    "canonical_terms": [
+      {
+        "term": "shared account",
+        "meaning": "one individual's account used across providers; never multiple people sharing a password"
+      },
+      {
+        "term": "provider access",
+        "meaning": "permission to use an individual provider; distinct from signing in"
+      }
+    ],
+    "source_readiness": {
+      "content": "topic ready; audience/purpose clarified once; all copy and talk proposed",
+      "visual": "supplied approved clean technical reference; compatible backend/ratio fixture reused"
+    },
+    "visible_numbering": "none",
+    "source_card_files": [
+      "interaction.md",
+      "outline.draft.md",
+      "speech.draft.md"
+    ]
+  },
+  "style": {
+    "name": "MOCK/TEST supplied approved clean technical visual reference",
+    "status": "reused supplied fixture decision; no new style vote",
+    "rules": [
+      "Retain the approved reference palette, typography and clean diagram language.",
+      "Use new compositions for the local content; do not copy reference text.",
+      "Exact palette/font extraction cannot be verified without the actual reference image."
+    ],
+    "reference": "MOCK/TEST clean-reference fixture; binary image not supplied in this text-only application",
+    "visual_direction": "Retain the approved reference palette, typography and clean diagram language.; Use new compositions for the local content; do not copy reference text.; Exact palette/font extraction cannot be verified without the actual reference image."
+  },
+  "planning": {
+    "brief": {
+      "audience": "nontechnical operations colleagues",
+      "purpose": "Understand the access journey",
+      "notes_language": "English",
+      "tone": "Natural, clear presenter voice; supplied notes remain exact",
+      "output_profile": "none",
+      "landing_title": null
+    },
+    "readiness": {
+      "content": "topic ready; audience/purpose clarified once; all copy and talk proposed",
+      "visual": "supplied approved clean technical reference; compatible backend/ratio fixture reused"
+    },
+    "story": "Understand the deck explains a proposed personal-account journey → Understand where sign-in sits in the journey → Understand that provider permission is a separate check → Understand account reuse without assuming automatic access or proven session reuse → Be able to explain the proposed journey and identify support questions without a technical decision request",
+    "shared_visuals": {
+      "individual_account": {
+        "meaning": "one personal account symbol; same meaning and appearance throughout",
+        "appearance": "one personal account symbol; same meaning and appearance throughout"
+      },
+      "provider_tile": {
+        "meaning": "repeated provider shape; distinct providers, no claim about real provider count",
+        "appearance": "repeated provider shape; distinct providers, no claim about real provider count"
+      }
+    },
+    "delivery": {
+      "voice": "natural-presenter",
+      "speaker_names": [],
+      "intent": "internal live discussion with speaker notes"
+    },
+    "review_policy": "consolidated",
+    "sample_strategy": {
+      "required_slides": [
+        "slide_03"
+      ],
+      "original_strategy": [
+        {
+          "id": "clean_reference_fixture",
+          "action": "reuse approved compatible sample style-only",
+          "suitability": "clean diagram style, simple account/provider symbols and short labels fit the proposed operations journey; compatible ratio/backend supplied by the mock fixture",
+          "accepts_new_content_pages": false
+        }
+      ],
+      "representation_mapping": {
+        "clean_reference_fixture": "slide_03 representative provider-entry scope; reuse the same supplied compatible style-only calibration",
+        "actual_reuse_record": "not recorded; real bytes/provenance and human sample evidence remain required"
+      }
+    },
+    "generation": {
+      "backend_used": "codex-gpt-image",
+      "tool_name": "codex-gpt-image",
+      "mode": "generate",
+      "aspect_ratio": "16:9",
+      "model": "gpt-image-2",
+      "size": "2560x1440",
+      "input_method": "MOCK/TEST image-capable bridge; real schema and attached snapshots still require verification",
+      "reference_mode": "image-conditioned input when a style sample is used",
+      "capability_basis": "TEST fixture only. Native image_gen schema in this context has no explicit size parameter; no native size capability is invented. No probe or API call occurred."
+    },
+    "unresolved": [],
+    "runtime_limitations": [
+      "MOCK/TEST fixture only; no real backend probe, live image call or approval event",
+      "Actual approved style/reference/sample bytes and acceptance provenance are not supplied",
+      "Schema and draft-view acceptance cannot establish image readiness or actual human approval"
+    ]
+  },
+  "slides": [
+    {
+      "number": 1,
+      "title": "One account across providers",
+      "role": "One account across providers",
+      "intent": "Understand the deck explains a proposed personal-account journey",
+      "key_points": [
+        "A proposed way to move between providers"
+      ],
+      "visible_copy": {
+        "title": "One account across providers",
+        "body": [
+          "A proposed way to move between providers"
+        ],
+        "labels": []
+      },
+      "visual_plan": {
+        "type": "journey overview",
+        "subject": "one person's account across two illustrative providers",
+        "objects": [
+          "person/account symbol",
+          "two provider tiles"
+        ],
+        "relationships": [
+          {
+            "from": "person/account symbol",
+            "to": "two provider tiles",
+            "description": "the same account links to both providers"
+          }
+        ],
+        "composition": "a short left-to-right journey in the existing clean reference style"
+      },
+      "shared_visual_ids": [
+        "individual_account",
+        "provider_tile"
+      ],
+      "depends_on": [],
+      "claim_sources": [
+        {
+          "status": "proposed",
+          "claim": "One account across providers",
+          "source": "D3 interaction.md and original outline.draft.md: proposed"
+        },
+        {
+          "status": "proposed",
+          "claim": "A proposed way to move between providers",
+          "source": "D3 interaction.md and original outline.draft.md: proposed"
+        },
+        {
+          "status": "proposed",
+          "claim": "one person's account across two illustrative providers",
+          "source": "D3 original visual proposal; object and relationship wording retained exactly"
+        },
+        {
+          "status": "proposed",
+          "claim": "Presenter talk for this page",
+          "source": "D3 original speech.draft.md: exact unchanged speaker_notes.text"
+        }
+      ],
+      "required_images": [],
+      "speaker_notes": {
+        "text": "Hi everyone.\n\nLet me show you the access journey we are proposing. Imagine a colleague who needs to open two different providers. This is a simple illustration.\n\nThe idea is that the colleague uses their own account for both. Let us follow that journey one step at a time.",
+        "speaking_time_seconds": null,
+        "transition": "Start at the personal account"
+      },
+      "language": "English",
+      "audience_state": {
+        "before": "",
+        "after": "Understand the deck explains a proposed personal-account journey"
+      },
+      "source_mapping": {
+        "visible_copy": "proposed",
+        "visual_plan": "proposed",
+        "speaker_notes": "proposed",
+        "organization_measurements": "not supplied; none invented"
+      }
+    },
+    {
+      "number": 2,
+      "title": "Start with your account",
+      "role": "Start with your account",
+      "intent": "Understand where sign-in sits in the journey",
+      "key_points": [
+        "Use your own account",
+        "Sign in before opening a provider"
+      ],
+      "visible_copy": {
+        "title": "Start with your account",
+        "body": [
+          "Use your own account",
+          "Sign in before opening a provider"
+        ],
+        "labels": []
+      },
+      "visual_plan": {
+        "type": "journey start",
+        "subject": "a person signs in using their personal account",
+        "objects": [
+          "same person/account symbol",
+          "sign-in doorway",
+          "first provider tile"
+        ],
+        "relationships": [
+          {
+            "from": "same person/account symbol",
+            "to": "first provider tile",
+            "description": "person uses the account before entering the provider path"
+          }
+        ],
+        "composition": "large account symbol on left; sign-in doorway in middle; first provider at right"
+      },
+      "shared_visual_ids": [
+        "individual_account",
+        "provider_tile"
+      ],
+      "depends_on": [
+        "slide_01"
+      ],
+      "claim_sources": [
+        {
+          "status": "proposed",
+          "claim": "Start with your account",
+          "source": "D3 interaction.md and original outline.draft.md: proposed"
+        },
+        {
+          "status": "proposed",
+          "claim": "Use your own account",
+          "source": "D3 interaction.md and original outline.draft.md: proposed"
+        },
+        {
+          "status": "proposed",
+          "claim": "Sign in before opening a provider",
+          "source": "D3 interaction.md and original outline.draft.md: proposed"
+        },
+        {
+          "status": "proposed",
+          "claim": "a person signs in using their personal account",
+          "source": "D3 original visual proposal; object and relationship wording retained exactly"
+        },
+        {
+          "status": "proposed",
+          "claim": "Presenter talk for this page",
+          "source": "D3 original speech.draft.md: exact unchanged speaker_notes.text"
+        }
+      ],
+      "required_images": [],
+      "speaker_notes": {
+        "text": "First, our colleague starts with their own account.\n\nSigning in lets the service recognise who is arriving. In this proposed journey, that is the account the colleague will use as they move between providers.\n\nNow they can choose the first provider.",
+        "speaking_time_seconds": null,
+        "transition": "Move into the first provider"
+      },
+      "language": "English",
+      "audience_state": {
+        "before": "Know this is one person's account",
+        "after": "Understand where sign-in sits in the journey"
+      },
+      "source_mapping": {
+        "visible_copy": "proposed",
+        "visual_plan": "proposed",
+        "speaker_notes": "proposed",
+        "organization_measurements": "not supplied; none invented"
+      }
+    },
+    {
+      "number": 3,
+      "title": "Open a provider",
+      "role": "Open a provider",
+      "intent": "Understand that provider permission is a separate check",
+      "key_points": [
+        "Choose the provider",
+        "Your access is checked there"
+      ],
+      "visible_copy": {
+        "title": "Open a provider",
+        "body": [
+          "Choose the provider",
+          "Your access is checked there"
+        ],
+        "labels": []
+      },
+      "visual_plan": {
+        "type": "provider entry",
+        "subject": "recognised person opens a provider and access is checked",
+        "objects": [
+          "same account symbol",
+          "highlighted first provider",
+          "entry gate"
+        ],
+        "relationships": [
+          {
+            "from": "same account symbol",
+            "to": "highlighted first provider",
+            "description": "account connects to selected provider"
+          },
+          {
+            "from": "entry gate",
+            "to": "highlighted first provider",
+            "description": "gate belongs to that provider"
+          }
+        ],
+        "composition": "first provider highlighted; second provider quieter in background; simple gate at entry"
+      },
+      "shared_visual_ids": [
+        "individual_account",
+        "provider_tile"
+      ],
+      "depends_on": [
+        "slide_01",
+        "slide_02"
+      ],
+      "claim_sources": [
+        {
+          "status": "proposed",
+          "claim": "Open a provider",
+          "source": "D3 interaction.md and original outline.draft.md: proposed"
+        },
+        {
+          "status": "proposed",
+          "claim": "Choose the provider",
+          "source": "D3 interaction.md and original outline.draft.md: proposed"
+        },
+        {
+          "status": "proposed",
+          "claim": "Your access is checked there",
+          "source": "D3 interaction.md and original outline.draft.md: proposed"
+        },
+        {
+          "status": "proposed",
+          "claim": "recognised person opens a provider and access is checked",
+          "source": "D3 original visual proposal; object and relationship wording retained exactly"
+        },
+        {
+          "status": "proposed",
+          "claim": "Presenter talk for this page",
+          "source": "D3 original speech.draft.md: exact unchanged speaker_notes.text"
+        }
+      ],
+      "required_images": [],
+      "speaker_notes": {
+        "text": "Now the colleague chooses the provider they need.\n\nThe proposal keeps a separate access check there. Having an account answers who the person is; the provider still needs to decide whether the person may use it.\n\nThat matters when the colleague moves to another provider.",
+        "speaking_time_seconds": null,
+        "transition": "Switch providers without implying automatic permission"
+      },
+      "language": "English",
+      "audience_state": {
+        "before": "Know the account recognises a person",
+        "after": "Understand that provider permission is a separate check"
+      },
+      "source_mapping": {
+        "visible_copy": "proposed",
+        "visual_plan": "proposed",
+        "speaker_notes": "proposed",
+        "organization_measurements": "not supplied; none invented"
+      }
+    },
+    {
+      "number": 4,
+      "title": "Switch to another provider",
+      "role": "Switch to another provider",
+      "intent": "Understand account reuse without assuming automatic access or proven session reuse",
+      "key_points": [
+        "Use the same account",
+        "Access can differ by provider"
+      ],
+      "visible_copy": {
+        "title": "Switch to another provider",
+        "body": [
+          "Use the same account",
+          "Access can differ by provider"
+        ],
+        "labels": []
+      },
+      "visual_plan": {
+        "type": "provider switch",
+        "subject": "the same account reaches a second provider with its own permission check",
+        "objects": [
+          "same account",
+          "first provider",
+          "highlighted second provider",
+          "one gate per provider"
+        ],
+        "relationships": [
+          {
+            "from": "same account",
+            "to": "same account",
+            "description": "identity remains the same"
+          },
+          {
+            "from": "one gate per provider",
+            "to": "highlighted second provider",
+            "description": "provider permissions are distinct"
+          }
+        ],
+        "composition": "journey advances right; account appearance stays constant; second provider highlighted"
+      },
+      "shared_visual_ids": [
+        "individual_account",
+        "provider_tile"
+      ],
+      "depends_on": [
+        "slide_02",
+        "slide_03"
+      ],
+      "claim_sources": [
+        {
+          "status": "proposed",
+          "claim": "Switch to another provider",
+          "source": "D3 interaction.md and original outline.draft.md: proposed"
+        },
+        {
+          "status": "proposed",
+          "claim": "Use the same account",
+          "source": "D3 interaction.md and original outline.draft.md: proposed"
+        },
+        {
+          "status": "proposed",
+          "claim": "Access can differ by provider",
+          "source": "D3 interaction.md and original outline.draft.md: proposed"
+        },
+        {
+          "status": "proposed",
+          "claim": "the same account reaches a second provider with its own permission check",
+          "source": "D3 original visual proposal; object and relationship wording retained exactly"
+        },
+        {
+          "status": "proposed",
+          "claim": "Presenter talk for this page",
+          "source": "D3 original speech.draft.md: exact unchanged speaker_notes.text"
+        }
+      ],
+      "required_images": [],
+      "speaker_notes": {
+        "text": "So, the colleague moves to the second provider using the same account.\n\nThat does not mean the two providers give the colleague the same access. Each provider can have its own permissions.\n\nWe also have not settled every sign-in detail. Using the same account alone does not tell us whether another sign-in step will appear. What stays clear is the personal account and the separate provider access.",
+        "speaking_time_seconds": null,
+        "transition": "Recap what the access journey changes"
+      },
+      "language": "English",
+      "audience_state": {
+        "before": "Know access is checked at a provider",
+        "after": "Understand account reuse without assuming automatic access or proven session reuse"
+      },
+      "source_mapping": {
+        "visible_copy": "proposed",
+        "visual_plan": "proposed",
+        "speaker_notes": "proposed",
+        "organization_measurements": "not supplied; none invented"
+      }
+    },
+    {
+      "number": 5,
+      "title": "What this changes",
+      "role": "What this changes",
+      "intent": "Be able to explain the proposed journey and identify support questions without a technical decision request",
+      "key_points": [
+        "One account to recognise",
+        "Provider access still matters",
+        "Support details need investigation"
+      ],
+      "visible_copy": {
+        "title": "What this changes",
+        "body": [
+          "One account to recognise",
+          "Provider access still matters",
+          "Support details need investigation"
+        ],
+        "labels": []
+      },
+      "visual_plan": {
+        "type": "journey recap",
+        "subject": "account continuity and distinct provider access",
+        "objects": [
+          "same account",
+          "both providers with entry gates",
+          "support question symbol"
+        ],
+        "relationships": [
+          {
+            "from": "same account",
+            "to": "both providers with entry gates",
+            "description": "account is reused across both provider paths"
+          },
+          {
+            "from": "both providers with entry gates",
+            "to": "both providers with entry gates",
+            "description": "each gate remains distinct"
+          },
+          {
+            "from": "support question symbol",
+            "to": "both providers with entry gates",
+            "description": "support handling remains an open question"
+          }
+        ],
+        "composition": "compact journey across top; account and access concepts beneath; open support question at right"
+      },
+      "shared_visual_ids": [
+        "individual_account",
+        "provider_tile"
+      ],
+      "depends_on": [
+        "slide_01",
+        "slide_03",
+        "slide_04"
+      ],
+      "claim_sources": [
+        {
+          "status": "proposed",
+          "claim": "What this changes",
+          "source": "D3 interaction.md and original outline.draft.md: proposed"
+        },
+        {
+          "status": "proposed",
+          "claim": "One account to recognise",
+          "source": "D3 interaction.md and original outline.draft.md: proposed"
+        },
+        {
+          "status": "proposed",
+          "claim": "Provider access still matters",
+          "source": "D3 interaction.md and original outline.draft.md: proposed"
+        },
+        {
+          "status": "proposed",
+          "claim": "Support details need investigation",
+          "source": "D3 interaction.md and original outline.draft.md: proposed"
+        },
+        {
+          "status": "proposed",
+          "claim": "account continuity and distinct provider access",
+          "source": "D3 original visual proposal; object and relationship wording retained exactly"
+        },
+        {
+          "status": "proposed",
+          "claim": "Presenter talk for this page",
+          "source": "D3 original speech.draft.md: exact unchanged speaker_notes.text"
+        }
+      ],
+      "required_images": [],
+      "speaker_notes": {
+        "text": "That is the access journey in the proposal: the person carries one account across providers, and provider access remains a separate question.\n\nFor operations, the support path will matter too. We still need to work out how account questions and provider access questions reach the right help.\n\nIs the journey clear, and where would someone need more guidance?",
+        "speaking_time_seconds": null,
+        "transition": "Invite understanding questions"
+      },
+      "language": "English",
+      "audience_state": {
+        "before": "Understand the complete proposed journey",
+        "after": "Be able to explain the proposed journey and identify support questions without a technical decision request"
+      },
+      "source_mapping": {
+        "visible_copy": "proposed",
+        "visual_plan": "proposed",
+        "speaker_notes": "proposed",
+        "organization_measurements": "not supplied; none invented"
+      }
+    }
+  ],
+  "test_context": {
+    "case": "D3",
+    "kind": "text-only behavioral application",
+    "actual_user_approval_recorded": false,
+    "fixture_concretization": "16:9 plus codex-gpt-image/gpt-image-2 is a TEST capability fixture, not a measured live backend or an organization fact.",
+    "reused_fixture_decisions": [
+      "approved clean technical reference",
+      "compatible existing backend and ratio"
+    ],
+    "schema_mapping": "Implementation representation only; no changed copy, note text, visual objects/meaning or scripted user decision. No actual approval is recorded."
+  }
+}

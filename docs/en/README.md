@@ -1,6 +1,6 @@
 # Codex PPT Skill Documentation
 
-Codex PPT is a presentation-generation skill built for Codex. It also works with agents that support `SKILL.md`, including Claude Code, OpenClaw, and Hermes Agent. It turns articles, reports, papers, course notes, or rough ideas into image-based presentations: first planning the outline and visual style, then generating each complete slide as an image, and finally assembling the images into a `.pptx` file.
+Codex PPT is a presentation-generation skill built for Codex. It also works with agents that support `SKILL.md`, including Claude Code, OpenClaw, and Hermes Agent. It turns articles, reports, papers, course notes, or rough ideas into image-based presentations: first planning the outline and visual style, then generating each complete slide as an image, and finally assembling the images into a `.pptx` file. Inputs can range from a topic to complete slide Markdown, including mixed readiness. The skill reuses ready copy and notes, clarifies consequential gaps, and approves exact content, visual meaning and natural presenter talk before expensive images. Consolidated current-image review is the default; strict batch review is available. Minor raster differences remain possible.
 
 ## How to Read This Documentation
 
@@ -24,7 +24,7 @@ If you are already using the skill and have encountered a problem, see the [FAQ]
 
 ## Key Features
 
-- Image-based presentation generation: Each slide is a complete slide image at the locked ratio (16:9 / 4:3 / 3:2), ideal for scenarios that require strong visual expression and a consistent style.
+- Image-based presentation generation: Each slide is a complete slide image at the locked ratio (16:9 / 4:3), ideal for scenarios that require strong visual expression and a consistent style.
 - Staged confirmation workflow: Confirm the outline, visual style, PPT ratio, image-generation method, and sample slide before generating the full deck to reduce rework.
 - 12 built-in styles: Options include clean professional, scientific defense, hand-drawn technical explanation, McKinsey-style, party and government red, and teaching courseware. See [Styles and Personal Style Library](/en/styles.md).
 - Style matching from reference materials: The skill can review a user-provided presentation, PDF, or screenshots, understand the visual style of each page, and generate a similar style.
@@ -32,7 +32,7 @@ If you are already using the skill and have encountered a problem, see the [FAQ]
 - Place specified source materials on designated slides: You can assign original paper figures, experiment results, architecture diagrams, or screenshots to specific slides.
 - Multiple agent environments: In addition to Codex, the skill works with agents that support `SKILL.md`, including Claude Code, OpenClaw, and Hermes Agent.
 - Automatic PowerPoint assembly: The skill generates `outline.md`, individual slide images, and `speech.md`, then assembles everything into a `.pptx` file.
-- Third-party API support for text models and the `gpt-image-2` image-generation model.
+- Third-party API support for text models and the the configured image model image-generation model.
 - Companion speaker notes: Speaker notes are generated and inserted into the PowerPoint notes pages by default.
 - Targeted post-generation edits for specific slides that need improvement. See the [FAQ](/en/faq.md).
 
@@ -51,7 +51,7 @@ Codex PPT generates image-based presentations. They offer strong visual consiste
 
 If you need to convert the result into an editable presentation, you can use [image-to-editable-ppt-skill](https://github.com/shx99717/image-to-editable-ppt-skill) after generation.
 
-You cannot use this skill without access to the `gpt-image-2` image-generation model. See [Installation and Configuration](/en/installation.md).
+Prefer callable Codex `image_gen` or Cursor `GenerateImage` using the live tool schema. Native model identity is host-managed. Codex can request 16:9 or 4:3 in the prompt without a size parameter; Cursor should pass the supported `aspect_ratio` value. Measure actual saved width/height (2% ratio tolerance); requested resolution is not proof of native 4K. API fallback reuses an explicitly configured provider model; if absent, select one using current documentation. There is no fixed model default. Attach every required source/style image through the actual input mechanism and record attempt-bound submission evidence. Native/bridge evidence is agent-reported; CLI adapter verification requires registered successful execution. Old project files remain readable, but new managed execution/assembly requires recompilation and fresh evidence. Only 16:9 and 4:3 decks are supported; no automatic conversion of old ratios.
 
 ## Related Links
 
@@ -59,3 +59,7 @@ You cannot use this skill without access to the `gpt-image-2` image-generation m
 - ClawHub page: https://clawhub.ai/ningzimu/codex-ppt
 - Use case showcase: https://github.com/ningzimu/codex-ppt-skill/issues/34
 - Editable presentation conversion skill: https://github.com/shx99717/image-to-editable-ppt-skill
+
+Speaker notes are drafted early in the presentation language, as the presenter's own warm, everyday speech: concrete scenes, thought-sized beats with blank-line pauses, natural connectors and purposeful transitions. Supplied notes are preserved; substantial additions need approval. Length follows speaking time and complexity.
+
+Managed v2 scripts enforce current plan/talk/policy decisions, source/sample bytes, compiled inputs, QA and actual current-image acceptance. Historical manual/image-only runs require explicit `--legacy-unmanaged`, which cannot bypass managed approval. CLI jobs use `run_slide_job.py` to forward every approved setting and image input.

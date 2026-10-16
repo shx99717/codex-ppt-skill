@@ -1,0 +1,49 @@
+{
+  "case": "D3",
+  "actually_performed": [
+    "read current skill and phase-linked guides",
+    "write UTF-8 draft plan, outline, speech and scripted interaction evidence"
+  ],
+  "mock_only": [
+    "scripted user decisions in interaction.md",
+    "backend compatibility/availability fixture",
+    "existing visual approvals where supplied"
+  ],
+  "waiting_for_real_input_or_approval": [
+    "actual human current plan/talk decision",
+    "actual schema/backend and image-input verification",
+    "source/reference bytes for supplied look or reused sample",
+    "actual sample rendering/acceptance or verified existing sample reuse",
+    "full production authorization and first-batch inspection",
+    "actual final images, consolidated image approval and complete-sequence QA",
+    "verified PPTX assembly"
+  ],
+  "not_performed": [
+    "live generation",
+    "API calls",
+    "job compilation",
+    "approval-ledger writes",
+    "worker dispatch",
+    "image QA claims",
+    "PPTX assembly",
+    "commit",
+    "push",
+    "install"
+  ],
+  "schema_application_actually_performed": [
+    "archived original incompatible draft JSON byte-for-byte in schema-red",
+    "used actual bundled --write-template and help output",
+    "mapped existing content into exact template fields without changing cards, notes or decisions",
+    "ran actual validate_spec against archived and compatible serialized JSON",
+    "ran actual planning_views.py --draft CLI against both shapes",
+    "verified derived talk, fixed-copy/note preservation and original card byte hashes"
+  ],
+  "schema_representation_only": [
+    "top-level deck_name/language/aspect_ratio/backend/goal/style plus planning.brief replace nested deck",
+    "internal_order/purpose map to number/intent; fixed title/body/notes stay exact",
+    "critical_labels map to labels; approximate_composition maps to composition",
+    "original relationship prose retained as description with existing-object from/to endpoints",
+    "plain output maps to machine output_profile none",
+    "D3 existing style-only fixture maps to slide_03 representative scope; no new sample event"
+  ]
+}

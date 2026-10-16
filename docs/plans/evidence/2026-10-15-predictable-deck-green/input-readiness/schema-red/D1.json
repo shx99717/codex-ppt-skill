@@ -1,0 +1,397 @@
+{
+  "workflow_version": 2,
+  "test_context": {
+    "case": "D1",
+    "kind": "text-only behavioral application",
+    "actual_user_approval_recorded": false,
+    "fixture_concretization": "16:9 plus codex-gpt-image/gpt-image-2 is a TEST capability fixture, not a measured live backend or an organization fact.",
+    "reused_fixture_decisions": []
+  },
+  "deck": {
+    "title": "Shared account proposal",
+    "language": "English",
+    "audience": "engineering colleagues",
+    "purpose": "Help colleagues understand the proposal and its trade-offs.",
+    "delivery_intent": "internal live discussion with speaker notes",
+    "readiness": {
+      "content": "topic and lack of measurements provided; complete story/copy/talk proposed",
+      "visual": "unresolved; clean technical system proposed"
+    },
+    "story": [
+      "Know the proposal, the discussion purpose and the absence of measured benefit",
+      "Understand the illustrative current pattern and the need to confirm it",
+      "Distinguish personal identity, conditional session reuse and service permissions",
+      "Understand qualitative expected benefit without interpreting it as measured outcome",
+      "Recognise common dependency, account lifecycle and permissions as unresolved trade-offs",
+      "Be ready to discuss evidence and design questions without an implied rollout commitment"
+    ],
+    "canonical_terminology": {
+      "shared account": "one individual's account used across providers; never multiple people sharing a password",
+      "provider access": "permission to use an individual provider; distinct from signing in"
+    },
+    "shared_visual_identities": {
+      "individual_account": "one personal account symbol; same meaning and appearance throughout",
+      "provider_tile": "repeated provider shape; distinct providers, no claim about real provider count"
+    },
+    "style": {
+      "name": "proposed clean technical diagrams",
+      "palette": "white background; charcoal text; blue individual account; teal provider tiles; gray connectors",
+      "typography": "plain sans-serif; clear title and body hierarchy; no decorative lettering",
+      "visual_language": "simple outlined diagrams, consistent account/provider symbols; no logos or factual chart",
+      "composition": "layout varies with slide role; use whitespace and readable text"
+    },
+    "selected_image_backend": "codex-gpt-image",
+    "aspect_ratio": "16:9",
+    "output_profile": "plain",
+    "landing_title": null,
+    "visible_numbering": "none",
+    "review_policy": "consolidated",
+    "required_representative_samples": [
+      {
+        "id": "slide_03",
+        "reason": "tests the shared identity, conditional session relation and per-service permission boundary; more representative than a cover"
+      }
+    ]
+  },
+  "planning": {
+    "generation": {
+      "selected_image_backend": "codex-gpt-image",
+      "underlying_model": "gpt-image-2",
+      "aspect_ratio": "16:9",
+      "size": "2560x1440",
+      "tool": "codex-gpt-image bridge",
+      "input_method": "MOCK/TEST image-capable bridge; real schema and attached snapshots still require verification",
+      "mode": "generate",
+      "reference_mode": "image-conditioned input when a style sample is used",
+      "capability_basis": "TEST fixture only. Native image_gen schema in this context has no explicit size parameter; no native size capability is invented. No probe or API call occurred."
+    }
+  },
+  "slides": [
+    {
+      "id": "slide_01",
+      "internal_order": 1,
+      "language": "English",
+      "purpose": "Know the proposal, the discussion purpose and the absence of measured benefit",
+      "role": "Shared login: a proposal to examine",
+      "audience_state": {
+        "before": "",
+        "after": "Know the proposal, the discussion purpose and the absence of measured benefit"
+      },
+      "visible_copy": {
+        "title": "Shared login: a proposal to examine",
+        "body": [
+          "One personal account across services",
+          "Expected benefit: less repeated access work",
+          "Trade-offs need investigation"
+        ],
+        "critical_labels": [],
+        "critical_values": []
+      },
+      "visual_plan": {
+        "type": "proposal overview",
+        "subject": "one personal identity across services",
+        "objects": [
+          "individual account",
+          "three illustrative service tiles"
+        ],
+        "relationships": [
+          "one account connects to multiple distinct services"
+        ],
+        "approximate_composition": "account at left; three services stacked at right; restrained connecting lines"
+      },
+      "source_mapping": {
+        "visible_copy": "proposed",
+        "visual_plan": "proposed",
+        "speaker_notes": "proposed",
+        "organization_measurements": "not supplied; none invented"
+      },
+      "required_images": [],
+      "shared_visual_ids": [
+        "individual_account",
+        "provider_tile"
+      ],
+      "depends_on": [],
+      "speaker_notes": {
+        "text": "Hi everyone.\n\nI want to walk through a shared login proposal and the trade-offs it brings.\n\nThe idea we will examine is one personal account across services. We expect that could reduce some repeated access work, but we do not have measurements yet.\n\nLet me start with the access pattern we are using as a working assumption.",
+        "speaking_time_seconds": null,
+        "transition": "Move from the proposal to the current-pattern assumption"
+      }
+    },
+    {
+      "id": "slide_02",
+      "internal_order": 2,
+      "language": "English",
+      "purpose": "Understand the illustrative current pattern and the need to confirm it",
+      "role": "Access today: a working assumption",
+      "audience_state": {
+        "before": "Know this is an unmeasured proposal",
+        "after": "Understand the illustrative current pattern and the need to confirm it"
+      },
+      "visible_copy": {
+        "title": "Access today: a working assumption",
+        "body": [
+          "Separate service accounts",
+          "Repeated sign-in and account recovery",
+          "Confirm this matches our environment"
+        ],
+        "critical_labels": [],
+        "critical_values": []
+      },
+      "visual_plan": {
+        "type": "separate paths",
+        "subject": "assumed current access pattern",
+        "objects": [
+          "one person",
+          "three service-account pairs"
+        ],
+        "relationships": [
+          "each illustrative service has a separate account path"
+        ],
+        "approximate_composition": "three separate horizontal paths; no shared identity hub"
+      },
+      "source_mapping": {
+        "visible_copy": "proposed working assumption, not supplied organization fact",
+        "visual_plan": "proposed",
+        "speaker_notes": "proposed working assumption, not supplied organization fact",
+        "organization_measurements": "not supplied; none invented"
+      },
+      "required_images": [],
+      "shared_visual_ids": [
+        "individual_account",
+        "provider_tile"
+      ],
+      "depends_on": [
+        "slide_01"
+      ],
+      "speaker_notes": {
+        "text": "Imagine a colleague moving between three services. This is an illustration, not a report about a particular person.\n\nFor the discussion, I am assuming each service has its own account and access steps. That can mean choosing credentials again or dealing with recovery separately.\n\nWe need to confirm that pattern against our actual environment. With that assumption visible, we can look at what the proposal changes.",
+        "speaking_time_seconds": null,
+        "transition": "Compare the separate paths with the proposed shared identity"
+      }
+    },
+    {
+      "id": "slide_03",
+      "internal_order": 3,
+      "language": "English",
+      "purpose": "Distinguish personal identity, conditional session reuse and service permissions",
+      "role": "The proposed model",
+      "audience_state": {
+        "before": "Understand the current-pattern assumption",
+        "after": "Distinguish personal identity, conditional session reuse and service permissions"
+      },
+      "visible_copy": {
+        "title": "The proposed model",
+        "body": [
+          "One personal identity",
+          "Reusable sign-in session where supported",
+          "Separate permissions for each service"
+        ],
+        "critical_labels": [],
+        "critical_values": []
+      },
+      "visual_plan": {
+        "type": "identity and access diagram",
+        "subject": "proposed identity/session model with separate permissions",
+        "objects": [
+          "individual account hub",
+          "three service tiles",
+          "a gate inside each service boundary"
+        ],
+        "relationships": [
+          "account links to each service",
+          "session reuse is conditional on service support",
+          "permissions are checked at each service"
+        ],
+        "approximate_composition": "shared identity hub across top; three service boundaries below, each with its own small gate"
+      },
+      "source_mapping": {
+        "visible_copy": "proposed",
+        "visual_plan": "proposed",
+        "speaker_notes": "proposed",
+        "organization_measurements": "not supplied; none invented"
+      },
+      "required_images": [],
+      "shared_visual_ids": [
+        "individual_account",
+        "provider_tile"
+      ],
+      "depends_on": [
+        "slide_01",
+        "slide_02"
+      ],
+      "speaker_notes": {
+        "text": "Now, here is the model I propose we discuss. The account belongs to one person and can be recognised across services.\n\nWhere a service supports it, the sign-in session could be reused. That is a design condition to check, not something we have already proved.\n\nSigning in tells a service who the person is. Permissions still decide what that person can do in that service. Keeping those responsibilities clear gives us a basis for discussing the benefit.",
+        "speaking_time_seconds": null,
+        "transition": "Explain the possible benefit mechanism without numerical claims"
+      }
+    },
+    {
+      "id": "slide_04",
+      "internal_order": 4,
+      "language": "English",
+      "purpose": "Understand qualitative expected benefit without interpreting it as measured outcome",
+      "role": "Where time could be saved",
+      "audience_state": {
+        "before": "Understand the proposed model and its conditions",
+        "after": "Understand qualitative expected benefit without interpreting it as measured outcome"
+      },
+      "visible_copy": {
+        "title": "Where time could be saved",
+        "body": [
+          "Fewer account credentials to manage",
+          "Reuse sign-in where supported",
+          "No time-saving measurements yet"
+        ],
+        "critical_labels": [],
+        "critical_values": []
+      },
+      "visual_plan": {
+        "type": "qualitative journey comparison",
+        "subject": "possible reduction in repeated access steps",
+        "objects": [
+          "current-pattern lane",
+          "proposed lane",
+          "same three illustrative services"
+        ],
+        "relationships": [
+          "current-pattern lane repeats separate account steps",
+          "proposed lane reuses the personal account; session reuse remains conditional"
+        ],
+        "approximate_composition": "two horizontal lanes; illustrate account/sign-in actions with icons; no times, percentages, bar lengths or invented metric"
+      },
+      "source_mapping": {
+        "visible_copy": "proposed",
+        "visual_plan": "proposed",
+        "speaker_notes": "proposed",
+        "organization_measurements": "not supplied; none invented"
+      },
+      "required_images": [],
+      "shared_visual_ids": [
+        "individual_account",
+        "provider_tile"
+      ],
+      "depends_on": [
+        "slide_02",
+        "slide_03"
+      ],
+      "speaker_notes": {
+        "text": "So, where might the time saving come from?\n\nFirst, a person could have fewer account credentials to keep track of. Second, where session reuse works, they may avoid some repeated sign-in steps as they move between services.\n\nThose are the mechanisms we expect to help. We cannot say how much time they save yet, and the benefit will depend on how people actually move between services.\n\nNow let us look at the questions that come with sharing the sign-in path.",
+        "speaking_time_seconds": null,
+        "transition": "Move from possible benefit to trade-offs"
+      }
+    },
+    {
+      "id": "slide_05",
+      "internal_order": 5,
+      "language": "English",
+      "purpose": "Recognise common dependency, account lifecycle and permissions as unresolved trade-offs",
+      "role": "Trade-offs to investigate",
+      "audience_state": {
+        "before": "Know the expected benefit is unmeasured",
+        "after": "Recognise common dependency, account lifecycle and permissions as unresolved trade-offs"
+      },
+      "visible_copy": {
+        "title": "Trade-offs to investigate",
+        "body": [
+          "Shared sign-in dependency",
+          "Account recovery and revocation",
+          "Provider permissions and ownership"
+        ],
+        "critical_labels": [],
+        "critical_values": []
+      },
+      "visual_plan": {
+        "type": "three investigation lenses",
+        "subject": "questions raised by a shared identity path",
+        "objects": [
+          "common identity hub",
+          "recovery loop",
+          "provider permission gates"
+        ],
+        "relationships": [
+          "services depend on a shared identity path",
+          "account lifecycle affects the shared identity",
+          "provider permissions still have distinct owners"
+        ],
+        "approximate_composition": "three equally weighted panels; show dependency, recovery and permission concepts; no severity ranking"
+      },
+      "source_mapping": {
+        "visible_copy": "proposed",
+        "visual_plan": "proposed",
+        "speaker_notes": "proposed",
+        "organization_measurements": "not supplied; none invented"
+      },
+      "required_images": [],
+      "shared_visual_ids": [
+        "individual_account",
+        "provider_tile"
+      ],
+      "depends_on": [
+        "slide_03",
+        "slide_04"
+      ],
+      "speaker_notes": {
+        "text": "A shared sign-in path gives us a common dependency to design carefully. What should happen if that path is unavailable?\n\nWe also need a clear account lifecycle. Who helps with recovery, and how should access be removed when it is no longer appropriate?\n\nThen there is ownership: who manages the personal account, and who grants access inside each provider? These are investigation questions. I am not presenting settled implementation decisions.\n\nThat leaves us with a useful set of questions for the engineering discussion.",
+        "speaking_time_seconds": null,
+        "transition": "Turn unresolved trade-offs into discussion questions"
+      }
+    },
+    {
+      "id": "slide_06",
+      "internal_order": 6,
+      "language": "English",
+      "purpose": "Be ready to discuss evidence and design questions without an implied rollout commitment",
+      "role": "Questions for investigation",
+      "audience_state": {
+        "before": "Understand proposal and trade-offs",
+        "after": "Be ready to discuss evidence and design questions without an implied rollout commitment"
+      },
+      "visible_copy": {
+        "title": "Questions for investigation",
+        "body": [
+          "Which assumptions need evidence?",
+          "Which trade-offs need a design spike?",
+          "How would we evaluate a trial?"
+        ],
+        "critical_labels": [],
+        "critical_values": []
+      },
+      "visual_plan": {
+        "type": "discussion map",
+        "subject": "questions that connect the proposal to possible investigation",
+        "objects": [
+          "current-pattern assumption card",
+          "trade-off cards",
+          "three discussion question cards"
+        ],
+        "relationships": [
+          "current assumptions inform evidence questions",
+          "trade-offs inform a possible design spike",
+          "a trial would need agreed evaluation criteria"
+        ],
+        "approximate_composition": "inputs on the left; three question cards on the right; an open discussion area, no assigned people or dates"
+      },
+      "source_mapping": {
+        "visible_copy": "proposed",
+        "visual_plan": "proposed",
+        "speaker_notes": "proposed",
+        "organization_measurements": "not supplied; none invented"
+      },
+      "required_images": [],
+      "shared_visual_ids": [
+        "individual_account",
+        "provider_tile"
+      ],
+      "depends_on": [
+        "slide_02",
+        "slide_04",
+        "slide_05"
+      ],
+      "speaker_notes": {
+        "text": "So, we have a proposal, a possible benefit mechanism and a set of trade-offs.\n\nI would like us to check which assumptions need evidence and which design questions deserve a small investigation. If we later choose a trial, we should agree how to evaluate it before claiming a saving.\n\nWhat have we missed, and where would you start?",
+        "speaking_time_seconds": null,
+        "transition": "Invite the room to discuss"
+      }
+    }
+  ]
+}

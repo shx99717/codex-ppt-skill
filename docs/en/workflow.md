@@ -1,69 +1,41 @@
 # Standard Workflow
 
-## Overview
+## Adapt to the input
 
-The Codex PPT workflow emphasizes staged confirmation. Instead of immediately generating the entire presentation, it first confirms the outline, style, PPT ratio, image backend, and sample slide to reduce rework.
+Start with a topic, rough notes, a report, prepared slide Markdown, or a mixture. The agent assesses content and visual readiness separately, reuses supplied decisions and exact prepared copy/notes, and asks only consequential questions before expanding content. Audience, purpose, prior knowledge, tone, setting, language, timing and scope can change the result; they are examples, not a fixed interview. Quality comes first.
 
-## Stage 1: Review the Source Material
+## Plan the whole deck and talk
 
-The agent first determines:
+Before expensive images, review a compact whole-deck plan: story and page roles, exact visible wording and critical values, intended objects/relationships/composition, source assets and fidelity, recurring visual identities, numbering and dependencies. Proposed additions and missing evidence remain identifiable; company facts and measurements are never invented.
 
-- The topic and central argument
-- The target audience
-- The presentation objective
-- The required slide count
-- Content that must be included or excluded
-- Whether any image assets are required
+Draft speaker notes at this stage in the presentation language. They sound like the presenter explaining to people in the room: first-person warmth, concrete scenes, everyday words, thought-sized beats separated by blank lines, natural connectors and purposeful transitions. Length follows speaking time. Preserve supplied notes; flag significant proposed rewrites. A representative note can calibrate the voice before reviewing the whole talk by exception.
 
-## Stage 2: Confirm the Outline
+## Lock style, ratio and executable method
 
-The agent generates `outline.md`, which usually includes:
+Choose from twelve built-in styles, personal styles or a supplied reference; normally the agent recommends a small relevant shortlist. See [Styles and Personal Style Library](/en/styles.md). Keep recurring identities coherent while varying composition by page role.
 
-- Slide number
-- Slide title
-- 3-5 key points per slide
-- The role of each slide, such as cover, agenda, concept explanation, process, comparison, data evidence, or summary
-- Optional visual ideas
-- Required image assets and how they will be used
+Prefer callable Codex `image_gen` or Cursor `GenerateImage` using the live tool schema. Native model identity is host-managed. Codex can request 16:9 or 4:3 in the prompt without a size parameter; Cursor should pass the supported `aspect_ratio` value. Measure actual saved width/height (2% ratio tolerance); requested resolution is not proof of native 4K. API fallback reuses an explicitly configured provider model; if absent, select one using current documentation. There is no fixed model default. Attach every required source/style image through the actual input mechanism and record attempt-bound submission evidence. Native/bridge evidence is agent-reported; CLI adapter verification requires registered successful execution. Old project files remain readable, but new managed execution/assembly requires recompilation and fresh evidence. Only 16:9 and 4:3 decks are supported; no automatic conversion of old ratios.
 
-No final slide images, `speech.md`, or `.pptx` file should be generated before the outline is approved.
+The backend and full configuration stay approved. For the bundled CLI, explicitly approve a text-only generate operation and an image-conditioned edit operation when applicable; managed jobs use the adapter that forwards exact settings and all verified images, rather than text-only batch replay.
 
-## Stage 3: Confirm the Visual Style
+Style, ratio, backend/configuration, required sample strategy, output profile/title and review policy are settled in the draft before this combined approval. Approve content, visuals, talk, output profile/landing title and review policy together. Prepared material needs only its real gaps filled; there is no required bullet count or interview for every page. On revisions, review affected scopes and dependent pages instead of rebuilding everything.
 
-The agent proposes 2-3 style directions and recommends one. Candidates come from the 12 built-in styles, including clean professional, scientific defense, hand-drawn technical explanation, McKinsey-style, party and government red, and teaching courseware, as well as your personal style library. The agent can also reproduce a style from screenshots, a PDF, or a presentation you provide. See [Styles and Personal Style Library](/en/styles.md) for complete style previews.
+## Calibrate before production
 
-After a style is selected, the entire presentation should maintain a consistent visual language, while individual slide layouts may vary according to the content.
+After plan/talk approval, generate or reuse an appropriate representative content sample. Accept its actual appearance and suitability before bulk production. Additional samples need a material visual reason. Accepted style-reference bytes remain immutable; repairing the sample's final content page does not replace the shared reference. A defective calibration sample can be repaired before acceptance.
 
-## Stage 4: Confirm PPT Ratio, Then the Image-Generation Backend
+## Generate, inspect and review
 
-The agent asks you to pick the final PPT ratio (`16:9` / `4:3` / `3:2`; recommend 3:2 on Cursor, 16:9 on Codex / Claude Code) **before** locking a backend, then only offers tools that can produce that ratio. Cursor `GenerateImage` is 3:2-only in **pixels** (a `16:9` or `4:3` argument may still return 1536×1024). The tool enum may omit `3:2`; for a 3:2-locked deck, inspect the schema, pass a legal landscape value if needed, and measure pixels. Do not use it for 16:9 / 4:3 locks. gpt-image-2 tools must pass `--size` `2560x1440` (16:9), `2560x1920` (4:3), or `2400x1600` (3:2).
+Compile approval-bound jobs. Use one slide worker per job when available; the parent owns canonical content, state, QA and final files. Workers preserve exact wording, values, assets and relationships; they report fit problems instead of rewriting content.
 
-Once the image backend is confirmed, the entire presentation should use the same backend without switching midway.
+Inspect the first production batch before later production. Check every image and then the complete ordered story, numbering, shared visuals and talk transitions. One isolated rendering defect gets one targeted automatic repair under its current visual contract. Further attempts need actual authorization. Repeated first-batch failures pause production for their common cause.
 
-## Stage 5: Generate and Confirm a Sample Slide
+Consolidated review is the default: routine successful batches continue, then the user reviews the current deck together and names exceptions. Strict review is available for approving each batch. Agent QA is separate from human image acceptance and cannot manufacture that acceptance.
 
-Generate one sample slide first and check:
+## Assemble and deliver
 
-- Whether the text is clear
-- Whether the style matches expectations
-- Whether the information density is appropriate
-- Whether the colors and layout are stable
-- Whether the design can scale to the full presentation
+The managed scripts require current scoped plan/talk/policy decisions, source and sample bytes, compiled inputs, completed results, per-slide/sequence QA and current-image user approval. Changed facts/source relationships also invalidate affected talk; note-only revisions retain current images. Final outline and talk derive from the approved plan.
 
-Generate the full deck only after the sample slide is approved.
+Use the already-approved plain, Medavis or both profile and landing title. Plain has N content pages; Medavis uses the matching bundled three-page template with landing + N content + ending (N+2), and content notes are offset by one. Delivery includes actual paths, counts, backend, notes and limitations. The slide visuals are raster images, so text/charts are not separate editable objects.
 
-## Stage 6: Batch Generation
-
-After the sample slide is approved, the agent generates `origin_image/slide_XX.png` one slide at a time. In environments that support sub-agents, one sub-agent generates each slide in parallel to speed up multi-slide production. Every slide follows the same style and image-generation backend approved for the sample.
-
-## Stage 7: Quality Review and Fixes
-
-Before assembly, the agent reviews every slide for text clarity, consistency with the outline, clipped content, visual consistency, unnecessary page numbers, and overlapping elements. Slides with serious issues are regenerated using stricter prompts, while minor local issues are preferably corrected with targeted image-editing tools.
-
-## Stage 8: Speaker Notes and Assembly
-
-The agent generates the speaker notes in `speech.md`, then asks which PPT output to build (**no template** / **medavis template** / **both**). For medavis or both, it suggests a landing-page title, confirms it with you **before** this run's PPTX exists, and runs `assemble_ppt.py` with `--template`, `--landing-title`, and the locked `--aspect-ratio`. Medavis uses the matching 3-page template (landing + content + ending, `N+2` slides). Speaker notes go on content slides only. Mismatched-ratio images are refused; they are not stretched.
-
-## Stage 9 (Optional): Save the Style
-
-If the presentation uses a custom or adjusted style, the agent notes in the final report that you can save it to your personal style library and reuse it by name in the future. See [Styles and Personal Style Library](/en/styles.md).
+Historical pre-v2 manual/image folders require explicit `--legacy-unmanaged`; the flag cannot bypass a managed deck. Custom/adapted styles may be saved in the personal style library after acceptance.

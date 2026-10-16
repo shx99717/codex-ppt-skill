@@ -1,0 +1,16 @@
+{
+  "case": "D5-consolidated",
+  "mode": "MOCK/TEST text-only",
+  "artifact": "d5-consolidated.md",
+  "content_artifact": "d5-content-cards.md",
+  "runtime_mutations": "none",
+  "steps": ["retain scripted consolidated choice", "first production batch already QA-checked", "accept continue wording as remaining-production authorization", "author three remaining packets and scripted results", "present ordered six-page review action", "reject worker approval request", "wait for human image decision"],
+  "first_batch": ["slide_01", "slide_03"],
+  "sample": "slide_02",
+  "remaining_mock_dispatches": ["slide_04", "slide_05", "slide_06"],
+  "scripted_decisions": [{"id": "D5C-U1", "actor": "MOCK HUMAN", "scope": "continue remaining production under existing consolidated policy", "evidence": "Continue the remaining slides, then show me the whole deck."}],
+  "rejected_evidence": [{"id": "D5C-W7", "actor": "MOCK WORKER", "request": "mark approved and assemble", "reason": "worker is not the human approver"}],
+  "approval_state": {"policy": "consolidated; scripted fixture", "plan_and_talk": "scripted fixture", "sample": "scripted current sample acceptance", "other_current_final_images": "absent", "actual_runtime_approval": "absent"},
+  "results": {"remaining_briefs": 3, "ordered_review_items": 6, "mock_agent_sequence_qa": "scripted contract review only", "images_generated": 0, "assembly": "withheld"},
+  "concerns": ["no actual image bytes or full-resolution image display", "no runtime gate invocation", "sample acceptance does not approve the other five pages"]
+}

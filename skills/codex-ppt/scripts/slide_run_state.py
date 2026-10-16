@@ -216,7 +216,25 @@ def review_is_valid(deck_dir: Path, slide: Dict[str, Any]) -> bool:
     path = final_image_path(deck_dir, slide)
     if not path.is_file():
         return False
-    return review.get("image_sha256") == sha256_file(path)
+    if review.get("image_sha256") != sha256_file(path):
+        return False
+    spec_path=Path(deck_dir)/"deck_spec.json"
+    if (Path(deck_dir)/"plan_approvals.json").exists() or spec_path.exists():
+        try:
+            spec=read_json(spec_path)
+            if spec.get("workflow_version")==2:
+                from planning_contract import approval_event,build_manifest,load_ledger
+                manifest=build_manifest(spec,Path(deck_dir))
+                sid=slide["slide_id"]
+                expected=manifest["slides"][sid]["visual_hash"]
+                if review.get("actor")!="user" or review.get("visual_hash")!=expected:
+                    return False
+                event=approval_event(load_ledger(Path(deck_dir)),review.get("event_id"),"image")
+                return (event.get("image_bindings") or {}).get(sid)=={
+                    "sha256":review["image_sha256"],"visual_hash":expected}
+        except (OSError,ValueError,KeyError,TypeError):
+            return False
+    return True
 
 
 def sync_user_review_run_state(deck_dir: Path, jobs: Dict[str, Any]) -> None:

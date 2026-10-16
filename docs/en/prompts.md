@@ -43,3 +43,17 @@ Slide 6 is too dense, and its title is not clear enough. Regenerate only slide 6
 ```text
 I really like the visual style of this presentation. Save it to the codex-ppt personal style library for future reuse. Include the color palette, typographic character, layout rules, illustration/chart style, and suitable use cases in the description.
 ```
+
+## Start from a topic
+
+```text
+Use codex-ppt to explain a shared login proposal to our engineering colleagues in English. We have no measurements. Recommend the story and visuals, label assumptions, draft natural speaker notes and show one combined whole-deck plan before images. Quality first; review effort can vary.
+```
+
+## Preserve prepared material
+
+```text
+Use codex-ppt with my slide-by-slide Markdown. Preserve the exact supplied visible copy and notes. Recommend only missing visuals and cross-slide connections, then show changes for one combined review. Do not rebuild completed pages.
+```
+
+Speaker notes are drafted early in the presentation language, as the presenter's own warm, everyday speech: concrete scenes, thought-sized beats with blank-line pauses, natural connectors and purposeful transitions. Supplied notes are preserved; substantial additions need approval. Length follows speaking time and complexity.

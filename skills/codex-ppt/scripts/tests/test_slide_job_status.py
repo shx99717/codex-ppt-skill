@@ -44,7 +44,7 @@ class DeckDirEncodingTests(unittest.TestCase):
             cp1252_stdout = io.TextIOWrapper(buffer, encoding="cp1252", errors="strict")
             old_argv, old_stdout = sys.argv, sys.stdout
             try:
-                sys.argv = ["slide_job_status.py", str(deck_dir)]
+                sys.argv = ["slide_job_status.py", str(deck_dir), "--legacy-unmanaged"]
                 sys.stdout = cp1252_stdout
                 exit_code = slide_job_status.main()
             finally:

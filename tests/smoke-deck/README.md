@@ -1,206 +1,55 @@
 # codex-ppt smoke deck
 
-A small, repeatable end-to-end test fixture for the codex-ppt skill.
+The three-content-slide coffee fixture checks multilingual pixels, backend provenance, layouts, notes, and plain/Medavis assembly. Every successful live run produces three final content images; repairs can produce additional candidates. Saved historical runs are unchanged.
 
-It is deliberately two things at once:
+## Managed v2 and historical compatibility
 
-- a **regression smoke test** — re-run it after a change and confirm nothing broke;
-- a **progress signal** — a second tier of assertions describes behavior the skill does *not* have yet,
-  and turns green as improvements land.
+New runs use the adaptive managed workflow. A topic or prepared source first becomes a whole-deck content/visual/talk draft. Review exact copy, relationships, assets, recurring identities, numbering, natural notes, output profile/title, representative strategy and review policy before expensive generation. Do not require three-to-five bullets or postpone notes until images exist.
 
-Every pass generates **exactly 3 images**.
+Consolidated review (the former low-interruption intent of FAST) continues routine batches after first-batch agent QA, then asks the user to accept actual current images together. Strict review (GATED) asks for each batch. Neither policy pre-approves unseen samples/images or manufactures approval evidence. Output choices belong in planning, not a new last-minute question.
 
-## What it covers
+Historical pre-v2 image folders remain usable with explicit `--legacy-unmanaged` on assembly/state CLIs. That flag cannot bypass managed records. Existing `verify_deck.py` physical BASELINE/TARGET assertions are preserved for historical comparison; they are supplemental checks, not proof of managed approval or visual quality.
 
-- The full 7-phase workflow, end to end, producing a valid `.pptx`
-- Subagent dispatch, result recording, and the slide state machine (guaranteed: 3 slides = 1 sample + 2 dispatched)
-- Backend detection, asserted against a per-host expectation matrix
-- Multilingual decks: slide 1 Chinese, slide 2 English, slide 3 mixed CJK+Latin
-- Layout variation (the "don't repeat the same blueprint" rule)
-- Speaker-note mapping from `speech.md` into the PPT
-- **GATED / interactive assembly:** template-mode ask (prefer **both** so baseline plain `.pptx` and medavis `{deck}-medavis.pptx` are produced); verifier checks the medavis file when present
-- **FAST assembly:** stays on **no template** (plain `{deck}.pptx` only) so unattended runs do not wait on template choice
+## Start a live test
 
-## What it does not cover
+Use [portable prompt](RUN_PROMPT.md), or a pinned host/backend prompt:
 
-Cross-model quality benchmarking, required source images (strict input assets), the sample rejection
-loop, and custom styles from the personal style library. All are out of scope by design — see
-"Known coverage gap" below for the one that is a deliberate trade rather than simple omission.
+- [Codex image_gen](RUN_PROMPT_codex.md)
+- [Cursor GenerateImage, 16:9 / 4:3](RUN_PROMPT_cursor.md)
+- [Cursor codex-gpt-image](RUN_PROMPT_cursor_codex-gpt-image.md)
+- [Claude Code codex-gpt-image, consolidated](RUN_PROMPT_claude.md)
+- [Claude Code codex-gpt-image, strict](RUN_PROMPT_claude_interactive.md)
 
-## Quick start
+Live tests require separate generation authorization and real user reviews. They are not part of offline implementation verification. Test the intended skill root explicitly. Do not overwrite an installed skill, commit or push as a side effect of a smoke test; installation synchronization is a separate user choice.
 
-For repeated runs (e.g. re-checking after every change to the skill), see [`RUN_PROMPT.md`](RUN_PROMPT.md)
-— a single copy-paste prompt that works unedited in Codex, Claude Code, or Cursor. It self-detects the
-host, asks where to put the output, and reports the verifier's result at the end.
-
-When running hosts **one by one** and fixing bugs under a strict fork↔install sync loop (no commits
-without permission), use the host-pinned prompts instead:
-[`RUN_PROMPT_cursor.md`](RUN_PROMPT_cursor.md) (Cursor / `GenerateImage` hard-pin),
-[`RUN_PROMPT_cursor_codex-gpt-image.md`](RUN_PROMPT_cursor_codex-gpt-image.md)
-(Cursor + `codex-gpt-image` hard-pin),
-[`RUN_PROMPT_claude.md`](RUN_PROMPT_claude.md) (Claude / `codex-gpt-image` FAST),
-[`RUN_PROMPT_claude_interactive.md`](RUN_PROMPT_claude_interactive.md) (Claude / `codex-gpt-image` GATED),
-[`RUN_PROMPT_codex.md`](RUN_PROMPT_codex.md) (Codex / `image_gen`).
-
-The manual steps below are for when you need more control (e.g. walking the gates by hand in GATED mode).
-
----
-
-## 0. Preflight
-
-Run before invoking the agent. It resolves the shared-runtime interpreter for your platform and checks
-that the assembly dependencies are importable.
+## Preflight and outputs
 
 ```bash
 python tests/smoke-deck/verify_deck.py --preflight
+python tests/smoke-deck/verify_deck.py tests/smoke-deck/runs/<run-id>/coffee-extraction \
+  --host codex --skill-root skills/codex-ppt
 ```
 
-If it reports missing dependencies, it prints the exact bootstrap command to run. Do not start a test
-run until preflight is clean — otherwise the run will fail at the final assembly step for reasons that
-have nothing to do with what you changed.
+Use a fresh run directory under ignored `runs/`. The fixture uses three slides: Chinese, English, then mixed CJK/Latin. Keep the pinned clean professional style; to test discovery separately, omit that style pin and record that the run is no longer baseline-comparable.
 
----
+Use 16:9 or 4:3 only. Prefer the callable native tool: Codex image_gen may use prompt-only ratio control; Cursor GenerateImage passes a supported aspect_ratio value. Inspect actual inputs, attach every snapshot, measure original pixels, and record the current attempt receipt. No fixed native model identity or invented size argument. API uses its explicit configured model and documented capabilities.
 
-## 1. Pick a run id
+An unrequested CLI fallback fails host-pinned runs. Deliberately selected CLI tests use `--allow-cli-fallback`; managed execution uses `run_slide_job.py` with an explicitly approved operation policy, not nested-job replay through text-only batch generation.
 
-Each run gets its own directory so you can diff before/after a change instead of clobbering:
+Plain has N slides; Medavis has landing + N content + ending (N+2) and content-note offset. Recommend both with a proposed landing title in the combined plan when testing branding. Never silently create an unapproved output profile.
 
-```
-tests/smoke-deck/runs/<run-id>/coffee-extraction/
-```
+## Quality and verification
 
-Use a timestamp, e.g. `20260809-1630`. `runs/` is gitignored.
+Inspect the first batch before later production, record per-slide and ordered-deck QA, and obtain actual current-image user approval according to policy. One isolated rendering defect gets one automatic targeted repair; further attempts need authorization. Pause common first-batch failures. Repairs preserve exact approved labels and immutable style references.
 
----
+The legacy verifier exit code reflects BASELINE assertions; TARGET is supplemental progress information. Report both and explain any limitation. Managed readiness additionally comes from the scripts' scoped fingerprints, actual decisions, current-image review, source/sample/job integrity and sequence QA. Passing a physical file check cannot approve a deck.
 
-## 2. Choose a mode
-
-### FAST mode
-
-Use this after most code changes. Every gate that the skill permits skipping is pre-approved, so the
-run is close to unattended.
-
-**Backend detection is deliberately NOT pre-answered.** The agent must still probe and choose for real —
-only the human confirmation is skipped. The verifier then checks the choice against the host matrix, so
-FAST still catches a wrong backend without you watching.
-
-Invocation prompt (copy verbatim, replacing `<run-id>`):
-
-```text
-Use the codex-ppt skill to build a deck from tests/smoke-deck/source.md.
-
-Fixed contract for this deck — do not deviate:
-- Output base directory: tests/smoke-deck/runs/<run-id>
-- Deck name: coffee-extraction
-- Exactly 3 slides
-- Slide 1 must be written in Chinese
-- Slide 2 must be written in English
-- Slide 3 must mix Chinese and Latin script on the same slide
-- Visual style: use the built-in style 清爽专业风
-- Aspect ratio: 16:9 is the default locked ratio unless the run recorded another. Old 3:2 image folders fail the 16:9 baseline.
-
-Titles, key points, layout roles and composition are yours to decide from the source content.
-
-Gate handling for this run:
-- Outline: pre-approved. Write outline.md and continue without waiting for my confirmation.
-- Style: already pinned above. Do not offer style options.
-- Sample slide: pre-approved. Accept the first sample and continue without waiting.
-- Image backend: do NOT assume. Actively check which image generation backends are callable in this
-  environment, state what you checked and what you selected, then proceed without waiting for my
-  confirmation.
-- Template mode: pre-approved **no template** (`--template none`). Do not ask; assemble plain `{deck}.pptx` only.
-
-Generate speaker notes, assemble the .pptx, and report the deck directory when done.
-```
-
-### GATED mode
-
-Use this when you are actively walking gates interactively (outline, backend, sample, pre-assembly
-review, **template mode**). Nothing is pre-approved except the fixed deck contract above; you answer
-each ask live.
-
-Invocation prompt (copy verbatim, replacing `<run-id>`):
-
-```text
-Use the codex-ppt skill to build a deck from tests/smoke-deck/source.md.
-
-Fixed contract for this deck — do not deviate:
-- Output base directory: tests/smoke-deck/runs/<run-id>
-- Deck name: coffee-extraction
-- Exactly 3 slides
-- Slide 1 must be written in Chinese
-- Slide 2 must be written in English
-- Slide 3 must mix Chinese and Latin script on the same slide
-- Visual style: use the built-in style 清爽专业风
-- Aspect ratio: ask `16:9` / `4:3` / `3:2` **before** backend lock. Recommend 3:2 on Cursor, 16:9 on Codex / Claude Code.
-
-Titles, key points, layout roles and composition are yours to decide from the source content.
-
-Stop at every approval gate and wait for me.
-
-At assembly, ask template mode (no template / medavis / both). For this smoke deck, **prefer both**
-unless I pick otherwise: produce `coffee-extraction.pptx` and `coffee-extraction-medavis.pptx`.
-Suggest a landing title from the outline (or "Coffee Extraction") and confirm it with me **before**
-the PPTX exists, then pass `--template both --landing-title "..." --aspect-ratio <locked>`.
-Verifier expects medavis `N+2` slides.
-```
-
-#### Gate checklist
-
-| Gate | What you are checking |
-|---|---|
-| **Outline** | `outline.md` written at `runs/<run-id>/coffee-extraction/`, 3 slides, per-slide language honored — and it **stops** before creating `deck_spec.json`, `speech.md`, or `prompts/` |
-| **Ratio** | Ask 16:9 / 4:3 / 3:2 **before** backend. Cursor: recommend 3:2. Codex/Claude: recommend 16:9. |
-| **Backend** | Only tools that can produce the locked ratio; each option names the model (GenerateImage = Cursor native, 3:2 only; image_gen / codex-gpt-image / image_gen.py = gpt-image-2 + `--size`). |
-| **Sample** | Text legible, especially CJK. Style matches 清爽专业风. Matches locked ratio (2% relative). No stray slide number. |
-| **Pre-assembly review** | User review markers recorded before assemble when the skill requires them. |
-| **Template mode** | Agent asks none/medavis/both + landing title **before** PPTX exists; for smoke prefer **both**; verifier checks `-medavis.pptx` when present (`N+2` slides). |
-
----
-
-## 3. Backend expectation matrix
-
-| Host | Acceptable `backend_used` |
-|---|---|
-| Codex | built-in `image_gen` |
-| Claude Code | `codex-gpt-image` |
-| Cursor | `GenerateImage` **(3:2 only)** or `codex-gpt-image` |
-
-**An unrequested fallback to `scripts/image_gen.py` is a failure on every host.** `codex-gpt-image` is
-expected to be installed on all three, so falling through to the CLI/API path without being asked can
-only mean backend detection failed.
-
-If you *deliberately* want to test the CLI/API path, pass `--allow-cli-fallback` to the verifier.
-
----
-
-## 4. Verify
+Offline regression command:
 
 ```bash
-python tests/smoke-deck/verify_deck.py tests/smoke-deck/runs/<run-id>/coffee-extraction \
-  --host cursor \
-  --skill-root ~/.cursor/skills/codex-ppt
+python -B -m unittest discover -s skills/codex-ppt/scripts/tests -p 'test_*.py'
 ```
 
-`--host` is required and must be one of `codex`, `claude-code`, `cursor`.
-`--skill-root` is optional; it enables the cross-platform docs check (T7).
+The implementation's separate synthetic two-content-slide smoke uses Pillow test fixtures, MOCK/TEST decision evidence and managed plain/Medavis assembly. It exercises contract/state/notes mapping only; it is never a live model deck or real human approval. Source-asset fidelity, lettering quality and timed speech still need real inspection in a later authorized pilot.
 
-### Pass/fail semantics
-
-The script always runs both tiers and prints two sections.
-
-- **BASELINE** — must pass against the unmodified skill. **The exit code reflects baseline only.**
-  A non-zero exit means something regressed.
-- **TARGET** — describes behavior the skill does not have yet. Reported as a progress counter
-  (`TARGET 0/7 satisfied`). Target failures never affect the exit code; they are the roadmap.
-
----
-
-## Known coverage gap
-
-Pinning the style keeps the visual baseline stable across runs — the approved sample slide is the deck's
-style anchor, so a floating style would move the baseline every time. The cost is that the 2-3 option
-**style menu never renders** in either mode.
-
-To exercise the style menu, delete the `Visual style:` line from the invocation prompt. That run is then
-not baseline-comparable, so treat it as a one-off rather than a regression pass.
+For failures, reproduce the actual layer, add meaningful regression RED before a script fix, verify GREEN, and report changes. Preserve prior run evidence and existing local edits.

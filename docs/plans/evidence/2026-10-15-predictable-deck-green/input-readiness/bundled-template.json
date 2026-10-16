@@ -1,0 +1,109 @@
+{
+  "workflow_version": 2,
+  "deck_name": "example-deck",
+  "language": "English",
+  "aspect_ratio": "3:2",
+  "selected_image_backend": "GenerateImage",
+  "goal": "Define the presentation goal.",
+  "deck_context": {
+    "source_summary": "Replace with provided evidence.",
+    "canonical_terms": []
+  },
+  "style": {
+    "name": "clean-professional",
+    "visual_direction": "Readable technical diagrams"
+  },
+  "planning": {
+    "brief": {
+      "audience": "Confirm audience",
+      "purpose": "Confirm purpose",
+      "notes_language": "English",
+      "tone": "Natural, clear",
+      "output_profile": "none",
+      "landing_title": null
+    },
+    "readiness": {
+      "content": "partial",
+      "visual": "partial"
+    },
+    "story": "Confirm the deck story.",
+    "shared_visuals": {},
+    "delivery": {
+      "voice": "natural-presenter",
+      "speaker_names": []
+    },
+    "review_policy": "consolidated",
+    "sample_strategy": {
+      "required_slides": [
+        "slide_02"
+      ]
+    },
+    "generation": {
+      "backend_used": "GenerateImage",
+      "tool_name": "GenerateImage",
+      "mode": "generate",
+      "aspect_ratio": "3:2"
+    },
+    "unresolved": [
+      "Confirm intention, exact copy, evidence, visuals, talk and live backend capabilities"
+    ]
+  },
+  "slides": [
+    {
+      "number": 1,
+      "title": "Opening",
+      "role": "opening",
+      "intent": "Confirm slide purpose.",
+      "key_points": [],
+      "visible_copy": {
+        "title": "Opening",
+        "body": [],
+        "labels": []
+      },
+      "visual_plan": {
+        "type": "diagram",
+        "subject": "Confirm visual meaning",
+        "objects": [],
+        "relationships": [],
+        "composition": "Confirm approximate layout"
+      },
+      "shared_visual_ids": [],
+      "depends_on": [],
+      "claim_sources": [],
+      "required_images": [],
+      "speaker_notes": {
+        "text": "Draft the presenter talk with breathing beats.",
+        "speaking_time_seconds": null,
+        "transition": "Confirm next spoken beat."
+      }
+    },
+    {
+      "number": 2,
+      "title": "Explain the idea",
+      "role": "explanation",
+      "intent": "Confirm slide purpose.",
+      "key_points": [],
+      "visible_copy": {
+        "title": "Explain the idea",
+        "body": [],
+        "labels": []
+      },
+      "visual_plan": {
+        "type": "diagram",
+        "subject": "Confirm visual meaning",
+        "objects": [],
+        "relationships": [],
+        "composition": "Confirm approximate layout"
+      },
+      "shared_visual_ids": [],
+      "depends_on": [],
+      "claim_sources": [],
+      "required_images": [],
+      "speaker_notes": {
+        "text": "Draft the presenter talk with breathing beats.",
+        "speaking_time_seconds": null,
+        "transition": "Confirm next spoken beat."
+      }
+    }
+  ]
+}

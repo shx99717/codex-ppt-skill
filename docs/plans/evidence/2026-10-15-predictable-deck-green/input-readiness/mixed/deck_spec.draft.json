@@ -1,0 +1,372 @@
+{
+  "workflow_version": 2,
+  "deck_name": "input-readiness-mixed",
+  "language": "English",
+  "aspect_ratio": "16:9",
+  "selected_image_backend": "codex-gpt-image",
+  "goal": "Internal technical discussion; decide what to investigate next",
+  "deck_context": {
+    "source_summary": "Same supplied and proposed material recorded in interaction.md and original human cards; no new organization facts.",
+    "canonical_terms": [
+      {
+        "term": "shared account",
+        "meaning": "one individual's account used across providers; never multiple people sharing a password"
+      },
+      {
+        "term": "provider access",
+        "meaning": "permission to use an individual provider; distinct from signing in"
+      }
+    ],
+    "source_readiness": {
+      "content": "slides 1–2 fixed; slide 3 is only an intention and needs copy/talk expansion",
+      "visual": "shared look already approved; local compositions for all three slides proposed"
+    },
+    "visible_numbering": "none",
+    "source_card_files": [
+      "interaction.md",
+      "outline.draft.md",
+      "speech.draft.md"
+    ]
+  },
+  "style": {
+    "name": "MOCK/TEST supplied approved clean technical visual reference",
+    "status": "reused supplied fixture decision; no new style vote",
+    "rules": [
+      "Retain the approved reference palette, typography and clean diagram language.",
+      "Use new compositions for the local content; do not copy reference text.",
+      "Exact palette/font extraction cannot be verified without the actual reference image."
+    ],
+    "reference": "MOCK/TEST clean-reference fixture; binary image not supplied in this text-only application",
+    "visual_direction": "Retain the approved reference palette, typography and clean diagram language.; Use new compositions for the local content; do not copy reference text.; Exact palette/font extraction cannot be verified without the actual reference image."
+  },
+  "planning": {
+    "brief": {
+      "audience": "internal technical audience",
+      "purpose": "Internal technical discussion; decide what to investigate next",
+      "notes_language": "English",
+      "tone": "Natural, clear presenter voice; supplied notes remain exact",
+      "output_profile": "none",
+      "landing_title": null
+    },
+    "readiness": {
+      "content": "slides 1–2 fixed; slide 3 is only an intention and needs copy/talk expansion",
+      "visual": "shared look already approved; local compositions for all three slides proposed"
+    },
+    "story": "See separate account/provider paths → See the contrast: one account connects the provider set → Be ready to choose investigation priorities",
+    "shared_visuals": {
+      "individual_account": {
+        "meaning": "one personal account symbol; same meaning and appearance throughout",
+        "appearance": "one personal account symbol; same meaning and appearance throughout"
+      },
+      "provider_tile": {
+        "meaning": "repeated provider shape; distinct providers, no claim about real provider count",
+        "appearance": "repeated provider shape; distinct providers, no claim about real provider count"
+      }
+    },
+    "delivery": {
+      "voice": "natural-presenter",
+      "speaker_names": [],
+      "intent": "internal live discussion with speaker notes"
+    },
+    "review_policy": "consolidated",
+    "sample_strategy": {
+      "required_slides": [
+        "slide_02"
+      ],
+      "original_strategy": [
+        {
+          "id": "slide_02",
+          "reason": "calibrate the proposed hub composition in the already approved look; no new style-selection interview"
+        }
+      ]
+    },
+    "generation": {
+      "backend_used": "codex-gpt-image",
+      "tool_name": "codex-gpt-image",
+      "mode": "generate",
+      "aspect_ratio": "16:9",
+      "model": "gpt-image-2",
+      "size": "2560x1440",
+      "input_method": "MOCK/TEST image-capable bridge; real schema and attached snapshots still require verification",
+      "reference_mode": "image-conditioned input when a style sample is used",
+      "capability_basis": "TEST fixture only. Native image_gen schema in this context has no explicit size parameter; no native size capability is invented. No probe or API call occurred."
+    },
+    "unresolved": [],
+    "runtime_limitations": [
+      "MOCK/TEST fixture only; no real backend probe, live image call or approval event",
+      "Actual approved style/reference/sample bytes and acceptance provenance are not supplied",
+      "Schema and draft-view acceptance cannot establish image readiness or actual human approval"
+    ]
+  },
+  "slides": [
+    {
+      "number": 1,
+      "title": "Access today",
+      "role": "Access today",
+      "intent": "See separate account/provider paths",
+      "key_points": [
+        "Separate accounts"
+      ],
+      "visible_copy": {
+        "title": "Access today",
+        "body": [
+          "Separate accounts"
+        ],
+        "labels": []
+      },
+      "visual_plan": {
+        "type": "separate access paths",
+        "subject": "separate accounts across providers",
+        "objects": [
+          "three provider tiles",
+          "one account icon for each provider"
+        ],
+        "relationships": [
+          {
+            "from": "one account icon for each provider",
+            "to": "three provider tiles",
+            "description": "each account icon connects only to its own provider"
+          }
+        ],
+        "composition": "three separated parallel paths; fixed title and body above; no extra labels"
+      },
+      "shared_visual_ids": [
+        "individual_account",
+        "provider_tile"
+      ],
+      "depends_on": [],
+      "claim_sources": [
+        {
+          "status": "provided",
+          "claim": "Access today",
+          "source": "mixed interaction.md and original outline.draft.md: provided fixed copy and notes"
+        },
+        {
+          "status": "provided",
+          "claim": "Separate accounts",
+          "source": "mixed interaction.md and original outline.draft.md: provided fixed copy and notes"
+        },
+        {
+          "status": "proposed",
+          "claim": "separate accounts across providers",
+          "source": "mixed original visual proposal; object and relationship wording retained exactly"
+        },
+        {
+          "status": "provided",
+          "claim": "Presenter talk for this page",
+          "source": "mixed original speech.draft.md: exact unchanged speaker_notes.text"
+        }
+      ],
+      "required_images": [],
+      "speaker_notes": {
+        "text": "Hi everyone.\n\nLet me start with the access problem.",
+        "speaking_time_seconds": null,
+        "transition": "The supplied next note introduces the proposal"
+      },
+      "language": "English",
+      "audience_state": {
+        "before": "",
+        "after": "See separate account/provider paths"
+      },
+      "source_mapping": {
+        "visible_copy": "provided fixed copy and notes",
+        "visual_plan": "proposed",
+        "speaker_notes": "provided fixed copy and notes",
+        "organization_measurements": "not supplied; none invented"
+      }
+    },
+    {
+      "number": 2,
+      "title": "A shared account",
+      "role": "A shared account",
+      "intent": "See the contrast: one account connects the provider set",
+      "key_points": [
+        "One account across providers"
+      ],
+      "visible_copy": {
+        "title": "A shared account",
+        "body": [
+          "One account across providers"
+        ],
+        "labels": []
+      },
+      "visual_plan": {
+        "type": "shared hub",
+        "subject": "one account connecting multiple providers",
+        "objects": [
+          "one individual account icon",
+          "the same three provider tiles"
+        ],
+        "relationships": [
+          {
+            "from": "one individual account icon",
+            "to": "the same three provider tiles",
+            "description": "one account connects to every illustrative provider"
+          }
+        ],
+        "composition": "account at left, providers at right; fixed title and body above; no extra labels"
+      },
+      "shared_visual_ids": [
+        "individual_account",
+        "provider_tile"
+      ],
+      "depends_on": [
+        "slide_01"
+      ],
+      "claim_sources": [
+        {
+          "status": "provided",
+          "claim": "A shared account",
+          "source": "mixed interaction.md and original outline.draft.md: provided fixed copy and notes"
+        },
+        {
+          "status": "provided",
+          "claim": "One account across providers",
+          "source": "mixed interaction.md and original outline.draft.md: provided fixed copy and notes"
+        },
+        {
+          "status": "proposed",
+          "claim": "one account connecting multiple providers",
+          "source": "mixed original visual proposal; object and relationship wording retained exactly"
+        },
+        {
+          "status": "provided",
+          "claim": "Presenter talk for this page",
+          "source": "mixed original speech.draft.md: exact unchanged speaker_notes.text"
+        }
+      ],
+      "required_images": [],
+      "speaker_notes": {
+        "text": "Now, here is the proposal.\n\nThe same account connects these providers.",
+        "speaking_time_seconds": null,
+        "transition": "The supplied next note opens ownership and rollout discussion"
+      },
+      "language": "English",
+      "audience_state": {
+        "before": "See the separated paths",
+        "after": "See the contrast: one account connects the provider set"
+      },
+      "source_mapping": {
+        "visible_copy": "provided fixed copy and notes",
+        "visual_plan": "proposed",
+        "speaker_notes": "provided fixed copy and notes",
+        "organization_measurements": "not supplied; none invented"
+      }
+    },
+    {
+      "number": 3,
+      "title": "Next steps to investigate",
+      "role": "Next steps to investigate",
+      "intent": "Be ready to choose investigation priorities",
+      "key_points": [
+        "Who owns the account?",
+        "How is provider access granted?",
+        "What should a pilot test?"
+      ],
+      "visible_copy": {
+        "title": "Next steps to investigate",
+        "body": [
+          "Who owns the account?",
+          "How is provider access granted?",
+          "What should a pilot test?"
+        ],
+        "labels": []
+      },
+      "visual_plan": {
+        "type": "investigation map",
+        "subject": "open questions about the shared account",
+        "objects": [
+          "shared account",
+          "provider access gates",
+          "small illustrative pilot path"
+        ],
+        "relationships": [
+          {
+            "from": "shared account",
+            "to": "shared account",
+            "description": "ownership question points to the account"
+          },
+          {
+            "from": "provider access gates",
+            "to": "provider access gates",
+            "description": "access question points to provider entry"
+          },
+          {
+            "from": "small illustrative pilot path",
+            "to": "small illustrative pilot path",
+            "description": "pilot question tests the proposed journey"
+          }
+        ],
+        "composition": "three question areas below the existing shared-account motif; keep the already approved look"
+      },
+      "shared_visual_ids": [
+        "individual_account",
+        "provider_tile"
+      ],
+      "depends_on": [
+        "slide_01",
+        "slide_02"
+      ],
+      "claim_sources": [
+        {
+          "status": "proposed",
+          "claim": "Next steps to investigate",
+          "source": "mixed interaction.md and original outline.draft.md: proposed expansion of the supplied phrase 'decide next steps'"
+        },
+        {
+          "status": "proposed",
+          "claim": "Who owns the account?",
+          "source": "mixed interaction.md and original outline.draft.md: proposed expansion of the supplied phrase 'decide next steps'"
+        },
+        {
+          "status": "proposed",
+          "claim": "How is provider access granted?",
+          "source": "mixed interaction.md and original outline.draft.md: proposed expansion of the supplied phrase 'decide next steps'"
+        },
+        {
+          "status": "proposed",
+          "claim": "What should a pilot test?",
+          "source": "mixed interaction.md and original outline.draft.md: proposed expansion of the supplied phrase 'decide next steps'"
+        },
+        {
+          "status": "proposed",
+          "claim": "open questions about the shared account",
+          "source": "mixed original visual proposal; object and relationship wording retained exactly"
+        },
+        {
+          "status": "proposed",
+          "claim": "Presenter talk for this page",
+          "source": "mixed original speech.draft.md: exact unchanged speaker_notes.text"
+        }
+      ],
+      "required_images": [],
+      "speaker_notes": {
+        "text": "So, we have seen the separate-account pattern and the proposed shared account.\n\nI suggest we leave this discussion with three things to investigate: who owns the account, how provider access is granted, and what a small pilot would need to test.\n\nThose are proposed next steps. We can use the discussion to choose where to start and what information we need.\n\nWhat would you put first?",
+        "speaking_time_seconds": null,
+        "transition": "Invite prioritisation"
+      },
+      "language": "English",
+      "audience_state": {
+        "before": "Have seen the fixed current and proposed diagrams",
+        "after": "Be ready to choose investigation priorities"
+      },
+      "source_mapping": {
+        "visible_copy": "proposed expansion of the supplied phrase 'decide next steps'",
+        "visual_plan": "proposed",
+        "speaker_notes": "proposed expansion of the supplied phrase 'decide next steps'",
+        "organization_measurements": "not supplied; none invented"
+      }
+    }
+  ],
+  "test_context": {
+    "case": "mixed",
+    "kind": "text-only behavioral application",
+    "actual_user_approval_recorded": false,
+    "fixture_concretization": "16:9 plus codex-gpt-image/gpt-image-2 is a TEST capability fixture, not a measured live backend or an organization fact.",
+    "reused_fixture_decisions": [
+      "approved shared look",
+      "fixed slide 1–2 copy and notes"
+    ],
+    "schema_mapping": "Implementation representation only; no changed copy, note text, visual objects/meaning or scripted user decision. No actual approval is recorded."
+  }
+}

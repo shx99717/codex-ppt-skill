@@ -32,7 +32,7 @@ def _run_main_with_gbk_stdout(argv: list[str]) -> tuple[int, str]:
     gbk_stdout = io.TextIOWrapper(buffer, encoding="gbk", errors="strict")
     old_argv, old_stdout = sys.argv, sys.stdout
     try:
-        sys.argv = argv
+        sys.argv = argv + ["--legacy-unmanaged"]
         sys.stdout = gbk_stdout
         with unittest.TestCase().assertRaises(SystemExit) as cm:
             assemble_ppt.main()
@@ -49,7 +49,7 @@ def _run_main(argv: list[str]) -> tuple[int, str]:
     buffer = io.StringIO()
     old_argv, old_stdout = sys.argv, sys.stdout
     try:
-        sys.argv = argv
+        sys.argv = argv + ["--legacy-unmanaged"]
         sys.stdout = buffer
         with unittest.TestCase().assertRaises(SystemExit) as cm:
             assemble_ppt.main()
@@ -348,7 +348,6 @@ class MedavisTemplateAssemblyTests(unittest.TestCase):
         templates = [
             _template_path("medavis_ppt_template_2026_en_16-9.pptx"),
             _template_path("medavis_ppt_template_2026_en_4-3.pptx"),
-            _template_path("medavis_ppt_template_2026_en_3-2.pptx"),
         ]
         before = {path: path.stat() for path in templates}
         with tempfile.TemporaryDirectory() as tmp:
@@ -408,12 +407,12 @@ class MedavisTemplateAssemblyTests(unittest.TestCase):
             self.assertIn("1536", output)
             self.assertIn("1024", output)
 
-    def test_none_3_2_accepted(self) -> None:
+    def test_none_4_3_additional_geometry(self) -> None:
         from pptx import Presentation
         from pptx.enum.shapes import MSO_SHAPE_TYPE
 
         with tempfile.TemporaryDirectory() as tmp:
-            _make_deck_ratio(tmp, (48, 32), slides=1)
+            _make_deck_ratio(tmp, (48, 36), slides=1)
             exit_code, _ = _run_main(
                 [
                     "assemble_ppt.py",
@@ -422,19 +421,19 @@ class MedavisTemplateAssemblyTests(unittest.TestCase):
                     "--template",
                     "none",
                     "--aspect-ratio",
-                    "3:2",
+                    "4:3",
                 ]
             )
             self.assertEqual(exit_code, 0)
             prs = Presentation(str(Path(tmp) / "demo-deck" / "demo-deck.pptx"))
             self.assertEqual(prs.slide_width, 9144000)
-            self.assertEqual(prs.slide_height, 6096000)
+            self.assertEqual(prs.slide_height, 6858000)
             pic = [
                 s for s in prs.slides[0].shapes if s.shape_type == MSO_SHAPE_TYPE.PICTURE
             ][0]
             self.assertEqual(pic.left, 0)
             self.assertEqual(pic.top, 0)
-            self.assertTrue(_picture_ratio_ok(pic, 3 / 2))
+            self.assertTrue(_picture_ratio_ok(pic, 4 / 3))
 
     def test_none_4_3_accepted(self) -> None:
         from pptx import Presentation
@@ -481,12 +480,12 @@ class MedavisTemplateAssemblyTests(unittest.TestCase):
             self.assertNotEqual(exit_code, 0)
             self.assertFalse((Path(tmp) / "demo-deck" / "demo-deck.pptx").exists())
 
-    def test_medavis_3_2_uses_matching_template(self) -> None:
+    def test_medavis_4_3_additional_template_geometry(self) -> None:
         from pptx import Presentation
         from pptx.enum.shapes import MSO_SHAPE_TYPE
 
         with tempfile.TemporaryDirectory() as tmp:
-            _make_deck_ratio(tmp, (48, 32), slides=1)
+            _make_deck_ratio(tmp, (48, 36), slides=1)
             exit_code, _ = _run_main(
                 [
                     "assemble_ppt.py",
@@ -497,13 +496,13 @@ class MedavisTemplateAssemblyTests(unittest.TestCase):
                     "--landing-title",
                     "Demo Title",
                     "--aspect-ratio",
-                    "3:2",
+                    "4:3",
                 ]
             )
             self.assertEqual(exit_code, 0)
             prs = Presentation(str(Path(tmp) / "demo-deck" / "demo-deck-medavis.pptx"))
             self.assertEqual(prs.slide_width, 9144000)
-            self.assertEqual(prs.slide_height, 6096000)
+            self.assertEqual(prs.slide_height, 6858000)
             self.assertEqual(len(prs.slides), 3)
             last = prs.slides[2]
             last_text = "\n".join(s.text_frame.text for s in last.shapes if s.has_text_frame)

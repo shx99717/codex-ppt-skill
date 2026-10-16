@@ -1,6 +1,6 @@
 # Codex PPT Skill 说明文档
 
-Codex PPT 是一个面向 Codex 的 PPT 生成 skill，也可在 Claude Code、OpenClaw、Hermes Agent 等支持 `SKILL.md` 的 agent 中使用。它把文章、报告、论文、课程笔记或粗略想法转换成图片式演示文稿：先规划大纲和视觉风格，再逐页生成完整幻灯片图片，最后组装成 `.pptx` 文件。
+Codex PPT 是一个面向 Codex 的 PPT 生成 skill，也可在 Claude Code、OpenClaw、Hermes Agent 等支持 `SKILL.md` 的 agent 中使用。它把文章、报告、论文、课程笔记或粗略想法转换成图片式演示文稿：先规划大纲和视觉风格，再逐页生成完整幻灯片图片，最后组装成 `.pptx` 文件。 输入可以是一个主题、完整逐页 Markdown，或准备程度不同的组合。skill 复用已完成的文案和讲稿，只澄清实质缺口，在昂贵生图前一起确认准确内容、视觉含义与自然讲稿。默认集中审核当前图片，也可严格逐批审核。图片渲染仍允许轻微差异。
 
 ## 这套文档怎么读
 
@@ -24,7 +24,7 @@ Codex PPT 是一个面向 Codex 的 PPT 生成 skill，也可在 Claude Code、O
 
 ## 特色功能
 
-- 图片式 PPT 生成：每一页都是完整幻灯片图片（锁定 16:9 / 4:3 / 3:2），适合追求强视觉表达和统一风格的场景。
+- 图片式 PPT 生成：每一页都是完整幻灯片图片（锁定 16:9 / 4:3），适合追求强视觉表达和统一风格的场景。
 - 分阶段确认流程：先确认大纲、视觉风格、画幅比例、图片生成方式和样张，再生成整套 PPT，减少返工。
 - 内置 12 种风格：包括手绘技术解释风、科研答辩风、清爽专业风、麦肯锡风格、党政红风格、教学课件风等方向，参见[风格与个人风格库](styles.md)。
 - 支持参考材料仿风格：可以阅读用户提供的 PPT、PDF 或截图，理解每页图片风格后再仿照生成。
@@ -32,7 +32,7 @@ Codex PPT 是一个面向 Codex 的 PPT 生成 skill，也可在 Claude Code、O
 - 支持指定素材入页：可以把论文原图、实验结果图、架构图或截图指定到具体页面中使用。
 - 支持多 agent 环境：除 Codex 外，也可在 Claude Code、OpenClaw、Hermes Agent 等支持 `SKILL.md` 的 agent 中使用。
 - 自动组装 PowerPoint：生成 `outline.md`、每页图片、`speech.md`，并最终组装为 `.pptx` 文件。
-- 支持通过第三方 API 使用文本模型和 `gpt-image-2` 生图模型。
+- 支持通过第三方 API 使用文本模型和 已配置的生图模型 生图模型。
 - 支持配套生成 PPT 演讲稿，默认会自动插入 PPT 备注页。
 - 支持生成后针对特定不满意的页面做定向修改，参见[常见问题](faq.md)。
 
@@ -51,7 +51,7 @@ Codex PPT 生成的是图片式 PPT：视觉一致性强，但页面里的文字
 
 如果你需要进一步转换成可编辑 PPT，可以在生成后再使用 [image-to-editable-ppt-skill](https://github.com/shx99717/image-to-editable-ppt-skill)。
 
-如果你没有 `gpt-image-2` 生图模型的使用权限，则无法使用该 skill，参见[安装与配置](installation.md)。
+优先使用当前可调用的 Codex `image_gen` 或 Cursor `GenerateImage`，以实时工具 schema 为准；原生工具的模型由宿主管理。Codex 可通过提示词请求 16:9 或 4:3，无需 size 参数；Cursor 应传入受支持的 `aspect_ratio`。测量实际文件宽高并检查 2% 比例容差，不能把分辨率请求当作原生 4K 的证明。API 回退复用明确配置的供应商模型；未配置时根据当前官方文档选择，不设固定模型默认值。通过真实输入机制附加全部源图和风格图，并记录绑定当前尝试的提交证据。原生和桥接证据保留为代理报告；CLI 验证依赖已登记的成功执行。历史文件可查看，但新的托管执行和组装需要重新编译及新的证据。仅支持 16:9 和 4:3，不自动转换旧比例。
 
 ## 相关链接
 
@@ -59,3 +59,7 @@ Codex PPT 生成的是图片式 PPT：视觉一致性强，但页面里的文字
 - ClawHub 页面：https://clawhub.ai/ningzimu/codex-ppt
 - 使用案例展示区：https://github.com/ningzimu/codex-ppt-skill/issues/34
 - 可编辑 PPT 转换 skill：https://github.com/shx99717/image-to-editable-ppt-skill
+
+讲稿在生图前用演示语言起草，像演讲者亲切地用日常语言解释：具体场景、以空行分隔的思考节拍、自然连接词与有目的的过渡。已有讲稿应保留，实质新增内容需确认。长度取决于讲话时间和复杂度。
+
+受管理的 v2 脚本检查当前内容/讲稿/策略决策、素材与样张字节、编译输入、QA 和用户对当前图片的接受。历史手动或纯图片任务须显式使用 `--legacy-unmanaged`，不能绕过受管理审批。CLI 任务用 `run_slide_job.py` 准确传入已批准参数与全部图片。

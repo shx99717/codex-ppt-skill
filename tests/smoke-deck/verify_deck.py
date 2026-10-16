@@ -32,7 +32,7 @@ HOST_ACCEPTABLE = {
     # so a doc-compliant subagent reporting "built-in image tool" on these hosts must still pass.
     # The specific-tool names (codex-gpt-image, GenerateImage) are also accepted when present;
     # rewarding that specificity is what TARGET T6 measures.
-    # Cursor GenerateImage is 3:2-only; a 16:9/4:3 GenerateImage run still fails the image-ratio
+    # Cursor GenerateImage supports live ratio controls; actual output must pass the image-ratio
     # baseline when pixels are 1536x1024. This matrix is host-label acceptance, not a ratio gate.
     "claude-code": {"builtin-image-gen", "codex-gpt-image"},
     "cursor": {"builtin-image-gen", "generateimage", "codex-gpt-image"},

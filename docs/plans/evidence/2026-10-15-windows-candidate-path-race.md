@@ -1,0 +1,7 @@
+# Windows candidate-directory race
+
+Full suite observed RED: 167 tests, one error in the two-provider overlap regression. The candidate resolved to `\\?\C:\...\candidates\slide_01.png` while its deck root remained `C:\...`; lexical containment incorrectly failed.
+
+Root-cause investigation read the actual bundled `ntpath.realpath` implementation (lines 695–731), checked test patches for leaked path mocks, and reran the focused suite (9 passing). A deterministic scratch probe wrapped only the native final-path call and created the candidate parent after the initial missing-directory error. Observed native errors changed from winerror 3 to 2; the existing parent resolved to a namespace-prefixed path; Python retained that prefix because the final error differed from its initial error. The same candidate then failed lexical containment. No API or source changes were used in the probe.
+
+Cause: adapter resolved and created a shared candidates directory outside the planning lock. Two legitimate workers could change directory existence during Windows non-strict resolution. Fix the source of the race: briefly serialize candidate resolution/parent creation under the planning lock, release it before per-candidate ownership and provider work. Do not strip namespace prefixes blindly or weaken containment checks. Add a Windows-native regression that interleaves a competing lock-respecting creator during final-path resolution, then rerun concurrent execution and the complete suite. Long provider calls still remain outside all global locks.

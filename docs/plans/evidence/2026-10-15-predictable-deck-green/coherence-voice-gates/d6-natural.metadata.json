@@ -1,0 +1,12 @@
+{
+  "case": "D6-natural",
+  "mode": "MOCK/TEST text-only",
+  "artifact": "d6-maya-natural.md",
+  "language": "en",
+  "steps": ["reuse known audience/purpose/tone/timing", "show exact illustrative card and approximately one-minute notes", "scripted acceptance of proposed one-card/shared-account transition", "hold production"],
+  "scripted_decisions": [{"id": "D6N-U2", "actor": "MOCK HUMAN", "scope": "visible/visual card, note voice, one-card scope and conditional transition", "evidence": "Yes, use that one-card example and the shared-account transition. The notes sound right."}],
+  "approval_state": {"local_plan_and_talk": "scripted acceptance", "production_settings": "unbound", "current_final_images": "absent", "actual_runtime_approval": "absent"},
+  "results": {"cards": 1, "notes": "actual five-beat text", "note_word_count": 140, "target_seconds": 60, "estimated_seconds_at_120_to_150_wpm": [56, 70], "timed_rehearsal": "not performed", "images_generated": 0},
+  "claims": {"persona": "explicitly fictional Maya", "portals": "three illustrative labels, no real customer mapping", "outcome": "qualitative burden of selecting a login", "measured_results": "none", "personal_experience": "none"},
+  "concerns": ["timing is an estimate", "conditional next-card approach is not a claim of actual deployment"]
+}

@@ -1,10 +1,10 @@
-"""Shared slide-image ratio checks, gpt-image-2 size table, and uniform contain placement."""
+"""Shared slide-image ratio checks, suggested API size table, and uniform contain placement."""
 
 from __future__ import annotations
 
 RATIO_RELATIVE_TOLERANCE = 0.02
-RATIO_BY_LABEL = {"16:9": 16 / 9, "4:3": 4 / 3, "3:2": 3 / 2}
-GPT_IMAGE_SIZE = {"16:9": "2560x1440", "4:3": "2560x1920", "3:2": "2400x1600"}
+RATIO_BY_LABEL = {"16:9": 16 / 9, "4:3": 4 / 3}
+GPT_IMAGE_SIZE = {"16:9": "2560x1440", "4:3": "2560x1920"}
 
 
 def is_ratio(width, height, expected, relative_tolerance=RATIO_RELATIVE_TOLERANCE) -> bool:

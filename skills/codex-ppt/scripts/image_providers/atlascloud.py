@@ -117,13 +117,16 @@ class AtlasCloudImageProvider(ImageProvider):
         raise TimeoutError(f"AtlasCloud prediction timed out: {last}")
 
     def _atlas_payload(self, payload: Dict[str, Any], *, operation: str) -> Dict[str, Any]:
+        unsupported=[key for key in ("background","input_fidelity","output_compression","moderation") if payload.get(key) is not None]
+        if unsupported:
+            raise ValueError("AtlasCloud adapter cannot forward these settings: " + ", ".join(unsupported))
         output_format = payload.get("output_format")
         if output_format not in (None, "png", "jpeg"):
             raise ValueError("AtlasCloud supports output_format png or jpeg.")
 
         body: Dict[str, Any] = {
             "model": atlascloud_model_for_operation(
-                str(payload.get("model", "gpt-image-2")),
+                str(payload["model"]),
                 operation,
             ),
             "prompt": payload["prompt"],
@@ -192,15 +195,14 @@ def _model_base_url(base_url: Optional[str]) -> str:
 
 
 def atlascloud_model_for_operation(model: str, operation: str) -> str:
-    suffix = "edit" if operation == "edit" else "text-to-image"
-    base = model.rstrip("/")
-    for existing_suffix in ("/text-to-image", "/edit"):
-        if base.endswith(existing_suffix):
-            base = base[: -len(existing_suffix)]
-            break
-    if "/" not in base:
-        base = f"openai/{base}"
-    return f"{base}/{suffix}"
+    if not isinstance(model,str) or not model.strip():
+        raise ValueError("AtlasCloud requires an explicit documented model route")
+    route=model.strip()
+    suffix="edit" if operation=="edit" else "text-to-image"
+    for endpoint in ("edit","text-to-image"):
+        if route.endswith("/"+endpoint) and endpoint!=suffix:
+            raise ValueError("Configured AtlasCloud route does not support this operation; select its documented route explicitly")
+    return route
 
 
 def _prediction_id(data: Dict[str, Any]) -> Optional[str]:

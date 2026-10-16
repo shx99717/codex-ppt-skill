@@ -1,142 +1,52 @@
-# Codex — FAST smoke + strict fix loop
+# Codex managed smoke prompt
 
-Paste the fenced block below **verbatim** into a fresh Codex session.
-This run is pinned to **Codex** only (native `image_gen`). Do not self-detect another host.
+Paste the following into the intended host. See [smoke documentation](README.md) for verification limits and [portable prompt](RUN_PROMPT.md) for sibling variants. This is a live test request only when the user invokes it; saving this prompt does not authorize a run.
 
-See also Cursor / Claude bridge variants in [`RUN_PROMPT.md`](RUN_PROMPT.md).
+```text
+Use codex-ppt to run the coffee smoke fixture end to end with consolidated image review.
 
-Canonical skill source: `d:/git/codex-ppt-skill/skills/codex-ppt`
-Installed skill this host must run: `~/.codex/skills/codex-ppt`
+Locate the repository (expected D:/git/codex-ppt-skill); ask only if absent.
+Test skills/codex-ppt/SKILL.md and its guides from this repository explicitly, and report the tested root/version.
+If using an installed copy instead, verify its source hashes against the intended repository first.
+Do not install/synchronize skills, commit, push, merge or release without separate authorization.
+Preserve existing edits and historical runs.
 
----
+Host is codex; do not switch hosts. Backend is pinned to image_gen. If unavailable or incompatible, report the blocker before proposing a separately approved fallback. Claude Code has no native image generation.
+Use 16:9 or 4:3 only. Prefer the callable native tool: Codex image_gen may use prompt-only ratio control; Cursor GenerateImage passes a supported aspect_ratio value. Inspect actual inputs, attach every snapshot, measure original pixels, and record the current attempt receipt. No fixed native model identity or invented size argument. API uses its explicit configured model and documented capabilities.
+Wrong-ratio images fail; never stretch, crop or letterbox as success.
+For a deliberately chosen CLI path, approve explicit model/size/quality and generate/reference-edit operations and use the managed run_slide_job.py adapter with every verified input.
 
-```
-You are running the codex-ppt smoke-deck on CODEX only, in FAST mode, with a
-strict engineering fix loop. Do not switch hosts. Do not commit or push unless
-I explicitly say so.
+Run python tests/smoke-deck/verify_deck.py --preflight.
+Resolve a genuine runtime dependency failure before generating.
+Ask for the output base once (suggest tests/smoke-deck/runs/<YYYYMMDD-HHMM>-<host>).
 
-## Host pins (fixed)
+Fixed reusable requirements:
+- Source tests/smoke-deck/source.md; deck name coffee-extraction.
+- Exactly three content slides: Chinese, English, then mixed Chinese/Latin.
+- Built-in 清爽专业风; do not ask for new style options.
+- Audience: colleagues learning coffee extraction; purpose: explain the mechanism.
+- Draft natural notes in the approved presentation/slide language with breathing beats and meaningful transitions.
+- Recommend both plain and Medavis output with landing title Coffee Extraction in the combined plan; confirm or reuse my explicit choice.
+- Internal IDs consecutive; visible numbering only if agreed.
 
-| Item | Value |
-|------|-------|
-| Environment | Codex CLI |
-| --host | codex |
-| Installed skill | ~/.codex/skills/codex-ppt |
-| Fork repo root | d:/git/codex-ppt-skill |
-| Canonical skill source | d:/git/codex-ppt-skill/skills/codex-ppt |
+Reuse these known decisions. Propose a coherent story, exact visible wording, objects/relationships/composition, shared visual identities, source mapping and complete talk. Mark additions/missing evidence. Review the whole content/visual/talk/output plan by exception before images; do not ask a fixed questionnaire or pad bullets.
 
-Acceptable backends for this host (verifier matrix): built-in `image_gen`.
-Unrequested `scripts/image_gen.py` / CLI fallback is a failure unless I
-explicitly ask for `--allow-cli-fallback`.
+Generate an appropriate representative content sample after current plan/talk approval; show actual sample pixels and wait for real acceptance.
+Record actual decisions with truthful evidence. Do not pre-approve unseen images or turn agent QA into my approval.
+After acceptance and production authorization, compile managed jobs and use one worker per remaining slide when available.
+Inspect the first batch, then each slide and the complete ordered deck. Preserve exact approved labels/values/relationships and source fidelity.
+Allow one targeted automatic repair for an isolated rendering defect; ask for additional attempts. Pause common first-batch failures.
 
-## Non-negotiable rules
+Use consolidated review: continue routine successful batches after first-batch QA, then show the whole current deck and ask for actual approval or named exceptions.
+Substantive changes return to affected-plan approval; unchanged notes-only changes retain valid images.
+Assemble only when current managed plan/talk/policy/source/sample/job/result/QA/image-review gates pass. Reuse approved output choices.
+Plain has three content slides; Medavis has five with notes only on the corresponding content pages.
 
-1. **Installed skill must match the fork.** Before generating, and after every
-   fix, sync:
-   copy `d:/git/codex-ppt-skill/skills/codex-ppt` → `~/.codex/skills/codex-ppt`
-   (replace the destination; exclude `__pycache__` / `*.pyc`). Verify with a
-   file-hash or file-list compare that the install matches the fork (especially
-   `scripts/record_user_review.py`, `scripts/probe_image_backends.py`,
-   `scripts/prepare_slide_prompts.py`, `SKILL.md`).
-2. **Edits land only in the fork repo** under `d:/git/codex-ppt-skill`
-   (skill code/docs/tests). Never “fix only” the installed copy.
-3. **No commits, no push, no amend** unless I explicitly authorize it.
-4. **No speculative refactors.** Fix the failing behavior; keep scope minimal.
-5. On any error/bug/failed check: follow **systematic debugging** — root cause
-   first, then fix. Prefer **TDD** for script/logic bugs: failing unit test →
-   fix → green unit tests → re-sync install → re-run smoke.
-6. Unit tests live at:
-   `skills/codex-ppt/scripts/tests/`
-   (`test_record_user_review.py`, `test_probe_image_backends.py`,
-   `test_backend_family.py`, `test_slide_language.py`).
-   Command from fork root:
-   `python -m unittest discover -s skills/codex-ppt/scripts/tests -v`
+Run python tests/smoke-deck/verify_deck.py <base>/coffee-extraction --host codex --skill-root <tested-skill-root>.
+Report full BASELINE/TARGET output, current managed readiness, backend/provenance, actual deck paths, notes mapping and limitations.
+The physical verifier is supplemental and cannot establish user acceptance.
 
-## Pass criteria for THIS fork run
-
-- **BASELINE**: all checks must PASS (exit code of verify_deck.py).
-- **TARGET**: T1 (review recorded), T2 (no hardcoded Chinese rule on EN slide),
-  T3 (per-slide language), T6 (specific selected_backend), and **T7** (no
-  Unix-only `.venv/bin/python` in skill docs; scored on Windows when
-  `--skill-root` is passed) must PASS — those goals are already implemented.
-  Investigate any other TARGET miss (T4/T5); fix if it is a real skill defect;
-  ask me if it looks environment-only (e.g. image width / host tooling).
-
-## Procedure
-
-### A. Preflight
-
-1. `cd d:/git/codex-ppt-skill`
-2. Sync fork → `~/.codex/skills/codex-ppt` and confirm match.
-3. `python tests/smoke-deck/verify_deck.py --preflight`
-   If deps missing, run the printed bootstrap, then re-check. Stop if bootstrap fails.
-4. Ask me for `<build_dir>` (suggest
-   `tests/smoke-deck/runs/<YYYYMMDD-HHMM>-codex`). Wait for my answer.
-
-### B. Generate (FAST contract — do not deviate)
-
-Use the **installed** codex-ppt skill to build from
-`tests/smoke-deck/source.md`:
-
-- Output base directory: `<build_dir>`
-- Deck name: `coffee-extraction`
-- Exactly 3 slides
-- Slide 1 Chinese; slide 2 English; slide 3 mixed Chinese + Latin
-- Visual style: built-in `清爽专业风` (do not offer style options)
-- Aspect ratio: 16:9
-- Titles / points / layout / composition: decide from the source
-
-Gate handling:
-- Outline: pre-approved — write `outline.md` and continue
-- Style: pinned — do not offer options
-- Sample: pre-approved — accept first sample and continue
-- Image backend: do NOT assume — probe callable backends in Codex (expect
-  native `image_gen` = host-native gpt-image-2). Pass `--size 2560x1440` for this 16:9 run.
-  State what you checked and what you locked as `selected_backend`, then continue without waiting for confirmation. Do not offer Cursor GenerateImage.
-- Still honor skill rules that require recording user review / run-state for
-  the pre-assembly review gate when the skill says to (FAST skips *waiting*,
-  not required bookkeeping). If the skill requires a review marker before
-  assemble, record approval via the skill’s review mechanism after slides are
-  ready, without inventing a new protocol.
-
-Generate speaker notes and assemble the `.pptx`.
-For this smoke deck, ask template mode but **prefer both** unless I say otherwise:
-produce `coffee-extraction.pptx` and `coffee-extraction-medavis.pptx`. Suggest a landing
-title from the outline (or "Coffee Extraction"), confirm with me **before** any PPTX of this run exists, then pass
-`--template both --landing-title "..." --aspect-ratio 16:9`. Pass gpt-image-2 `--size` for the locked ratio (16:9=2560x1440). Medavis wrap is N+2 slides (landing + content + ending).
-
-### C. Verify
-
-```bash
-python tests/smoke-deck/verify_deck.py <build_dir>/coffee-extraction \
-  --host codex \
-  --skill-root ~/.codex/skills/codex-ppt
-```
-
-Show the full BASELINE and TARGET output verbatim.
-
-### D. On failure — strict fix loop (repeat until green or blocked)
-
-1. **Reproduce & isolate**: quote the failing check / error; name the layer
-   (skill docs/prose, script, install drift, verifier, host tooling).
-2. **Root cause**: inspect fork source (and unit tests). Do not patch symptoms.
-3. **Failing test first** when the bug is in Python helpers/scripts:
-   add or extend a unit test under `skills/codex-ppt/scripts/tests/`, see RED,
-   then implement the smallest fix in the fork.
-4. **Verify units**: full
-   `python -m unittest discover -s skills/codex-ppt/scripts/tests -v` must be OK.
-5. **Re-sync install** from fork → `~/.codex/skills/codex-ppt`; re-confirm match.
-6. **Re-run smoke** from step B (new `<build_dir>` suffix like `-fix1` unless I
-   say to reuse), then step C.
-7. **Report** each cycle: root cause, files changed (fork paths only), unit
-   result, smoke result. Then **stop and wait** — do not commit.
-
-If you are blocked (missing credentials, ambiguous product decision, need a
-commit), stop and ask me with options.
-
-### E. Success report
-
-When BASELINE is green and T1/T2/T3/T6/T7 pass: summarize backend used, deck path,
-and any remaining TARGET notes. Remind me that changes are uncommitted until I
-approve a commit.
+On a real defect, reproduce/root-cause first, add regression RED before a script change, apply the smallest fix in the repo, and verify GREEN.
+Do not silently patch installed copies or generate unlimited paid retries.
+Stop only for genuine missing input/decisions or actual required user reviews; no routine extra confirmations.
 ```
