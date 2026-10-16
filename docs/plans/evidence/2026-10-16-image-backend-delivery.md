@@ -56,3 +56,7 @@ Both reviewers independently verified their original finding closures. No unreso
 ## Remaining limits
 
 Exact native resolution control and a universal maximum have not been established. Native attachment receipts remain agent reports. Cursor evidence is user-provided and dated. Live provider compatibility depends on the selected provider's current documented capabilities and actual responses. Deployment of the installed skill is separate work and has not occurred.
+
+## Subsequent authorized publication — 2026-10-16
+
+The user later explicitly requested commit, push and PR creation. Implementation commit 55a973d was pushed, and https://github.com/shx99717/codex-ppt-skill/pull/3 was opened against main. Fresh verification before publication passed 190 script tests (163.325 seconds) and 10 smoke tests (0.277 seconds). The staged check also exposed trailing Markdown formatting whitespace in new evidence files and an extra test-file EOF blank line that the earlier unstaged check did not cover; these were removed without changing finding prose or test behavior, the staged check passed, and all seven capability tests passed again. A follow-up adds the required PR references to the changelog. The earlier uncommitted-state report above describes the implementation delivery checkpoint, not the subsequent publication state. No merge or installed-skill deployment occurred.

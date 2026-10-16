@@ -6,27 +6,27 @@ Release notes are generated from this file. Keep changelog entries in English.
 
 ### Fixes
 
-- Prefer callable Codex and Cursor native image tools using live schemas, prompt/parameter ratio controls, and measured outputs rather than a fixed image model or size-parameter requirement.
-- Require explicit configured API models with provider/model/operation-scoped capability evidence; do not apply older model restrictions by substring.
-- Bind managed image submissions to compiler contract versions, dispatch attempts, all source/style inputs, and original candidate bytes; distinguish agent-reported inputs from registered adapter execution.
-- Remove 3:2 deck support and its Medavis template. Supported ratios are 16:9 and 4:3; historical files are not automatically converted.
+- Prefer callable Codex and Cursor native image tools using live schemas, prompt/parameter ratio controls, and measured outputs rather than a fixed image model or size-parameter requirement. (#3)
+- Require explicit configured API models with provider/model/operation-scoped capability evidence; do not apply older model restrictions by substring. (#3)
+- Bind managed image submissions to compiler contract versions, dispatch attempts, all source/style inputs, and original candidate bytes; distinguish agent-reported inputs from registered adapter execution. (#3)
+- Remove 3:2 deck support and its Medavis template. Supported ratios are 16:9 and 4:3; historical files are not automatically converted. (#3)
 
 
 ### Features
 
-- Add adaptive whole-deck content, visual, and talk planning with approval-bound production inputs.
-- Add consolidated generated-slide review with separate agent QA and current-image user approval.
-- Add an executable managed CLI adapter that preserves approved settings and verified image inputs.
+- Add adaptive whole-deck content, visual, and talk planning with approval-bound production inputs. (#3)
+- Add consolidated generated-slide review with separate agent QA and current-image user approval. (#3)
+- Add an executable managed CLI adapter that preserves approved settings and verified image inputs. (#3)
 
 - Let the user pick the final PPT ratio (`16:9` / `4:3` / `3:2`) before backend lock, persist `aspect_ratio`, and assemble none-mode plus matching 3-page Medavis templates (landing + content + ending, overlay logo). (#2)
 - Filter image backends by locked ratio (Cursor `GenerateImage` is 3:2-only) and require gpt-image-2 `--size` `2560x1440` / `2560x1920` / `2400x1600`. (#2)
 
 ### Improvements
 
-- Preserve recurring visuals, story transitions, terminology, and cross-slide dependencies during generation and revisions.
-- Draft natural presenter notes before image production, with breathing beats, purposeful transitions, and speaking-time-aware length.
-- Check the first production batch and allow one targeted automatic repair before escalation.
-- Protect compiled prompts, recorded images, and assembly output with grouped state transitions and canonical slide ordering.
+- Preserve recurring visuals, story transitions, terminology, and cross-slide dependencies during generation and revisions. (#3)
+- Draft natural presenter notes before image production, with breathing beats, purposeful transitions, and speaking-time-aware length. (#3)
+- Check the first production batch and allow one targeted automatic repair before escalation. (#3)
+- Protect compiled prompts, recorded images, and assembly output with grouped state transitions and canonical slide ordering. (#3)
 
 - Hard-gate saved images and PPT assembly on 2% relative ratio; refuse stretch, letterbox, and crop as success paths. (#2)
 - Smoke-deck GATED/interactive prompts prefer template mode **both**; `verify_deck.py` validates `coffee-extraction-medavis.pptx` when present (landing + content placement/notes). FAST stays on no-template. (#2)
@@ -42,8 +42,8 @@ Release notes are generated from this file. Keep changelog entries in English.
 
 ### Documentation
 
-- Synchronize adaptive planning, early talk review, explicit legacy compatibility, and consolidated/strict approval guidance across Chinese, English, and Korean documentation.
-- Preserve the complete speaker-note voice guidance and examples in a distributable reference.
+- Synchronize adaptive planning, early talk review, explicit legacy compatibility, and consolidated/strict approval guidance across Chinese, English, and Korean documentation. (#3)
+- Preserve the complete speaker-note voice guidance and examples in a distributable reference. (#3)
 
 - Add Claude Code interactive (GATED) smoke prompt `tests/smoke-deck/RUN_PROMPT_claude_interactive.md` as the wait-at-every-gate sibling of the FAST `RUN_PROMPT_claude.md`. (#2)
 - Document GenerateImage schema-vs-pixels (enum may lack `3:2`; 4:3/16:9 arguments are not pixel proof) in skill docs, worker prompt, Cursor smoke prompt, and zh/en/ko README plus usage workflow pages. (#2)

@@ -196,3 +196,10 @@ Repository git status was clean before this memory was created. The approved imp
 - Separately, the user authorized two unattended three-slide rendering tests in D:\temp\2026.10\image-backend-deck-comparison-20261016. Native image_gen and codex-gpt-image bridge both produced 1672x941 outputs; bridge requested 1536x864 and did not report actual model identity. Slides 2/3 in each deck attached their own opening slide as a style-only reference. One native caption repair succeeded.
 - Test PPTX files, PDFs and actual PPTX renders were inspected; embedded image bytes, notes and current submission records checked. These are explicitly review-pending preview decks, with no fabricated human image acceptance. Generated deliverables remain outside the source repository.
 - The user's concern about three-point layouts was checked against source guidance: there is no bullet quota and the skill explicitly forbids imposing 3–5 bullets. The repeated three-part layout was the agent's sample design choice, not a skill rule.
+
+## Publication result — 2026-10-16
+
+- Implementation commit: 55a973defb41fba41d6d5cc19ad36e2ded3457d0, pushed to origin/feature/SQ5GEN-predictable-deck-generation.
+- Pull request: https://github.com/shx99717/codex-ppt-skill/pull/3, open against main. It includes the earlier approval-bound deck-planning commits already on this branch.
+- Fresh prepublication verification: 190 script tests passed in 163.325 seconds; 10 smoke tests passed; 30 changed/new Python files parsed; staged whitespace check passed after removing trailing formatting whitespace from new review evidence and one extra EOF blank line. Seven capability tests rerun after that formatting correction passed.
+- Follow-up publication commit adds PR #3 references to previously unreferenced Unreleased entries and records this status. No merge, installed-skill update or generated test-deck publication performed.
