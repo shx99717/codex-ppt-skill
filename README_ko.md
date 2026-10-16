@@ -4,7 +4,7 @@
 
 [![문서](https://img.shields.io/badge/%EB%AC%B8%EC%84%9C-%EC%82%AC%EC%9A%A9%20%EC%95%88%EB%82%B4-111827)](https://ningzimu.github.io/codex-ppt-skill/#/ko/) [![지원](https://img.shields.io/badge/%EC%A7%80%EC%9B%90-%EB%8F%84%EC%9B%80%EB%B0%9B%EA%B8%B0-2CA5E0)](https://t.me/CodexPPT) [![ClawHub](https://img.shields.io/badge/ClawHub-codex--ppt-cd3b35)](https://clawhub.ai/ningzimu/codex-ppt) [![ClawMama](https://img.shields.io/badge/ClawMama-codex--ppt-2CA5E0)](https://app.clawmama.run/skills/5lak48/hermes?utm_source=github&utm_medium=issue&utm_campaign=skill_outreach_ningzimu_codex_ppt_skill) [![GitHub stars](https://img.shields.io/github/stars/ningzimu/codex-ppt-skill?style=flat&logo=github&label=stars)](https://github.com/ningzimu/codex-ppt-skill/stargazers) [![GitHub forks](https://img.shields.io/github/forks/ningzimu/codex-ppt-skill?style=flat&logo=github&label=forks)](https://github.com/ningzimu/codex-ppt-skill/forks)
 
-PowerPoint 덱을 생성하는 Codex용 skill입니다. Codex 외에도 Claude Code, OpenClaw, Hermes Agent 등 `SKILL.md`를 지원하는 다른 에이전트에서도 사용할 수 있으며, 이런 비(非)Codex 환경에서는 보통 `gpt-image-2`, 서드파티 이미지 API, 또는 OpenAI 호환 이미지 생성 엔드포인트 설정이 필요합니다. 이 skill은 글, 리포트, 논문, 강의 노트 등의 원본 자료를 "한 페이지 통이미지" 형식의 프레젠테이션으로 변환합니다. 먼저 개요와 시각 스타일을 기획하고, 각 슬라이드를 전면 이미지로 생성한 뒤, 마지막에 로컬 스크립트로 이미지들을 `.pptx` 파일로 조립합니다.
+PowerPoint 덱을 생성하는 Codex용 skill입니다. Codex 외에도 Claude Code, OpenClaw, Hermes Agent 등 `SKILL.md`를 지원하는 다른 에이전트에서도 사용할 수 있으며, 이런 비(非)Codex 환경에서는 보통 명시적으로 선택한 이미지 API 설정 또는 설치된 브리지 사용이 필요합니다. 이 skill은 글, 리포트, 논문, 강의 노트 등의 원본 자료를 "한 페이지 통이미지" 형식의 프레젠테이션으로 변환합니다. 먼저 개요와 시각 스타일을 기획하고, 각 슬라이드를 전면 이미지로 생성한 뒤, 마지막에 로컬 스크립트로 이미지들을 `.pptx` 파일로 조립합니다.
 
 ## 스폰서
 
@@ -38,7 +38,7 @@ skill 설계와 사용에 대한 기본 소개는 [good-skill-design.pptx](asset
 ## 특징
 
 - 여러 에이전트에서 동작: Codex, Claude Code, OpenClaw, Hermes Agent 등 `SKILL.md` 기반 환경을 지원합니다. 내장 이미지 생성·편집 도구를 우선 사용할 수 있는 Codex가 가장 권장되는 환경입니다.
-- 서드파티 이미지 공급자 연동: OpenAI 호환 엔드포인트, AtlasCloud, `base URL`, 커스텀 모델명 설정을 지원하므로, API/CLI fallback에서 `gpt-image-2`나 호환 이미지 모델을 사용할 수 있습니다.
+- 서드파티 이미지 공급자 연동: OpenAI 호환 엔드포인트, AtlasCloud, `base URL`, 커스텀 모델명 설정을 지원하므로, API/CLI fallback에서 설정된 이미지 모델나 호환 이미지 모델을 사용할 수 있습니다.
 - 주제부터 완성된 페이지별 Markdown까지, 준비 상태가 다른 혼합 입력으로 시작할 수 있습니다. 완성 문구·대본을 재사용하고 중요한 빈틈만 확인하며 비용이 큰 이미지 생성 전에 정확한 내용, 시각적 의미와 자연스러운 대본을 함께 승인합니다. 기본은 현재 이미지 통합 검토이며 배치별 검토도 가능합니다. 작은 래스터 차이는 생길 수 있습니다.
 - 원샷이 아닌 가이드형: 계속 진행하기 전에 `outline.md`, 슬라이드별 핵심 포인트, 스타일 방향, 샘플 슬라이드 품질을 확인하도록 요청합니다.
 - 낮은 준비 부담: 글, 리포트, 논문, 강의 노트, Markdown 파일, 개요, PDF, Word 문서 등을 모두 시작 자료로 사용할 수 있습니다.
@@ -51,7 +51,7 @@ skill 설계와 사용에 대한 기본 소개는 [good-skill-design.pptx](asset
 
 ## 출력 예시
 
-아래는 기술 공유 덱의 예시입니다. 각 페이지는 `gpt-image-2`로 생성한 완전한 슬라이드 이미지이며(기본 16:9, 또는 잠긴 4:3 / 3:2), 로컬 스크립트로 PPTX 파일로 조립됩니다.
+아래는 기술 공유 덱의 예시입니다. 각 페이지는 `gpt-image-2`로 생성한 완전한 슬라이드 이미지이며(기본 16:9, 또는 잠긴 4:3), 로컬 스크립트로 PPTX 파일로 조립됩니다.
 
 ![생성된 PPT 예시](assets/slides_example.png)
 
@@ -216,7 +216,7 @@ skill은 다음 워크플로를 따릅니다:
 
 ## 사용 팁
 
-- Codex 구독자는 기본적으로 내장 이미지 생성 도구를 사용합니다. Cursor `GenerateImage`는 **픽셀이** 3:2입니다(`16:9` / `4:3` 인자를 넘겨도 1536×1024가 나올 수 있음). 도구 enum에 `3:2`가 없을 수 있으니, 3:2로 잠근 덱에서는 schema를 확인한 뒤 필요하면 허용된 가로 비율을 넘기고 픽셀을 측정하세요. 16:9 / 4:3 잠금에는 사용하지 마세요. 비율을 맞추려면 gpt-image-2(`codex-gpt-image` / `image_gen.py`)에 `--size`를 전달하세요: 16:9=`2560x1440`, 4:3=`2560x1920`, 3:2=`2400x1600`. 조립은 비율이 맞지 않으면 거절하며 이미지를 늘리지 않습니다.
+현재 호출 가능한 Codex `image_gen` 또는 Cursor `GenerateImage`를 우선하며 실제 도구 schema를 확인합니다. 네이티브 모델은 호스트가 관리합니다. Codex는 size 인자 없이 프롬프트로 16:9 또는 4:3을 요청할 수 있고, Cursor는 지원되는 `aspect_ratio` 값을 전달합니다. 저장 파일의 실제 가로/세로를 측정하고 2% 비율 허용 오차를 검사합니다. 해상도 요청은 네이티브 4K의 증거가 아닙니다. API 대체 경로는 명시적으로 설정한 공급자 모델을 재사용하고, 없으면 최신 공식 문서에 따라 선택합니다. 고정 기본 모델은 없습니다. 실제 입력 방식으로 모든 원본/스타일 이미지를 첨부하고 현재 시도에 연결된 제출 증거를 기록합니다. 네이티브/브리지 증거는 에이전트 보고이며 CLI 검증에는 등록된 성공 실행이 필요합니다. 과거 파일은 읽을 수 있지만 새로운 관리 실행/조립에는 재컴파일과 새로운 증거가 필요합니다. 덱은 16:9와 4:3만 지원하며 이전 비율을 자동 변환하지 않습니다.
 - 특정 슬라이드의 내용, 레이아웃, 색상, 문구가 마음에 들지 않으면, 전체 덱을 다시 생성하는 대신 현재 에이전트에게 그 슬라이드를 상세히 다듬어 달라고 요청하세요.
 
 ![슬라이드 단건 수정 예시: PPT를 열고 주석을 클릭해 수정할 영역을 표시](assets/single-slide-revision-example.png)
@@ -227,7 +227,7 @@ skill은 다음 워크플로를 따릅니다:
 ## 관련 프로젝트
 
 - [image-to-editable-ppt-skill](https://github.com/shx99717/image-to-editable-ppt-skill): 슬라이드 스크린샷, PDF 페이지, 이미지 기반 PPTX 파일을 편집 가능한 PowerPoint 덱으로 재구성합니다. `codex-ppt`가 이미지 기반 슬라이드를 생성한 뒤에 유용합니다.
-- [codex-gpt-image](https://github.com/ningzimu/codex-gpt-image): Codex OAuth / 멤버 로그인 기반의 `gpt-image-2` 이미지 생성 skill입니다.
+- [codex-gpt-image](https://github.com/ningzimu/codex-gpt-image): Codex OAuth / 멤버 로그인 기반의 이미지 생성 브리지이며 현재 모델과 이미지 입력 지원 여부를 확인해야 합니다.
 - [handdrawn-tech-illustrations](https://github.com/ningzimu/handdrawn-tech-illustrations): 중국어 기술 콘텐츠를 위한 손그림 일러스트 skill입니다. 기술 아티클, 제품 노트, 스크린샷, 개요, 대략적인 아이디어를 아티클 삽화, 개념 설명 그래픽, WeChat 커버 이미지, Rednote 커버로 변환하며, 친근하고 가벼운 카툰풍에 중국어 가독성이 좋고 적당한 정보 밀도를 갖습니다.
 - [awesome-ai-ppt](https://github.com/ningzimu/awesome-ai-ppt): 오픈소스 AI PPT 프로젝트를 HTML-first, image-first, PPTX-native, 변환, 자동화 인프라 등의 워크플로별로 정리한 큐레이션 목록입니다. 에이전트나 개발자가 PPT 덱을 만들고, 편집하고, 변환하고, 검사하는 데 도움이 되는 GitHub 프로젝트에 초점을 둡니다.
 - [awesome-skills](https://github.com/ningzimu/awesome-skills): 실용적인 AI Agent Skills와 관련 도구를 엄선한 목록입니다. 하나의 진입점을 설치하면 에이전트가 지속적으로 업데이트되는 목록을 참고해 작업에 맞는 skill을 선택하고 설치해 사용할 수 있습니다.

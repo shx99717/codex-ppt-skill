@@ -35,8 +35,8 @@ def _minimal_spec(**overrides):
 
 
 class PrepareSlideRatioTests(unittest.TestCase):
-    def test_canvas_uses_spec_3_2_not_16_9(self) -> None:
-        deck = {"language": "English", "goal": "g", "style": {}, "aspect_ratio": "3:2"}
+    def test_canvas_uses_spec_4_3_not_16_9(self) -> None:
+        deck = {"language": "English", "goal": "g", "style": {}, "aspect_ratio": "4:3"}
         slide = {"title": "T", "key_points": ["a"]}
         prompt = _build_prompt(
             deck=deck,
@@ -45,7 +45,7 @@ class PrepareSlideRatioTests(unittest.TestCase):
             global_style_reference=None,
             base_dir=Path("."),
         )
-        self.assertIn("3:2", prompt)
+        self.assertIn("4:3", prompt)
         self.assertNotIn("16:9 full-slide PowerPoint image", prompt)
 
     def test_locked_4_3_overrides_style_text_16_9(self) -> None:
@@ -91,7 +91,7 @@ class PrepareSlideRatioTests(unittest.TestCase):
             spec_path.write_text(
                 json.dumps(
                     _minimal_spec(
-                        aspect_ratio="3:2",
+                        aspect_ratio="16:9",
                         selected_image_backend="GenerateImage",
                     )
                 ),
@@ -104,7 +104,7 @@ class PrepareSlideRatioTests(unittest.TestCase):
             ):
                 self.assertEqual(main(), 0)
             jobs = json.loads((out_dir / "slide_jobs.json").read_text(encoding="utf-8"))
-            self.assertEqual(jobs["aspect_ratio"], "3:2")
+            self.assertEqual(jobs["aspect_ratio"], "16:9")
             self.assertEqual(jobs["selected_backend"], "GenerateImage")
             keys = list(jobs.keys())
             self.assertEqual(keys.index("aspect_ratio"), keys.index("selected_backend") + 1)
@@ -112,7 +112,7 @@ class PrepareSlideRatioTests(unittest.TestCase):
     def test_generateimage_sample_method_records_ratio_not_gpt_size(self) -> None:
         method = _sample_generation_method(
             {
-                "aspect_ratio": "3:2",
+                "aspect_ratio": "16:9",
                 "sample_generation_method": {
                     "backend_used": "GenerateImage",
                     "tool_name": "GenerateImage",
@@ -122,36 +122,36 @@ class PrepareSlideRatioTests(unittest.TestCase):
             base_dir=Path("."),
         )
         self.assertIsNotNone(method)
-        self.assertEqual(method["aspect_ratio"], "3:2")
+        self.assertEqual(method["aspect_ratio"], "16:9")
         size = method.get("size")
         if size is not None:
-            self.assertNotIn("gpt-image-2 --size", str(size))
+            self.assertNotIn("API --size", str(size))
 
-    def test_gpt_image_2_sample_method_sets_table_size(self) -> None:
+    def test_api_sample_method_sets_table_size(self) -> None:
         method = _sample_generation_method(
             {
                 "aspect_ratio": "4:3",
                 "sample_generation_method": {
-                    "backend_used": "codex-gpt-image",
-                    "tool_name": "codex-gpt-image",
+                    "backend_used": "scripts/image_gen.py",
+                    "tool_name": "scripts/image_gen.py",
                 },
             },
             base_dir=Path("."),
         )
-        self.assertEqual(method["size"], "gpt-image-2 --size 2560x1920")
+        self.assertEqual(method["size"], "API --size 2560x1920")
 
     def test_write_template_includes_aspect_ratio(self) -> None:
         with tempfile.TemporaryDirectory() as tmp:
             path = Path(tmp) / "example.json"
             _write_template(path)
             data = json.loads(path.read_text(encoding="utf-8"))
-            self.assertEqual(data.get("aspect_ratio"), "3:2")
+            self.assertEqual(data.get("aspect_ratio"), "16:9")
             self.assertEqual(data.get("selected_image_backend"), "GenerateImage")
             self.assertEqual(data["workflow_version"], 2)
             self.assertTrue(data["planning"]["unresolved"])
             method = data["planning"]["generation"]
             self.assertEqual(method.get("backend_used"), "GenerateImage")
-            self.assertEqual(method.get("aspect_ratio"), "3:2")
+            self.assertEqual(method.get("aspect_ratio"), "16:9")
             self.assertNotIn("size", method)
 
 

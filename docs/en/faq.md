@@ -16,7 +16,7 @@ Yes. Codex PPT is a `SKILL.md`-based skill. In addition to Codex, it works with 
 
 This skill is developed and tested primarily with Codex, so Codex offers the best compatibility and is recommended.
 
-Different agents have different image-generation capabilities and tool interfaces. Outside Codex, you will usually need to configure `gpt-image-2` or a third-party OpenAI-compatible image-generation API. See [Installation and Configuration](/en/installation.md), and let the AI guide you through setup based on your current environment.
+Different agents have different image-generation capabilities and tool interfaces. Outside Codex, you will usually need to configure the configured image model or a third-party OpenAI-compatible image-generation API. See [Installation and Configuration](/en/installation.md), and let the AI guide you through setup based on your current environment.
 
 ## Q: How Do I Update the Skill to the Latest Version?
 
@@ -32,15 +32,15 @@ Do not regenerate the entire deck. First select one or two slides with obvious d
 
 ## Q: What Should I Do If the Generated Presentation Looks Bad?
 
-First confirm that your `gpt-image-2` model can generate images correctly. If the model is unavailable, returns abnormal quality, or a third-party API or relay service does not correctly support `gpt-image-2`, the output quality will be significantly worse.
+First confirm that your configured image model can generate images correctly. If the model is unavailable, returns abnormal quality, or a third-party API or relay service does not correctly support the configured image model, the output quality will be significantly worse.
 
 After confirming that the model works, ask the AI to address specific issues such as inconsistent styling, text that is too small, overcrowded layouts, unattractive colors, or illustrations that do not match the topic. It is best to regenerate one sample slide first and continue with the full deck only after you are satisfied.
 
 ## Q: What Should I Do If the Generated Slide Images Are Blurry?
 
-Codex subscribers use the built-in `image_gen` tool by default. If the tool schema accepts `WIDTHxHEIGHT`, pass `--size` for the locked ratio: `2560x1440` (16:9), `2560x1920` (4:3), or `2400x1600` (3:2). If the schema cannot express the locked ratio, omit `image_gen` and ask the user. Returned pixels may be smaller than the requested box; gate on 2% relative ratio, not exact pixels.
+Prefer callable Codex `image_gen` or Cursor `GenerateImage` using the live tool schema. Native model identity is host-managed. Codex can request 16:9 or 4:3 in the prompt without a size parameter; Cursor should pass the supported `aspect_ratio` value. Measure actual saved width/height (2% ratio tolerance); requested resolution is not proof of native 4K. API fallback reuses an explicitly configured provider model; if absent, select one using current documentation. There is no fixed model default. Attach every required source/style image through the actual input mechanism and record attempt-bound submission evidence. Native/bridge evidence is agent-reported; CLI adapter verification requires registered successful execution. Old project files remain readable, but new managed execution/assembly requires recompilation and fresh evidence. Only 16:9 and 4:3 decks are supported; no automatic conversion of old ratios.
 
-The API/CLI fallback (`codex-gpt-image` / `image_gen.py`) must pass the same `--size` table. For a 16:9 deck that is still blurry on text-heavy slides, ask the AI to generate at 4K. See [Installation and Configuration](/en/installation.md) for API key setup.
+For API fallback, use the selected model’s documented settings; a mandatory output resolution must be verified on actual files.
 
 ## Q: Why Confirm the Outline First?
 

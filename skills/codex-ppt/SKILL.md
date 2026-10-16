@@ -5,7 +5,7 @@ description: Use when a user needs a PowerPoint or PPTX presentation from articl
 
 # Codex PPT
 
-Create a coherent image-based presentation with an approved content, visual and talk plan. Each content slide is one complete generated image; text, charts and shapes are not separately editable. Keep the locked ratio: 16:9, 4:3 or 3:2.
+Create a coherent image-based presentation with an approved content, visual and talk plan. Each content slide is one complete generated image; text, charts and shapes are not separately editable. Keep the locked ratio: 16:9 or 4:3.
 
 ## Adaptive workflow
 
@@ -26,7 +26,8 @@ Before delivery, validate the complete image/talk sequence and current user appr
 - Notes explain approved material in the presenter's voice and language. New substantive claims need approval. No invented company metrics, presenter experience, real customers or speaker names.
 - All final images use the selected actual image backend. Local drawing, Pillow, SVG/HTML/canvas screenshots, native PPT layout screenshots and manual overlays are not final-image fallbacks. Structural previews remain labeled planning artifacts.
 - Inspect actual tool schemas and local images. A prompt requesting a ratio is not proof. Measure saved pixels; reject more than 2% relative ratio error rather than stretching, cropping or letterboxing.
-- Cursor GenerateImage is used only for locked 3:2: inspect its enum, pass a legal landscape argument if 3:2 is absent, then measure pixels. gpt-image-2 paths require the locked size (2560x1440 / 2560x1920 / 2400x1600) only when the live schema exposes that parameter. Do not offer an incompatible native schema, generic “built-in image tool,” or OpenClaw image_generate.
+- Prefer callable Codex image_gen and Cursor GenerateImage using live capabilities. Codex ratios may be prompt-only; Cursor uses supported aspect_ratio values. No permanent native model ID or invented size parameter. Measure original pixels and distinguish resolution preferences from mandatory requirements.
+- Require current execution-contract and attempt-bound [submission evidence](docs/image-submission-evidence.md) for managed results; native/bridge evidence remains agent-reported.
 - Preserve required figures through real image inputs; inspect supplied labels/data and generated fidelity. Read [source assets](docs/user-supplied-assets.md). No text-only substitute for an unattached image.
 - After sample acceptance and full-production authorization, use one slide worker per remaining job when agents are available. The parent owns specs, jobs, state, QA, notes, final images and assembly. Workers use only their assigned packet and never edit parent files.
 - Current script approvals and immutable compiled jobs are required at preparation, dispatch, result and assembly. Do not hand-edit job state/prompts, silently fall back to legacy, or use QA as human approval.

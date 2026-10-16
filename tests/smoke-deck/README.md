@@ -15,7 +15,7 @@ Historical pre-v2 image folders remain usable with explicit `--legacy-unmanaged`
 Use [portable prompt](RUN_PROMPT.md), or a pinned host/backend prompt:
 
 - [Codex image_gen](RUN_PROMPT_codex.md)
-- [Cursor GenerateImage, 3:2](RUN_PROMPT_cursor.md)
+- [Cursor GenerateImage, 16:9 / 4:3](RUN_PROMPT_cursor.md)
 - [Cursor codex-gpt-image](RUN_PROMPT_cursor_codex-gpt-image.md)
 - [Claude Code codex-gpt-image, consolidated](RUN_PROMPT_claude.md)
 - [Claude Code codex-gpt-image, strict](RUN_PROMPT_claude_interactive.md)
@@ -32,7 +32,7 @@ python tests/smoke-deck/verify_deck.py tests/smoke-deck/runs/<run-id>/coffee-ext
 
 Use a fresh run directory under ignored `runs/`. The fixture uses three slides: Chinese, English, then mixed CJK/Latin. Keep the pinned clean professional style; to test discovery separately, omit that style pin and record that the run is no longer baseline-comparable.
 
-Choose ratio before backend. Codex native tools must expose the required schema; Claude Code has no native image tool and uses the installed bridge. Cursor GenerateImage is restricted to 3:2 measured pixels: inspect enum, pass a legal landscape argument if necessary, and measure. gpt-image-2 paths use 2560x1440 (16:9), 2560x1920 (4:3), or 2400x1600 (3:2) when supported. Wrong-ratio pixels fail instead of being stretched.
+Use 16:9 or 4:3 only. Prefer the callable native tool: Codex image_gen may use prompt-only ratio control; Cursor GenerateImage passes a supported aspect_ratio value. Inspect actual inputs, attach every snapshot, measure original pixels, and record the current attempt receipt. No fixed native model identity or invented size argument. API uses its explicit configured model and documented capabilities.
 
 An unrequested CLI fallback fails host-pinned runs. Deliberately selected CLI tests use `--allow-cli-fallback`; managed execution uses `run_slide_job.py` with an explicitly approved operation policy, not nested-job replay through text-only batch generation.
 

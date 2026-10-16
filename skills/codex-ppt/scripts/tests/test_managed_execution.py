@@ -75,7 +75,13 @@ class ManagedExecutionTests(unittest.TestCase):
                 except (AssertionError,ContractError):
                     continue
                 from planning_fixtures import approve_fixture_sample
-                approve_fixture_sample(deck)
+                try:
+                    approve_fixture_sample(deck)
+                except AssertionError as exc:
+                    self.assertEqual(field,"unknown_option")
+                    self.assertIn("Unsupported CLI generation fields: unknown_option",str(exc))
+                    self.assertFalse((deck/"slide_jobs.json").exists())
+                    continue
                 result=run_cli("prepare_slide_prompts.py","--spec",deck/"deck_spec.json","--out-dir",deck)
                 if result.returncode==0:
                     self.assertNotEqual(dispatch_fixture(deck).returncode,0)
@@ -97,7 +103,13 @@ class ManagedExecutionTests(unittest.TestCase):
                 spec["planning"]["generation"][field]=value
                 approve_fixture(deck,spec)
                 from planning_fixtures import approve_fixture_sample
-                approve_fixture_sample(deck)
+                try:
+                    approve_fixture_sample(deck)
+                except AssertionError as exc:
+                    expected="Managed slide execution requires n=1" if field=="n" else "output_compression must be an integer"
+                    self.assertIn(expected,str(exc))
+                    self.assertFalse((deck/"slide_jobs.json").exists())
+                    continue
                 result=run_cli("prepare_slide_prompts.py","--spec",deck/"deck_spec.json","--out-dir",deck)
                 self.assertNotEqual(result.returncode,0,result.stderr)
                 self.assertFalse((deck/"slide_jobs.json").exists())

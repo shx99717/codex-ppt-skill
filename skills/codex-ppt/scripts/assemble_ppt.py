@@ -24,12 +24,10 @@ PPT_TITLE_TOKEN = "<PPT-Title>"
 SLIDE_EMU = {
     "16:9": (9144000, 5143500),
     "4:3": (9144000, 6858000),
-    "3:2": (9144000, 6096000),
 }
 MEDAVIS_TEMPLATE_NAME = {
     "16:9": "medavis_ppt_template_2026_en_16-9.pptx",
     "4:3": "medavis_ppt_template_2026_en_4-3.pptx",
-    "3:2": "medavis_ppt_template_2026_en_3-2.pptx",
 }
 
 
@@ -330,7 +328,7 @@ def create_presentation(
     Args:
         image_files: 幻灯片图片文件列表
         output_path: 输出 PPT 文件路径
-        aspect_ratio: 幻灯片宽高比（16:9、4:3 或 3:2）
+        aspect_ratio: 幻灯片宽高比（16:9 或 4:3）
 
     Returns:
         bool: 成功返回 True，失败返回 False
@@ -557,7 +555,7 @@ def main():
   python assemble_ppt.py /path/to/base/ MyPresentation.pptx \\
     --template both --landing-title "Deck Title"
 
-  # 指定 4:3 / 3:2 宽高比（none 与 medavis 均生效）
+  # 指定 4:3 宽高比（none 与 medavis 均生效）
   python assemble_ppt.py /path/to/base/ MyPresentation.pptx --aspect-ratio 4:3
 
   # 只初始化目录，不生成 PPT
@@ -586,7 +584,7 @@ def main():
     parser.add_argument('base_dir', help='基础目录（PPT 项目文件夹的父目录）')
     parser.add_argument('output', help='输出 PPT 文件名 (.pptx)')
     parser.add_argument('--aspect-ratio', '--ar',
-                        choices=['16:9', '4:3', '3:2'],
+                        choices=['16:9', '4:3'],
                         default='16:9',
                         help='幻灯片宽高比 (默认: 16:9；none 与 medavis 均使用)')
     parser.add_argument('--template',

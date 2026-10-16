@@ -210,7 +210,7 @@ def _validate_spec(spec: dict) -> None:
     digest(spec)  # Reject nonfinite/unserializable values.
     for key in ("deck_name", "language", "selected_image_backend", "goal"):
         need(nonempty(spec.get(key)), f"Missing {key}")
-    need(spec.get("aspect_ratio") in {"16:9", "4:3", "3:2"}, "Unsupported ratio")
+    need(spec.get("aspect_ratio") in {"16:9", "4:3"}, "Unsupported ratio. Choose 16:9 or 4:3")
     for key in ("approved_style_reference", "sample_generation_method"):
         need(key not in spec, f"{key} is ledger-owned in managed v2")
     need(isinstance(spec.get("style"), dict) and bool(spec["style"]), "Missing style")
@@ -531,6 +531,11 @@ def require_job_current(deck_dir: Path, jobs: dict, slide: dict) -> dict:
     if file_digest(path)!=slide.get("job_sha256"):
         raise ContractError(f"Compiled prompt SHA changed for {sid}")
     job=read_contract_json(path,"compiled prompt")
+    from image_input_contract import require_version
+    try:
+        require_version(jobs,job)
+    except ValueError as exc:
+        raise ContractError(str(exc)) from exc
     expected=manifest["slides"][sid]["visual_hash"]
     if job.get("workflow_version")!=2 or job.get("visual_hash")!=expected or slide.get("visual_hash")!=expected:
         raise ContractError(f"Stale visual job for {sid}")
@@ -663,7 +668,10 @@ def require_managed_ready(deck_dir: Path,output_profile: str,aspect_ratio: str,l
     if sorted(images)!=sorted(expected):
         raise ContractError("Final images are missing, extra or duplicated")
     for sid,slide in by_id.items():
-        require_job_current(deck_dir,jobs,slide)
+        current_job=require_job_current(deck_dir,jobs,slide)
+        from image_input_contract import require_recorded_submission,measured_output
+        require_recorded_submission(current_job,slide,inside_path(deck_dir,slide["out"]))
+        measured_output(inside_path(deck_dir,slide["out"]),aspect_ratio,spec["planning"]["generation"].get("output_requirements"))
         if slide.get("out")!=f"origin_image/{sid}.png" or slide.get("status") not in {"recorded","accepted"}:
             raise ContractError(f"Final slide is incomplete: {sid}")
         path=inside_path(deck_dir,slide["out"])

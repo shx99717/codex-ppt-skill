@@ -172,6 +172,7 @@ def main() -> int:
     parser.add_argument("--backend-used", required=True)
     parser.add_argument("--selected-source", required=True, help="Generated image selected by the worker.")
     parser.add_argument("--qa-note", required=True)
+    parser.add_argument("--submission-receipt", help="Attempt-bound actual image submission JSON")
     parser.add_argument("--legacy-unmanaged", action="store_true")
     args = parser.parse_args()
 
@@ -201,11 +202,26 @@ def main() -> int:
 
         label = str(jobs.get("aspect_ratio") or "").strip()
         if label not in RATIO_BY_LABEL:
-            raise SystemExit("slide_jobs.json is missing a valid aspect_ratio (16:9, 4:3, or 3:2)")
+            raise SystemExit("slide_jobs.json is missing a valid aspect_ratio (16:9 or 4:3)")
         try:
             require_image_ratio(str(source), RATIO_BY_LABEL[label], label)
         except ValueError as exc:
             raise SystemExit(str(exc)) from exc
+        from image_input_contract import measured_output,validate_receipt
+        measurements=measured_output(source,label,(prompt_job.get("generation_config") or {}).get("output_requirements"))
+        submission=None
+        if managed:
+            if not args.submission_receipt:
+                raise ContractError("Managed result requires --submission-receipt for the current attempt")
+            receipt_path=Path(args.submission_receipt).resolve()
+            submission=json.loads(receipt_path.read_text(encoding="utf-8"))
+            try:
+                verification=validate_receipt(submission,prompt_job,slide,source)
+                completion=slide.get("execution_completion",{})
+                if verification=="adapter_verified" and (completion.get("receipt_path")!=str(receipt_path) or completion.get("receipt_sha256")!=sha256_file(receipt_path)):
+                    raise ValueError("Registered adapter receipt bytes/path changed")
+            except ValueError as exc:
+                raise ContractError(str(exc)) from exc
         out_ref = slide.get("out") or f"origin_image/{slide['slide_id']}.png"
         target = resolve_deck_path(deck_dir, out_ref)
         try:
@@ -243,7 +259,9 @@ def main() -> int:
             "qa_note": args.qa_note,
             "recorded_at": now_iso(),
         }
+        slide["result"].update(measurements)
         if managed:
+            slide["result"].update(submission=submission,submission_verification=verification)
             slide["result"]["visual_hash"] = slide["visual_hash"]
         slide["status"] = "recorded"
         update_jobs_run_status(jobs)

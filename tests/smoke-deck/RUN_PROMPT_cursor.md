@@ -12,7 +12,7 @@ Do not install/synchronize skills, commit, push, merge or release without separa
 Preserve existing edits and historical runs.
 
 Host is cursor; do not switch hosts. Backend is pinned to GenerateImage. If unavailable or incompatible, report the blocker before proposing a separately approved fallback. Claude Code has no native image generation.
-Ratio is 3:2. Inspect GenerateImage's enum; if 3:2 is absent, pass a legal landscape value such as 16:9, then measure pixels. A legal argument is not proof of pixel ratio. Do not switch backends merely because the enum omits 3:2.
+Use 16:9 or 4:3 only. Prefer the callable native tool: Codex image_gen may use prompt-only ratio control; Cursor GenerateImage passes a supported aspect_ratio value. Inspect actual inputs, attach every snapshot, measure original pixels, and record the current attempt receipt. No fixed native model identity or invented size argument. API uses its explicit configured model and documented capabilities.
 Wrong-ratio images fail; never stretch, crop or letterbox as success.
 For a deliberately chosen CLI path, approve explicit model/size/quality and generate/reference-edit operations and use the managed run_slide_job.py adapter with every verified input.
 

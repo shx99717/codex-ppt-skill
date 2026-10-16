@@ -4,7 +4,7 @@
 
 [![文档](https://img.shields.io/badge/%E6%96%87%E6%A1%A3-%E4%BD%BF%E7%94%A8%E6%8C%87%E5%8D%97-111827)](https://ningzimu.github.io/codex-ppt-skill/#/) [![支持](https://img.shields.io/badge/%E6%94%AF%E6%8C%81-%E8%8E%B7%E5%8F%96%E5%B8%AE%E5%8A%A9-2CA5E0)](https://t.me/CodexPPT) [![ClawHub](https://img.shields.io/badge/ClawHub-codex--ppt-cd3b35)](https://clawhub.ai/ningzimu/codex-ppt) [![ClawMama](https://img.shields.io/badge/ClawMama-codex--ppt-2CA5E0)](https://app.clawmama.run/skills/5lak48/hermes?utm_source=github&utm_medium=issue&utm_campaign=skill_outreach_ningzimu_codex_ppt_skill) [![GitHub stars](https://img.shields.io/github/stars/ningzimu/codex-ppt-skill?style=flat&logo=github&label=stars)](https://github.com/ningzimu/codex-ppt-skill/stargazers) [![GitHub forks](https://img.shields.io/github/forks/ningzimu/codex-ppt-skill?style=flat&logo=github&label=forks)](https://github.com/ningzimu/codex-ppt-skill/forks)
 
-一个面向 Codex 的 PPT 生成 skill，也可在 Claude Code、OpenClaw、Hermes Agent 等支持 `SKILL.md` 的 agent 中使用；在这些非 Codex 环境中通常需要配置 `gpt-image-2`、第三方生图 API 或 OpenAI 兼容格式的生图接口。它把文章、报告、论文、课程笔记等内容转换成“整页图片式”的演示文稿：先规划大纲和视觉风格，再生成每页幻灯片图片，最后用本地脚本组装为 `.pptx`。
+一个面向 Codex 的 PPT 生成 skill，也可在 Claude Code、OpenClaw、Hermes Agent 等支持 `SKILL.md` 的 agent 中使用；在这些非 Codex 环境中通常需要配置明确选择的生图 API 或使用已安装的桥接工具。它把文章、报告、论文、课程笔记等内容转换成“整页图片式”的演示文稿：先规划大纲和视觉风格，再生成每页幻灯片图片，最后用本地脚本组装为 `.pptx`。
 
 ## 赞助
 
@@ -38,7 +38,7 @@
 ## 特点
 
 - 多 agent 可用：支持 Codex、Claude Code、OpenClaw、Hermes Agent 等支持 `SKILL.md` 的环境；最推荐在 Codex 中使用，优先走内置生图和编辑图能力。
-- 第三方生图供应商接入：支持 OpenAI 兼容接口、AtlasCloud、`base URL` 和自定义模型名配置，方便通过 API/CLI fallback 使用 `gpt-image-2` 或兼容模型。
+- 第三方生图供应商接入：支持 OpenAI 兼容接口、AtlasCloud、`base URL` 和自定义模型名配置，方便通过 API/CLI fallback 使用 已配置的生图模型 或兼容模型。
 - 输入可以是一个主题、完整逐页 Markdown，或准备程度不同的组合。skill 复用已完成的文案和讲稿，只澄清实质缺口，在昂贵生图前一起确认准确内容、视觉含义与自然讲稿。默认集中审核当前图片，也可严格逐批审核。图片渲染仍允许轻微差异。
 - 不是无脑生成：会先引导你确认 `outline.md`、每页要点、风格方向和样张效果，再按确认后的方案继续。
 - 低门槛输入：文章、报告、论文、课程笔记、Markdown、大纲、PDF、Word 等材料都可以作为起点。
@@ -51,7 +51,7 @@
 
 ## 生成效果
 
-下面是一套技术分享 PPT 的生成效果示例。每页都是由 `gpt-image-2` 生成的完整幻灯片图片（默认 16:9，也可锁定 4:3 / 3:2），再由本地脚本组装为 PPTX。
+下面是一套技术分享 PPT 的生成效果示例。每页都是由 `gpt-image-2` 生成的完整幻灯片图片（默认 16:9，也可锁定 4:3），再由本地脚本组装为 PPTX。
 
 ![生成 PPT 效果示例](assets/slides_example.png)
 
@@ -216,7 +216,7 @@ skill 会按以下流程执行：
 
 ## 使用技巧
 
-- Codex 会员默认会优先使用内置生图工具。Cursor `GenerateImage` 像素实际为 3:2（传入 `16:9` / `4:3` 仍可能得到 1536×1024）；工具枚举可能没有 `3:2`，锁定 3:2 时请检查 schema，必要时改传合法横图参数并量像素。不能用于 16:9 / 4:3 锁定。需要匹配比例时，请用 gpt-image-2（`codex-gpt-image` / `image_gen.py`）并传入 `--size`：16:9=`2560x1440`，4:3=`2560x1920`，3:2=`2400x1600`。组装时不会拉伸；比例不对会拒绝保存。
+优先使用当前可调用的 Codex `image_gen` 或 Cursor `GenerateImage`，以实时工具 schema 为准；原生工具的模型由宿主管理。Codex 可通过提示词请求 16:9 或 4:3，无需 size 参数；Cursor 应传入受支持的 `aspect_ratio`。测量实际文件宽高并检查 2% 比例容差，不能把分辨率请求当作原生 4K 的证明。API 回退复用明确配置的供应商模型；未配置时根据当前官方文档选择，不设固定模型默认值。通过真实输入机制附加全部源图和风格图，并记录绑定当前尝试的提交证据。原生和桥接证据保留为代理报告；CLI 验证依赖已登记的成功执行。历史文件可查看，但新的托管执行和组装需要重新编译及新的证据。仅支持 16:9 和 4:3，不自动转换旧比例。
 - 如果只是不满意某一页的内容、排版、配色或文字表达，可以直接让当前 agent 针对这一页做细致修改，不需要整套 PPT 重新生成。
 
 ![单页局部修改示意：打开 PPT、点击标注，并框选需要修改的位置](assets/single-slide-revision-example.png)
@@ -227,7 +227,7 @@ skill 会按以下流程执行：
 ## 我的其他项目
 
 - [image-to-editable-ppt-skill](https://github.com/shx99717/image-to-editable-ppt-skill)：把幻灯片截图、PDF 页面或图片版 PPTX 重建为可编辑 PowerPoint，适合在 `codex-ppt` 生成整页图片后继续做可编辑化。
-- [codex-gpt-image](https://github.com/ningzimu/codex-gpt-image)：通过 Codex OAuth / 会员登录调用 `gpt-image-2` 的生图 skill。
+- [codex-gpt-image](https://github.com/ningzimu/codex-gpt-image)：通过 Codex OAuth / 会员登录调用生图能力的桥接 skill，模型及图像输入能力以当前实现为准。
 - [handdrawn-tech-illustrations](https://github.com/ningzimu/handdrawn-tech-illustrations)：面向中文技术内容的手绘配图 skill，可以把技术文章、产品笔记、截图、大纲或粗略想法生成正文配图、概念解释图、微信公众号封面和小红书封面；风格强调亲和、轻卡通、中文可读和适中的信息密度。
 - [awesome-ai-ppt](https://github.com/ningzimu/awesome-ai-ppt)：精选的 AI PPT 相关开源项目，按 HTML-first、图片生成式、PPTX-native、转换与自动化基础设施等工作流分类，关注能帮助 agent 或开发者创建、编辑、转换、检查 PPT 的 GitHub 仓库。
 - [awesome-skills](https://github.com/ningzimu/awesome-skills)：精选实用的 AI Agent Skills 与配套工具；安装一个入口后，Agent 会根据任务从持续更新的清单中选择、安装并使用合适的 skill。

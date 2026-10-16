@@ -12,7 +12,7 @@ Do not install/synchronize skills, commit, push, merge or release without separa
 Preserve existing edits and historical runs.
 
 Detect Codex, Cursor or Claude Code and record the actual host. Probe callable native/bridge capabilities; choose a compatible specific backend with me. Do not invent native image tools or assume an API fallback.
-Choose 16:9, 4:3 or 3:2 before backend lock; recommend 3:2 for Cursor native GenerateImage, otherwise 16:9. Inspect live tool schemas and reference-input support. On a supported gpt-image-2 path use the locked size: 2560x1440, 2560x1920 or 2400x1600. If the native schema cannot express it, report the blocker.
+Use 16:9 or 4:3 only. Prefer the callable native tool: Codex image_gen may use prompt-only ratio control; Cursor GenerateImage passes a supported aspect_ratio value. Inspect actual inputs, attach every snapshot, measure original pixels, and record the current attempt receipt. No fixed native model identity or invented size argument. API uses its explicit configured model and documented capabilities.
 Wrong-ratio images fail; never stretch, crop or letterbox as success.
 For a deliberately chosen CLI path, approve explicit model/size/quality and generate/reference-edit operations and use the managed run_slide_job.py adapter with every verified input.
 

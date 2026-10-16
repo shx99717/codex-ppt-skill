@@ -43,7 +43,8 @@ class SlideImageRatioTests(unittest.TestCase):
     def test_gpt_image_size_table(self) -> None:
         self.assertEqual(slide_image_ratio.gpt_image_size("16:9"), "2560x1440")
         self.assertEqual(slide_image_ratio.gpt_image_size("4:3"), "2560x1920")
-        self.assertEqual(slide_image_ratio.gpt_image_size("3:2"), "2400x1600")
+        with self.assertRaises(KeyError):
+            slide_image_ratio.gpt_image_size("3:2")
 
     def test_uniform_picture_box_exact_16_9_fills_slide(self) -> None:
         left, top, width, height = slide_image_ratio.uniform_picture_box(

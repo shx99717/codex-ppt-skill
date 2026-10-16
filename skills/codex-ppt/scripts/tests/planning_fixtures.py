@@ -108,7 +108,15 @@ _MANAGED_SPEC_JSON = r'''{
 
 def managed_spec():
     """Return a fresh complete managed input with no runtime approvals."""
-    return json.loads(_MANAGED_SPEC_JSON)
+    spec=json.loads(_MANAGED_SPEC_JSON)
+    import os
+    facts={"supports_image_inputs":True,"qualities":["auto","low","medium","high","xhigh","max"],
+        "size_constraints":{"max_edge":3840,"multiple":16,"min_pixels":655360,"max_pixels":8294400,"max_ratio":3},
+        "source":"https://example.invalid/synthetic-test-capabilities","checked_on":"2026-10-16"}
+    spec["planning"]["generation"]["capabilities"]={"model":"gpt-image-2",
+        "provider_base_url":os.getenv("OPENAI_BASE_URL") or "https://api.openai.com/v1",
+        "operations":{"generate":dict(facts),"edit":dict(facts)}}
+    return spec
 
 # The helpers below exercise real bundled CLIs with explicitly synthetic decisions.
 def run_cli(script, *args):
@@ -151,8 +159,16 @@ def approve_fixture(deck, spec=None):
 
 
 def approve_fixture_sample(deck, sid="slide_02"):
-    path = deck / "candidate.png"
-    fixture_image(path)
+    path = deck / f"{sid}-candidate.png"
+    prepared=run_cli("prepare_slide_prompts.py","--spec",deck/"deck_spec.json","--out-dir",deck,"--phase","sample","--slides",sid,"--force")
+    if prepared.returncode:
+        raise AssertionError(prepared.stdout+prepared.stderr)
+    dispatched=dispatch_fixture(deck,sid)
+    if dispatched.returncode:
+        raise AssertionError(dispatched.stderr)
+    recorded=result_fixture(deck,sid)
+    if recorded.returncode:
+        raise AssertionError(recorded.stdout+recorded.stderr)
     result = run_cli("record_plan_approval.py", deck, "--approve-sample", sid,
                      "--image", path, "--backend-used", "scripts/image_gen.py",
                      "--evidence", "SYNTHETIC TEST sample user decision")
@@ -174,10 +190,34 @@ def dispatch_fixture(deck,sid="slide_01",agent="fixture-agent"):
     return run_cli("record_slide_dispatch.py",deck,"--slide",sid,"--agent-id",agent)
 
 
+def register_fixture_receipt(deck, sid, path):
+    """Synthetic adapter state for rollback tests; never real backend evidence."""
+    from image_input_contract import make_receipt
+    from planning_contract import file_digest
+    state=json.loads((deck/"slide_jobs.json").read_text(encoding="utf-8"))
+    slide=next(v for v in state["slides"] if v["slide_id"]==sid)
+    job=json.loads((deck/slide["job"]).read_text(encoding="utf-8"))
+    receipt=make_receipt(job,slide,path,"cli_image_files",origin="adapter")
+    receipt_path=deck/f"{sid}-synthetic-submission.json"
+    write_spec(receipt_path,receipt)
+    slide["execution_completion"]={"producer":"run_slide_job.py","status":"succeeded","dry_run":False,
+        "receipt":receipt,"receipt_path":str(receipt_path.resolve()),"receipt_sha256":file_digest(receipt_path)}
+    write_spec(deck/"slide_jobs.json",state)
+    return receipt_path
+
+
 def result_fixture(deck,sid="slide_01",agent="fixture-agent",color="white"):
     path=deck/f"{sid}-candidate.png"
     fixture_image(path,color)
-    return run_cli("record_slide_result.py",deck,"--slide",sid,"--agent-id",agent,
+    from planning_contract import require_job_current,ContractError
+    state=json.loads((deck/"slide_jobs.json").read_text(encoding="utf-8"))
+    slide=next(v for v in state["slides"] if v["slide_id"]==sid)
+    try:
+        require_job_current(deck,state,slide)
+    except ContractError:
+        return run_cli("record_slide_result.py",deck,"--slide",sid,"--agent-id",agent,"--backend-used","scripts/image_gen.py","--selected-source",path,"--qa-note","SYNTHETIC invalid job")
+    receipt_path=register_fixture_receipt(deck,sid,path)
+    return run_cli("record_slide_result.py",deck,"--slide",sid,"--agent-id",agent,"--submission-receipt",receipt_path,
                    "--backend-used","scripts/image_gen.py","--selected-source",path,
                    "--qa-note","SYNTHETIC TEST worker return")
 

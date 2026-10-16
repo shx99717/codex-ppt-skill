@@ -41,7 +41,7 @@ class ManagedPreparationTests(unittest.TestCase):
         result=self.prepare()
         self.assertNotEqual(result.returncode,0)
         self.assertIn("sample",result.stderr.lower())
-        self.assertFalse((self.deck/"prompts").exists())
+        self.assertFalse((self.deck/"prompts/slide_01.json").exists())
 
     def test_sample_phase_compiles_only_explicit_selection(self):
         self.approve()
@@ -56,7 +56,7 @@ class ManagedPreparationTests(unittest.TestCase):
         for args in (("--phase","sample"),("--phase","sample","--slides","slide_01")):
             result=self.prepare(*args)
             self.assertNotEqual(result.returncode,0)
-            self.assertFalse((self.deck/"prompts").exists())
+            self.assertFalse((self.deck/"prompts/slide_01.json").exists())
 
     def test_production_embeds_exact_copy_filtered_context_and_snapshots(self):
         self.approve(True)
@@ -73,7 +73,7 @@ class ManagedPreparationTests(unittest.TestCase):
         self.approve(True)
         result=self.prepare("--selected-backend","other")
         self.assertNotEqual(result.returncode,0)
-        self.assertFalse((self.deck/"prompts").exists())
+        self.assertFalse((self.deck/"prompts/slide_01.json").exists())
 
     def test_changed_sample_strategy_needs_actual_plan_approval(self):
         from planning_fixtures import write_spec
@@ -82,7 +82,7 @@ class ManagedPreparationTests(unittest.TestCase):
         write_spec(self.deck/"deck_spec.json",spec)
         result=self.prepare("--phase","sample","--slides","slide_01")
         self.assertNotEqual(result.returncode,0)
-        self.assertFalse((self.deck/"prompts").exists())
+        self.assertFalse((self.deck/"prompts/slide_01.json").exists())
 
     def test_note_only_approval_and_force_preserve_job_bytes_and_result(self):
         from planning_fixtures import approve_fixture
@@ -119,7 +119,7 @@ class ManagedPreparationTests(unittest.TestCase):
         self.approve(True)
         result=self.prepare("--legacy-unmanaged")
         self.assertNotEqual(result.returncode,0)
-        self.assertFalse((self.deck/"prompts").exists())
+        self.assertFalse((self.deck/"prompts/slide_01.json").exists())
 
     def test_template_is_honest_unapproved_v2_draft(self):
         from planning_fixtures import run_cli

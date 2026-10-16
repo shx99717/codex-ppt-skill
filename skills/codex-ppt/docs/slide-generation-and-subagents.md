@@ -25,7 +25,8 @@ The parent prepares required images and context, spawns within capacity using pr
 
 ```text
 record_slide_dispatch.py DECK --slide slide_03 --agent-id ACTUAL_ID
-record_slide_result.py DECK --slide slide_03 --agent-id ACTUAL_ID --backend-used LABEL --selected-source GENERATED.png --qa-note "Actual worker result"
+# Native/bridge worker returns its actual-input receipt; CLI emits the registered candidate receipt.
+record_slide_result.py DECK --slide slide_03 --agent-id ACTUAL_ID --backend-used LABEL --selected-source GENERATED.png --submission-receipt GENERATED.submission.json --qa-note "Actual worker result"
 record_slide_qa.py DECK --slide slide_03 --pass --evidence "Actual parent inspection"
 ```
 
@@ -50,3 +51,5 @@ For multilingual decks, set explicit slide language and render exact text in tha
 ## Compatibility
 
 Legacy utility workflows use --legacy-unmanaged explicitly; they cannot act on managed markers. New skill runs always compile v2 jobs. Final naming remains origin_image/slide_01.png, slide_02.png, etc., with no missing, extra or duplicate official slide files. Rejected candidates and references stay elsewhere.
+
+See [submission evidence](image-submission-evidence.md) for contract versions, native input mapping, adapter completion and measured output records.

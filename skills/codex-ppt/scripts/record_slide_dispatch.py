@@ -58,6 +58,7 @@ def main() -> int:
 
         slide.pop("user_review", None)
         slide.pop("qa", None)
+        slide.pop("execution_completion", None)
         slide["dispatch"] = {
             "attempt_id": str(uuid.uuid4()),
             "agent_id": args.agent_id,

@@ -134,13 +134,15 @@ class ReviewRegressions(unittest.TestCase):
         fixture_image(target, "blue")
         self.checked(dispatch_fixture(self.deck))
         source = self.deck / "result.png"; fixture_image(source, "red")
+        from planning_fixtures import register_fixture_receipt
+        receipt=register_fixture_receipt(self.deck,"slide_01",source)
         before = (target.read_bytes(), (self.deck / "slide_jobs.json").read_bytes())
         def broken_copy(source, destination):
             Path(destination).write_bytes(b"incomplete copy")
             raise OSError("SYNTHETIC partial copy failure")
         with patch.object(sys, "argv", ["record_slide_result.py", str(self.deck), "--slide", "1",
             "--agent-id", "fixture-agent", "--backend-used", "scripts/image_gen.py",
-            "--selected-source", str(source), "--qa-note", "SYNTHETIC"]), \
+            "--selected-source", str(source), "--submission-receipt", str(receipt), "--qa-note", "SYNTHETIC"]), \
             patch.object(record_slide_result.shutil, "copy2", side_effect=broken_copy), redirect_stdout(io.StringIO()):
             with self.assertRaises(OSError):
                 record_slide_result.main()
@@ -166,6 +168,13 @@ class ReviewRegressions(unittest.TestCase):
                 # Reapprove a matching synthetic sample, then compile both changed jobs.
                 from planning_fixtures import approve_fixture_sample
                 approve_fixture_sample(self.deck)
+                # Change approved page content after calibration so both packets
+                # must be rewritten, while its immutable style sample stays valid.
+                for slide in spec["slides"]:
+                    slide["title"] += " revised"
+                    slide["visible_copy"]["title"] = slide["title"]
+                approve_fixture(self.deck,spec)
+                before = {p:p.read_bytes() for p in before}
                 with patch.object(sys, "argv", ["prepare_slide_prompts.py", "--spec",
                     str(self.deck / "deck_spec.json"), "--out-dir", str(self.deck), "--force"]), \
                     patch.object(record_plan_approval, "atomic_bytes", side_effect=failing_write), redirect_stdout(io.StringIO()):
@@ -179,6 +188,8 @@ class ReviewRegressions(unittest.TestCase):
         target=self.deck/"origin_image/slide_01.png";fixture_image(target,"blue")
         self.checked(dispatch_fixture(self.deck))
         source=self.deck/"new-result.png";fixture_image(source,"red")
+        from planning_fixtures import register_fixture_receipt
+        receipt=register_fixture_receipt(self.deck,"slide_01",source)
         before=(target.read_bytes(),(self.deck/"slide_jobs.json").read_bytes())
         original=record_plan_approval.atomic_bytes;failed=[]
         def fail_state_once(path,body):
@@ -187,7 +198,7 @@ class ReviewRegressions(unittest.TestCase):
             return original(path,body)
         with patch.object(sys,"argv",["record_slide_result.py",str(self.deck),"--slide","1",
             "--agent-id","fixture-agent","--backend-used","scripts/image_gen.py",
-            "--selected-source",str(source),"--qa-note","SYNTHETIC"]), \
+            "--selected-source",str(source),"--submission-receipt",str(receipt),"--qa-note","SYNTHETIC"]), \
             patch.object(record_plan_approval,"atomic_bytes",side_effect=fail_state_once),redirect_stdout(io.StringIO()):
             with self.assertRaises(OSError):
                 record_slide_result.main()

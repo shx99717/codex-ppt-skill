@@ -4,6 +4,14 @@ Release notes are generated from this file. Keep changelog entries in English.
 
 ## Unreleased
 
+### Fixes
+
+- Prefer callable Codex and Cursor native image tools using live schemas, prompt/parameter ratio controls, and measured outputs rather than a fixed image model or size-parameter requirement.
+- Require explicit configured API models with provider/model/operation-scoped capability evidence; do not apply older model restrictions by substring.
+- Bind managed image submissions to compiler contract versions, dispatch attempts, all source/style inputs, and original candidate bytes; distinguish agent-reported inputs from registered adapter execution.
+- Remove 3:2 deck support and its Medavis template. Supported ratios are 16:9 and 4:3; historical files are not automatically converted.
+
+
 ### Features
 
 - Add adaptive whole-deck content, visual, and talk planning with approval-bound production inputs.

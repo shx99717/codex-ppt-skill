@@ -29,8 +29,8 @@ def _locked_aspect_ratio(spec: Dict[str, Any]) -> str:
     if raw is None or str(raw).strip() == "":
         return "16:9"
     label = str(raw).strip()
-    if label not in {"16:9", "4:3", "3:2"}:
-        _die(f"aspect_ratio must be 16:9, 4:3, or 3:2 (got {label!r})")
+    if label not in {"16:9", "4:3"}:
+        _die(f"aspect_ratio must be 16:9 or 4:3 (got {label!r})")
     return label
 
 
@@ -130,13 +130,9 @@ def _slide_images(slide: Dict[str, Any], *, slide_number: int, base_dir: Path) -
     return images
 
 
-def _is_gpt_image_2_backend(label: Optional[str]) -> bool:
-    if not label:
-        return False
-    n = re.sub(r"[^a-z0-9]+", "", label.lower())
-    if "generateimage" in n:
-        return False
-    return "imagegen" in n or "codexgptimage" in n or "gptimage" in n
+def _is_api_backend(label: Optional[str]) -> bool:
+    from generation_execution import is_cli_backend
+    return bool(label and is_cli_backend(label))
 
 
 def _method_backend_label(method: Optional[Dict[str, Any]]) -> Optional[str]:
@@ -161,8 +157,8 @@ def _sample_generation_method(spec: Dict[str, Any], *, base_dir: Path) -> Option
             method[key] = _resolve_image_path(method[key], base_dir=base_dir)
     label = _locked_aspect_ratio(spec)
     backend = _method_backend_label(method)
-    if _is_gpt_image_2_backend(backend):
-        method["size"] = f"gpt-image-2 --size {gpt_image_size(label)}"
+    if _is_api_backend(backend):
+        method["size"] = f"API --size {gpt_image_size(label)}"
     else:
         method["aspect_ratio"] = label
         size = method.get("size")
@@ -274,7 +270,7 @@ def _build_prompt(
             "language": display_lang,
             "slide_number": number,
             "render_slide_number": False,
-            "gpt_image_2_size": gpt_image_size(_locked_aspect_ratio(deck)),
+            "suggested_api_size": gpt_image_size(_locked_aspect_ratio(deck)),
         }),
         _format_block("Deck Goal", deck.get("goal")),
         _format_block("Required Background", required_background),
@@ -352,7 +348,7 @@ def _write_template(path: Path) -> None:
     # capabilities before approval. No runtime sample or human approval is asserted.
     template={
         "workflow_version":2,"deck_name":"example-deck","language":"English",
-        "aspect_ratio":"3:2","selected_image_backend":"GenerateImage","goal":"Define the presentation goal.",
+        "aspect_ratio":"16:9","selected_image_backend":"GenerateImage","goal":"Define the presentation goal.",
         "deck_context":{"source_summary":"Replace with provided evidence.","canonical_terms":[]},
         "style":{"name":"clean-professional","visual_direction":"Readable technical diagrams"},
         "planning":{"brief":{"audience":"Confirm audience","purpose":"Confirm purpose",
@@ -361,7 +357,7 @@ def _write_template(path: Path) -> None:
             "shared_visuals":{},"delivery":{"voice":"natural-presenter","speaker_names":[]},
             "review_policy":"consolidated","sample_strategy":{"required_slides":["slide_02"]},
             "generation":{"backend_used":"GenerateImage","tool_name":"GenerateImage",
-                          "mode":"generate","aspect_ratio":"3:2"},
+                          "mode":"generate","aspect_ratio":"16:9"},
             "unresolved":["Confirm intention, exact copy, evidence, visuals, talk and live backend capabilities"]},
         "slides":[]}
     for number,title,role in [(1,"Opening","opening"),(2,"Explain the idea","explanation")]:
@@ -391,12 +387,13 @@ def approved_prompt_blocks(render_context: dict) -> str:
 def _managed_job(spec,context,sid,manifest,sample_refs,images,phase,repair):
     from generation_execution import execution_contract
     prompt=approved_prompt_blocks(context)
-    prompt+="\n\nGenerate one full-slide image with the locked ratio. "
+    prompt+="\n\nGenerate one full-slide image. "
+    prompt+=f"Output canvas width:height aspect ratio must be {spec['aspect_ratio']}. Fill the actual canvas; no borders or letterboxing. "
     prompt+="Use source images with their stated fidelity. Style sample images supply visual style only; "
     prompt+="do not copy their text or layout. No local drawing, overlays or raster substitutes."
     if repair:
         prompt+="\n\nRECORDED RENDERING REPAIR:\n"+json.dumps(repair,sort_keys=True,ensure_ascii=False)
-    return {"workflow_version":2,"slide":context["local"]["slide"]["number"],
+    return {"workflow_version":2,"execution_contract_version":1,"slide":context["local"]["slide"]["number"],
         "title":context["local"]["slide"]["title"],"phase":phase,
         "render_phase":repair["render_phase"] if repair else phase,"prompt":prompt,
         "out":f"{sid}.png","input_images":images,"requires_context_images":bool(images),
@@ -481,6 +478,7 @@ def prepare_managed(args) -> int:
             image_inputs+=approved_source_inputs(deck,contexts[sid],ledger)
             job=_managed_job(spec,contexts[sid],sid,manifest,sample_refs,image_inputs,args.phase,repair)
             accepted=(args.phase!="repair" and accepted_sample_is_current(deck,sid,manifest,ledger)
+                      and bool(old and (old.get("result") or {}).get("submission"))
                       and not (old and old.get("phase")=="repair"))
             if old and path.exists():
                 existing=read_json(path)
@@ -493,7 +491,7 @@ def prepare_managed(args) -> int:
                         and existing.get("style_hash")==job["style_hash"]
                         and accepted_sample_is_current(deck,sid,manifest,ledger)
                         and qa_is_current(deck,old,manifest))
-                    if keep_accepted_calibration:
+                    if keep_accepted_calibration and existing.get("execution_contract_version")==1:
                         # Retain the real repaired calibration packet and its
                         # empty style inputs, rather than changing its provenance.
                         continue
@@ -501,7 +499,7 @@ def prepare_managed(args) -> int:
                         and existing.get("style_hash")==job["style_hash"]
                         and existing.get("sample_refs")==job["sample_refs"]
                         and qa_is_current(deck,old,manifest))
-                    if keep_finished_repair:
+                    if keep_finished_repair and existing.get("execution_contract_version")==1:
                         continue
                     raise ContractError("Recorded repair requires --phase repair; production/sample cannot bypass the repair limit")
                 # Accepted sample provenance stays its actual sample-phase job.
@@ -509,7 +507,7 @@ def prepare_managed(args) -> int:
                 keep_sample=(accepted and args.phase!="repair" and existing.get("phase")=="sample"
                              and existing.get("visual_hash")==job["visual_hash"]
                              and existing.get("style_hash")==job["style_hash"])
-                if same or keep_sample:
+                if (same or keep_sample) and existing.get("execution_contract_version")==1:
                     if accepted:
                         entries[sid]["status"]="accepted"
                     continue
@@ -522,7 +520,7 @@ def prepare_managed(args) -> int:
             body=(json.dumps(job,ensure_ascii=False,sort_keys=True,indent=2)+"\n").encode("utf-8")
             import hashlib
             entry=entries[sid]
-            for key in ("qa","user_review","dispatch","result","blocker"):
+            for key in ("qa","user_review","dispatch","result","blocker","execution_completion"):
                 entry.pop(key,None)
             entry.update(job=f"prompts/{sid}.json",job_sha256=hashlib.sha256(body).hexdigest(),
                 visual_hash=job["visual_hash"],phase=args.phase,input_images=image_inputs,
@@ -534,7 +532,7 @@ def prepare_managed(args) -> int:
             writes[path]=body
         # Validate all selected entries first, then save; one invalid selection must
         # never replace an earlier valid prompt in the same invocation.
-        jobs.update(workflow_version=2,run_status="jobs_prepared",deck_name=spec["deck_name"],
+        jobs.update(workflow_version=2,execution_contract_version=1,run_status="jobs_prepared",deck_name=spec["deck_name"],
             selected_backend=spec["selected_image_backend"],aspect_ratio=spec["aspect_ratio"],
             sample_generation_method=spec["planning"]["generation"],max_concurrent_slides=capacity,
             slides=[entries[sid] for sid in ids],updated_at=now_iso())

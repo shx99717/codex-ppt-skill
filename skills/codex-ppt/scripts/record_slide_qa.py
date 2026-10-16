@@ -45,6 +45,8 @@ def main() -> int:
             job=require_job_current(deck,jobs,slide)
             if slide.get("status") not in {"recorded","accepted"}:
                 raise ContractError("QA requires a recorded current image")
+            from image_input_contract import require_recorded_submission
+            require_recorded_submission(job,slide,inside_path(deck,slide["out"]))
             image=file_digest(inside_path(deck,slide["out"]))
             if image!=(slide.get("result") or {}).get("final_image_sha256"):
                 raise ContractError("Image differs from recorded backend result")
@@ -61,6 +63,7 @@ def main() -> int:
                     slide["repair_request"]={"id":str(uuid.uuid4()),"evidence":args.evidence,"visual_hash":slide["visual_hash"],
                                              "image_sha256":image,"render_phase":job["render_phase"]}
                     slide["status"]="pending_repair"
+                    slide.pop("execution_completion",None)
                 else:
                     slide["status"]="blocked"
             if first and first["ids"]:

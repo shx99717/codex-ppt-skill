@@ -74,7 +74,7 @@ Plain output has N content slides. Medavis has N+2:
 - Content pages use the bundled blank layout and one uniform image scale, with `medavis-logo-small.png` top right at equal 10px margins. Content notes map with an offset of one.
 - Original ending page is unchanged, without a generated image, extra logo, or content notes.
 
-The bundled three-page templates are `medavis_ppt_template_2026_en_16-9.pptx`, `_4-3.pptx` and `_3-2.pptx`. `none`, `medavis` and `both` all support 16:9, 4:3 and 3:2. The locked pixel ratio is checked within 2% relative tolerance. Wrong-ratio images need regeneration; stretching, cropping or letterboxing cannot count as success. Branded files always use `{deck_name}-medavis.pptx`; `both` delivers both separate files.
+The bundled three-page templates are `medavis_ppt_template_2026_en_16-9.pptx`, `_4-3.pptx`. `none`, `medavis` and `both` all support 16:9 and 4:3. The locked pixel ratio is checked within 2% relative tolerance. Wrong-ratio images need regeneration; stretching, cropping or letterboxing cannot count as success. Branded files always use `{deck_name}-medavis.pptx`; `both` delivers both separate files.
 
 ## Compatibility
 
@@ -85,3 +85,5 @@ Historical image folders and pre-v2 jobs use `--legacy-unmanaged` explicitly on 
 Report actual project/output/image/outline/speech/job paths and counts; backend and result provenance; note embedding; relevant repairs or remaining limitations; and the approved profile. Do not infer successful rendering or human approval from state labels alone. Slides are full raster images: wording, charts and diagrams are not separately editable PowerPoint objects.
 
 For a custom or adapted style, offer once to save it in the personal style library. If accepted, read [style library](style-library.md). Skip this offer for an unchanged built-in style. Do not let style reuse replace current content, talk or image approval.
+
+See [submission evidence](image-submission-evidence.md) for contract versions, native input mapping, adapter completion and measured output records.

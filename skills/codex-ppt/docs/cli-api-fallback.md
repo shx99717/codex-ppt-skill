@@ -40,14 +40,14 @@ Basic generation command:
 
 ```bash
 {runtime_python} {skill_root}/scripts/image_gen.py generate \
-  --model gpt-image-2 \
+  --model YOUR_SELECTED_MODEL_ID \
   --prompt-file {prompt_file} \
-  --size {2560x1440|2560x1920|2400x1600} \
+  --size {2560x1440|2560x1920} \
   --quality medium \
   --out {candidate_path}
 ```
 
-The fallback CLI accepts model names containing `gpt-image-`, such as `gpt-image-2` or `openai/gpt-image-2`.
+The fallback CLI requires an explicitly configured provider-documented model ID; there is no fixed default model.
 
 The following prompt extraction is an unmanaged utility example only. Managed jobs must use the adapter. Use a job's `prompt` alone only when it has no input images:
 
@@ -55,7 +55,7 @@ The following prompt extraction is an unmanaged utility example only. Managed jo
 python3 -c 'import json, pathlib; print(json.loads(pathlib.Path("{base_dir}/{deck_name}/prompts/slide_01.json").read_text())["prompt"])' | \
 {runtime_python} {skill_root}/scripts/image_gen.py generate \
   --prompt-file - \
-  --size {2560x1440|2560x1920|2400x1600} \
+  --size {2560x1440|2560x1920} \
   --quality medium \
   --out {candidate_path}
 ```
@@ -69,7 +69,7 @@ The fallback CLI supports:
 - `generate`: create one or more images from a prompt.
 - `edit`: edit one or more existing images, optionally with a mask.
 
-The fallback CLI must pass gpt-image-2 `--size` for the **locked** ratio: `2560x1440` (16:9), `2560x1920` (4:3), `2400x1600` (3:2). Do not rely on prompt text or `--size auto`. Gate saved images on 2% relative ratio, not exact pixels. For 4K, use `--size 3840x2160 --quality high` only when the user asks for 4K **and** the locked ratio is 16:9. Do not use portrait `--size` for slide canvases.
+For API execution, use the approved model and size supported by its documented capability profile. Suggested slide sizes are 2560x1440 (16:9) and 2560x1920 (4:3); these are not native-tool requirements. Measure saved pixels and honor explicitly approved minimum/exact output requirements.
 
 ## Editing Slides
 
@@ -92,14 +92,16 @@ Transparent-background requests:
 
 - Built-in mode should use a flat chroma-key background and local removal when appropriate.
 - CLI/API fallback should also prefer chroma-key generation plus `scripts/remove_chroma_key.py` for simple opaque subjects.
-- `gpt-image-2` does not support `--background transparent`. If the user needs true model-native transparency, ask before switching to `--model gpt-image-1.5 --background transparent --output-format png`.
+- Check transparency and input-fidelity support for the explicitly selected model; do not apply an older model rule by name substring.
 
 ## Assembly And Doctor
 
-`assemble_ppt.py` supports `16:9`, `4:3`, and `3:2` for `--template none|medavis|both`. Pass the locked `--aspect-ratio`. Medavis template mode requires `--landing-title` and loads the matching bundled 3-page file.
+`assemble_ppt.py` supports `16:9` and `4:3` for `--template none|medavis|both`. Pass the locked `--aspect-ratio`. Medavis template mode requires `--landing-title` and loads the matching bundled 3-page file.
 
 Run the API doctor only when troubleshooting fallback API access:
 
 ```bash
 python3 {skill_root}/scripts/codex_ppt_runtime.py doctor --check-api
 ```
+
+See [submission evidence](image-submission-evidence.md) for contract versions, native input mapping, adapter completion and measured output records.

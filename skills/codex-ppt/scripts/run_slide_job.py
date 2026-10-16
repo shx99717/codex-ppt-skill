@@ -47,6 +47,11 @@ def execute_job(args) -> int:
             prompt.write_text(job["prompt"], encoding="utf-8")
             command = [sys.executable, "-B", str(Path(__file__).with_name("image_gen.py")),
                 execution["operation"], "--prompt-file", str(prompt), "--out", str(out), "--no-augment"]
+            capabilities=job["generation_config"].get("capabilities")
+            if capabilities is not None:
+                capability_path=Path(scratch)/"capabilities.json"
+                capability_path.write_text(json.dumps(capabilities),encoding="utf-8")
+                command += ["--capabilities-file",str(capability_path)]
             for key, value in execution["parameters"].items():
                 if value is not None:
                     command += ["--" + key.replace("_", "-"), str(value)]
@@ -61,8 +66,9 @@ def execute_job(args) -> int:
         if result.returncode:
             return result.returncode
         with consumer_lock(deck), FileLock(str(deck / ".slide_jobs.json.lock")):
-            current = find_slide(load_jobs(deck), sid)
-            require_job_current(deck, load_jobs(deck), current)
+            current_jobs=load_jobs(deck)
+            current = find_slide(current_jobs, sid)
+            require_job_current(deck, current_jobs, current)
             if current["job_sha256"] != job_sha:
                 raise ContractError("Compiled job changed during backend execution")
             if not args.dry_run and (current.get("status") != "dispatched"
@@ -73,9 +79,20 @@ def execute_job(args) -> int:
                 if not out.is_file():
                     raise ContractError("Backend returned without a candidate image")
                 try:
-                    require_image_ratio(str(out), RATIO_BY_LABEL[jobs["aspect_ratio"]], jobs["aspect_ratio"])
+                    from image_input_contract import measured_output
+                    measured_output(out,jobs["aspect_ratio"],job["generation_config"].get("output_requirements"))
                 except ValueError as exc:
                     raise ContractError(str(exc)) from exc
+                from image_input_contract import make_receipt,sha256
+                from record_plan_approval import atomic_group
+                receipt=make_receipt(job,current,out,"cli_image_files",origin="adapter")
+                receipt_path=out.with_suffix(".submission.json")
+                receipt_bytes=(json.dumps(receipt,ensure_ascii=False,indent=2)+"\n").encode("utf-8")
+                import hashlib
+                current["execution_completion"]={"producer":"run_slide_job.py","status":"succeeded","dry_run":False,
+                    "receipt":receipt,"receipt_path":str(receipt_path),"receipt_sha256":hashlib.sha256(receipt_bytes).hexdigest()}
+                atomic_group(deck,{receipt_path.relative_to(deck).as_posix():receipt_bytes,
+                    "slide_jobs.json":(json.dumps(current_jobs,ensure_ascii=False,indent=2)+"\n").encode("utf-8")})
         print(json.dumps({"slide_id": sid, "operation": execution["operation"],
             "backend_used": job["expected_backend"], "candidate": str(out),
             "dry_run": args.dry_run, "job_sha256": job_sha}))

@@ -25,11 +25,9 @@ For scripts/image_gen.py, use run_slide_job.py DECK --slide ID --agent-id YOUR_I
 (generate without inputs; explicitly approved reference_mode=edit with inputs),
 exact settings and every verified image. Do not replay managed JSON with generate-batch.
 
-Ratio is the locked 16:9 / 4:3 / 3:2. For gpt-image-2 paths that expose size:
-2560x1440 / 2560x1920 / 2400x1600. Cursor GenerateImage only for locked 3:2:
-inspect its enum, use the approved legal landscape tool argument if 3:2 is absent,
-then measure actual pixels. The tool argument is not proof of ratio.
-Reject more than 2% relative ratio error; no stretch/crop/letterbox success path.
+Ratio is the locked 16:9 or 4:3. For native Codex image_gen, use the explicit ratio in the prompt even if no size/ratio parameter exists. For Cursor pass the supported aspect_ratio value. Never invent parameters or a model ID. Measure original output pixels; reject more than 2% relative ratio error. No stretch/crop/letterbox substitute. Exact/minimum output sizes apply only if approved as requirements.
+
+Attach every input through the live tool mechanism. Inspect local snapshots first, then use explicit reference paths when supported; context-only inclusion needs complete mapping and adequate capacity. Return a blocker if any input cannot be attached. Return an actual submission receipt described in docs/image-submission-evidence.md, bound to dispatch.attempt_id, current job and original candidate bytes. Native/bridge evidence_origin is agent_reported. The bundled CLI emits its own registered receipt after successful execution; do not synthesize one or reuse a different attempt.
 
 Generate one complete raster slide through that backend. Forbidden:
 local drawing, Pillow-generated slides, SVG/HTML/CSS/canvas screenshots,
@@ -48,6 +46,7 @@ Keep your selected original backend-generated candidate outside origin_image.
 Return:
 backend_used=<actual locked label>
 selected_source=<absolute original generated candidate path>
+submission_receipt=<absolute actual attempt receipt path>
 qa_note=<actual inspection summary>
 or blocker=<specific unavailable input/tool/fit/quality issue and evidence>
 ```
