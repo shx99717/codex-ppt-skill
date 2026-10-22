@@ -12,7 +12,7 @@ Draft speaker notes at this stage in the presentation language. They sound like 
 
 ## Lock style, ratio and executable method
 
-Choose from twelve built-in styles, personal styles or a supplied reference; normally the agent recommends a small relevant shortlist. See [Styles and Personal Style Library](/en/styles.md). Keep recurring identities coherent while varying composition by page role.
+Choose from thirteen built-in styles, personal styles or a supplied reference; normally the agent recommends a small relevant shortlist. See [Styles and Personal Style Library](/en/styles.md). Keep recurring identities coherent while varying composition by page role.
 
 Prefer callable Codex `image_gen` or Cursor `GenerateImage` using the live tool schema. Native model identity is host-managed. Codex can request 16:9 or 4:3 in the prompt without a size parameter; Cursor should pass the supported `aspect_ratio` value. Measure actual saved width/height (2% ratio tolerance); requested resolution is not proof of native 4K. API fallback reuses an explicitly configured provider model; if absent, select one using current documentation. There is no fixed model default. Attach every required source/style image through the actual input mechanism and record attempt-bound submission evidence. Native/bridge evidence is agent-reported; CLI adapter verification requires registered successful execution. Old project files remain readable, but new managed execution/assembly requires recompilation and fresh evidence. Only 16:9 and 4:3 decks are supported; no automatic conversion of old ratios.
 

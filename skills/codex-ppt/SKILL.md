@@ -38,7 +38,7 @@ Before delivery, validate the complete image/talk sequence and current user appr
 
 Use [CLI/API fallback](docs/cli-api-fallback.md) only after choosing it; [image configuration](docs/image-model-configuration.md) only for an actual configuration problem. A CLI text-only generate path cannot attach required images: confirm an input-capable path in the plan, or raise a blocker before making the call.
 
-The twelve built-in styles and personal style discovery remain in [style and sample](docs/outline-style-and-sample.md). Personal styles live outside installation; same-name personal files take priority. Read [style library](docs/style-library.md) when saving styles, and offer to save a custom/adapted final style.
+The thirteen built-in styles and personal style discovery remain in [style and sample](docs/outline-style-and-sample.md). Personal styles live outside installation; same-name personal files take priority. Read [style library](docs/style-library.md) when saving styles, and offer to save a custom/adapted final style.
 
 Legacy manual/image-only CLIs require explicit --legacy-unmanaged. They refuse decks with managed markers. Legacy public assembly/image utilities remain usable. Never use legacy to bypass missing or stale v2 approvals.
 

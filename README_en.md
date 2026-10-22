@@ -42,7 +42,7 @@ For a basic introduction to skill design and usage, see [good-skill-design.pptx]
 - Inputs can range from a topic to complete slide Markdown, including mixed readiness. The skill reuses ready copy and notes, clarifies consequential gaps, and approves exact content, visual meaning and natural presenter talk before expensive images. Consolidated current-image review is the default; strict batch review is available. Minor raster differences remain possible.
 - Guided instead of one-shot: the skill asks you to confirm `outline.md`, per-slide key points, style direction, and sample-slide quality before continuing.
 - Low setup effort: articles, reports, papers, course notes, Markdown files, outlines, PDFs, and Word documents can all be used as starting material.
-- 12 built-in PPT style references: includes clean professional, scientific defense, Party-and-Government Red, Teaching Courseware, e-ink magazine, hand-drawn technical explainer, dashboard, McKinsey style, and more. The hand-drawn technical explainer style is a strong starting point if you do not want to write prompts.
+- 13 built-in PPT style references: includes clean professional, scientific defense, Party-and-Government Red, Teaching Courseware, e-ink magazine, hand-drawn technical explainer, dashboard, McKinsey style, medavis Corporate, and more. The hand-drawn technical explainer style is a strong starting point if you do not want to write prompts.
 - Supports custom style replication: provide a favorite image, PDF, or PPT/PPTX, and the agent can analyze its color, layout, typography, and visual system before generating a new deck in that style.
 - Builds a reusable personal style library: once you like a deck style, ask the agent to save it into `~/.codex-ppt-skill/references/` so future decks can reuse it directly; the library lives outside the skill install, survives skill updates, and a personal style with the same name takes priority over the built-in one.
 - Supports parallel subagent generation: after the sample slide is approved, one subagent can handle one slide and self-check readability, style consistency, and content completeness before reporting issues for repair.
@@ -76,6 +76,8 @@ The following preview images were generated with `gpt-image-2` to help users cho
 | ![Scientific Defense](assets/style-previews/scientific-defense.png) | ![McKinsey Style](assets/style-previews/mckinsey-style.png) |
 | Party-and-Government Red | Teaching Courseware |
 | ![Party-and-Government Red](assets/style-previews/party-government-red.png) | ![Teaching Courseware](assets/style-previews/teaching-courseware.png) |
+| medavis Corporate | |
+| ![medavis Corporate](assets/style-previews/medavis-corporate.png) | |
 
 ## Output Structure
 
