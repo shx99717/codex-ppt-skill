@@ -4,6 +4,10 @@ Release notes are generated from this file. Keep changelog entries in English.
 
 ## Unreleased
 
+### Features
+
+- Add the built-in `medavis企业风` (medavis Corporate) style: medavis petrol and green on a light sage background, Titillium Web style typography, calm healthcare-IT layouts, and a free top-right corner for an optional logo. Independent of the Medavis output template. (#4)
+
 ### Fixes
 
 - Prefer callable Codex and Cursor native image tools using live schemas, prompt/parameter ratio controls, and measured outputs rather than a fixed image model or size-parameter requirement. (#3)
